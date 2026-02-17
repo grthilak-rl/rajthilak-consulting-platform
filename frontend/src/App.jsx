@@ -3,12 +3,14 @@ import Landing from "./pages/Landing";
 import SubmitRequirement from "./pages/SubmitRequirement";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
+import Portfolio from "./pages/Portfolio";
 import RequirementDetail from "./pages/RequirementDetail";
 
 export default function App() {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
+      <Route path="/portfolio" element={<Portfolio />} />
       <Route path="/submit" element={<SubmitRequirement />} />
       <Route path="/admin/login" element={<AdminLogin />} />
       <Route path="/admin/dashboard" element={<AdminDashboard />} />
