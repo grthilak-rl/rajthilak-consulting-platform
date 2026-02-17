@@ -10,3 +10,6 @@ DATABASE_URL = os.environ.get(
 
 ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "admin@example.com")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "changeme")
+
+JWT_SECRET = os.environ.get("JWT_SECRET", "dev-secret-change-in-production")
+JWT_EXPIRES_IN = int(os.environ.get("JWT_EXPIRES_IN", "60"))  # minutes
