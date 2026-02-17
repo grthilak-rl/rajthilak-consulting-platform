@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 from app.models.requirement import RequirementStatus, RequirementType
 
@@ -41,4 +41,4 @@ class StatusUpdate(BaseModel):
 
 
 class ProgressUpdate(BaseModel):
-    progress: int
+    progress: int = Field(ge=0, le=100)
