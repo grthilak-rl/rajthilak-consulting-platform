@@ -1,2 +1,12 @@
+import os
+
 APP_NAME = "Consulting Platform"
 APP_VERSION = "0.1.0"
+
+DATABASE_URL = os.environ.get(
+    "DATABASE_URL",
+    "postgresql://postgres:postgres@localhost:5432/consulting_platform",
+)
+
+ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "admin@example.com")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "changeme")
