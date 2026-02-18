@@ -1,19 +1,24 @@
 const API_BASE = "/api";
 
-let token = null;
+const TOKEN_KEY = "auth_token";
 
 export function setToken(t) {
-  token = t;
+  if (t) {
+    sessionStorage.setItem(TOKEN_KEY, t);
+  } else {
+    sessionStorage.removeItem(TOKEN_KEY);
+  }
 }
 
 export function getToken() {
-  return token;
+  return sessionStorage.getItem(TOKEN_KEY);
 }
 
 function authHeaders() {
   const headers = { "Content-Type": "application/json" };
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
+  const t = getToken();
+  if (t) {
+    headers["Authorization"] = `Bearer ${t}`;
   }
   return headers;
 }
