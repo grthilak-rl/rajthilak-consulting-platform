@@ -9,7 +9,7 @@ export default function AdminLogin() {
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
 
-  async function handleSubmit(e) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     setSubmitting(true);
@@ -19,7 +19,7 @@ export default function AdminLogin() {
       setToken(data.access_token);
       navigate("/admin/dashboard");
     } catch (err) {
-      setError(err.message);
+      setError((err as Error).message);
     } finally {
       setSubmitting(false);
     }

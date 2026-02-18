@@ -1,7 +1,20 @@
 import { useState } from "react";
 import { submitRequirement } from "../api/client";
 
-const INITIAL_FORM = {
+interface RequirementForm {
+  name: string;
+  email: string;
+  company: string;
+  title: string;
+  description: string;
+  type: string;
+  tech_stack: string;
+  timeline: string;
+}
+
+type FormErrors = Partial<Record<keyof RequirementForm, string>>;
+
+const INITIAL_FORM: RequirementForm = {
   name: "",
   email: "",
   company: "",
@@ -12,8 +25,8 @@ const INITIAL_FORM = {
   timeline: "",
 };
 
-function validateForm(form) {
-  const errors = {};
+function validateForm(form: RequirementForm): FormErrors {
+  const errors: FormErrors = {};
   if (!form.name.trim()) errors.name = "Name is required";
   if (!form.email.trim()) {
     errors.email = "Email is required";
@@ -27,21 +40,21 @@ function validateForm(form) {
 }
 
 export default function SubmitRequirement() {
-  const [form, setForm] = useState(INITIAL_FORM);
-  const [errors, setErrors] = useState({});
+  const [form, setForm] = useState<RequirementForm>(INITIAL_FORM);
+  const [errors, setErrors] = useState<FormErrors>({});
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [apiError, setApiError] = useState("");
 
-  function handleChange(e) {
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
-    if (errors[name]) {
+    if (errors[name as keyof RequirementForm]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
   }
 
-  async function handleSubmit(e) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setApiError("");
 
@@ -53,17 +66,17 @@ export default function SubmitRequirement() {
 
     setSubmitting(true);
     try {
-      const payload = { ...form };
-      if (!payload.company.trim()) payload.company = null;
-      if (!payload.tech_stack.trim()) payload.tech_stack = null;
-      if (!payload.timeline.trim()) payload.timeline = null;
+      const payload: Record<string, unknown> = { ...form };
+      if (!(form.company).trim()) payload.company = null;
+      if (!(form.tech_stack).trim()) payload.tech_stack = null;
+      if (!(form.timeline).trim()) payload.timeline = null;
 
       await submitRequirement(payload);
 
       setSuccess(true);
       setForm(INITIAL_FORM);
     } catch (err) {
-      setApiError(err.message);
+      setApiError((err as Error).message);
     } finally {
       setSubmitting(false);
     }

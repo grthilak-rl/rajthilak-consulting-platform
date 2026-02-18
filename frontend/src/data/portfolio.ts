@@ -1,4 +1,6 @@
-const portfolio = [
+import type { Project } from "../types";
+
+const portfolio: Project[] = [
   {
     name: "HIT",
     description:

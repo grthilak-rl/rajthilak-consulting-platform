@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchRequirements, setToken } from "../api/client";
+import { ApiError, fetchRequirements, setToken } from "../api/client";
+import type { Requirement } from "../types";
 
 export default function AdminDashboard() {
-  const [requirements, setRequirements] = useState([]);
+  const [requirements, setRequirements] = useState<Requirement[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -11,13 +12,13 @@ export default function AdminDashboard() {
   useEffect(() => {
     fetchRequirements()
       .then(setRequirements)
-      .catch((err) => {
-        if (err.status === 401 || err.status === 403) {
+      .catch((err: unknown) => {
+        if (err instanceof ApiError && (err.status === 401 || err.status === 403)) {
           setToken(null);
           navigate("/admin/login");
           return;
         }
-        setError(err.message);
+        setError((err as Error).message);
       })
       .finally(() => setLoading(false));
   }, [navigate]);
@@ -31,7 +32,7 @@ export default function AdminDashboard() {
       {requirements.length === 0 ? (
         <p>No requirements submitted yet.</p>
       ) : (
-        <table border="1" cellPadding="8" cellSpacing="0">
+        <table border={1} cellPadding="8" cellSpacing="0">
           <thead>
             <tr>
               <th>Title</th>

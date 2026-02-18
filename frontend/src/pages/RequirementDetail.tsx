@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
+  ApiError,
   fetchRequirement,
   updateStatus,
   updateProgress,
@@ -8,15 +9,16 @@ import {
   createNote,
   setToken,
 } from "../api/client";
+import type { Requirement, Note } from "../types";
 
 const STATUSES = ["new", "accepted", "in_progress", "completed", "rejected"];
 
 export default function RequirementDetail() {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const [requirement, setRequirement] = useState(null);
-  const [notes, setNotes] = useState([]);
+  const [requirement, setRequirement] = useState<Requirement | null>(null);
+  const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
   const [actionError, setActionError] = useState("");
@@ -28,8 +30,8 @@ export default function RequirementDetail() {
   const [noteContent, setNoteContent] = useState("");
   const [addingNote, setAddingNote] = useState(false);
 
-  function handleAuthError(err) {
-    if (err.status === 401 || err.status === 403) {
+  function handleAuthError(err: unknown): boolean {
+    if (err instanceof ApiError && (err.status === 401 || err.status === 403)) {
       setToken(null);
       navigate("/admin/login");
       return true;
@@ -38,6 +40,8 @@ export default function RequirementDetail() {
   }
 
   useEffect(() => {
+    if (!id) return;
+
     Promise.all([fetchRequirement(id), fetchNotes(id)])
       .then(([req, notesList]) => {
         setRequirement(req);
@@ -45,15 +49,16 @@ export default function RequirementDetail() {
         setProgress(req.progress);
         setNotes(notesList);
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
         if (!handleAuthError(err)) {
-          setLoadError(err.message);
+          setLoadError((err as Error).message);
         }
       })
       .finally(() => setLoading(false));
   }, [id, navigate]);
 
-  async function handleStatusChange(e) {
+  async function handleStatusChange(e: React.ChangeEvent<HTMLSelectElement>) {
+    if (!id) return;
     const newStatus = e.target.value;
     setStatus(newStatus);
     setSaving(true);
@@ -63,8 +68,8 @@ export default function RequirementDetail() {
       setRequirement(updated);
     } catch (err) {
       if (!handleAuthError(err)) {
-        setActionError(err.message);
-        setStatus(requirement.status);
+        setActionError((err as Error).message);
+        if (requirement) setStatus(requirement.status);
       }
     } finally {
       setSaving(false);
@@ -72,6 +77,7 @@ export default function RequirementDetail() {
   }
 
   async function handleProgressSave() {
+    if (!id) return;
     setSaving(true);
     setActionError("");
     try {
@@ -79,15 +85,16 @@ export default function RequirementDetail() {
       setRequirement(updated);
     } catch (err) {
       if (!handleAuthError(err)) {
-        setActionError(err.message);
-        setProgress(requirement.progress);
+        setActionError((err as Error).message);
+        if (requirement) setProgress(requirement.progress);
       }
     } finally {
       setSaving(false);
     }
   }
 
-  async function handleAddNote(e) {
+  async function handleAddNote(e: React.FormEvent) {
+    if (!id) return;
     e.preventDefault();
     if (!noteContent.trim()) return;
     setAddingNote(true);
@@ -98,7 +105,7 @@ export default function RequirementDetail() {
       setNoteContent("");
     } catch (err) {
       if (!handleAuthError(err)) {
-        setActionError(err.message);
+        setActionError((err as Error).message);
       }
     } finally {
       setAddingNote(false);
@@ -118,7 +125,7 @@ export default function RequirementDetail() {
       <h1>{requirement.title}</h1>
       {actionError && <p style={{ color: "red" }}>{actionError}</p>}
 
-      <table border="1" cellPadding="8" cellSpacing="0">
+      <table border={1} cellPadding="8" cellSpacing="0">
         <tbody>
           <tr>
             <th>Name</th>
