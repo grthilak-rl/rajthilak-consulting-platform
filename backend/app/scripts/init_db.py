@@ -1,10 +1,13 @@
 import time
 
+from alembic import command
+from alembic.config import Config
 from bcrypt import hashpw, gensalt
+from sqlalchemy import text as sa_text
 from sqlalchemy.exc import OperationalError
 
 from app.core.config import ADMIN_EMAIL, ADMIN_PASSWORD
-from app.core.database import Base, engine, SessionLocal
+from app.core.database import engine, SessionLocal
 from app.models import User
 from app.models.requirement import Requirement, RequirementType, RequirementStatus
 
@@ -12,19 +15,28 @@ MAX_RETRIES = 10
 RETRY_DELAY = 2
 
 
-def init_db():
+def _wait_for_db():
     for attempt in range(1, MAX_RETRIES + 1):
         try:
             print(f"Connecting to database (attempt {attempt}/{MAX_RETRIES})...")
-            Base.metadata.create_all(bind=engine)
-            print("Tables created.")
-            break
+            with engine.connect() as conn:
+                conn.execute(sa_text("SELECT 1"))
+            print("Database is ready.")
+            return
         except OperationalError:
             if attempt == MAX_RETRIES:
                 print("Could not connect to database. Giving up.")
                 raise
             print(f"Database not ready. Retrying in {RETRY_DELAY}s...")
             time.sleep(RETRY_DELAY)
+
+
+def init_db():
+    _wait_for_db()
+
+    alembic_cfg = Config("alembic.ini")
+    command.upgrade(alembic_cfg, "head")
+    print("Migrations applied.")
 
     seed_admin()
     seed_requirements()
