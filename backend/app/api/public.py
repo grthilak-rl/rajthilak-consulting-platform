@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Request, status
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
+from app.core.limiter import limiter
 from app.models.requirement import Requirement
 from app.schemas.requirement import RequirementCreate, RequirementResponse
 
@@ -13,7 +14,8 @@ router = APIRouter()
     response_model=RequirementResponse,
     status_code=status.HTTP_201_CREATED,
 )
-def create_requirement(body: RequirementCreate, db: Session = Depends(get_db)):
+@limiter.limit("5/minute")
+def create_requirement(request: Request, body: RequirementCreate, db: Session = Depends(get_db)):
     requirement = Requirement(
         name=body.name,
         email=body.email,

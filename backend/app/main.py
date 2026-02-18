@@ -5,9 +5,13 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+
 from app.api import public, auth, admin
 from app.core.config import CORS_ORIGINS
 from app.core.deps import get_current_user
+from app.core.limiter import limiter
 from app.scripts.init_db import init_db
 
 
@@ -18,6 +22,8 @@ async def lifespan(app):
 
 
 app = FastAPI(title="Consulting Platform API", lifespan=lifespan)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 
 @app.exception_handler(RequestValidationError)
