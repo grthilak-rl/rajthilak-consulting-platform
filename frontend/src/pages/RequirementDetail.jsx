@@ -6,7 +6,6 @@ import {
   updateProgress,
   fetchNotes,
   createNote,
-  getToken,
   setToken,
 } from "../api/client";
 
@@ -39,11 +38,6 @@ export default function RequirementDetail() {
   }
 
   useEffect(() => {
-    if (!getToken()) {
-      navigate("/admin/login");
-      return;
-    }
-
     Promise.all([fetchRequirement(id), fetchNotes(id)])
       .then(([req, notesList]) => {
         setRequirement(req);

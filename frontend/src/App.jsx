@@ -5,6 +5,7 @@ import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import Portfolio from "./pages/Portfolio";
 import RequirementDetail from "./pages/RequirementDetail";
+import ProtectedRoute from "./ProtectedRoute";
 
 export default function App() {
   return (
@@ -13,8 +14,8 @@ export default function App() {
       <Route path="/portfolio" element={<Portfolio />} />
       <Route path="/submit" element={<SubmitRequirement />} />
       <Route path="/admin/login" element={<AdminLogin />} />
-      <Route path="/admin/dashboard" element={<AdminDashboard />} />
-      <Route path="/admin/requirements/:id" element={<RequirementDetail />} />
+      <Route path="/admin/dashboard" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+      <Route path="/admin/requirements/:id" element={<ProtectedRoute><RequirementDetail /></ProtectedRoute>} />
     </Routes>
   );
 }

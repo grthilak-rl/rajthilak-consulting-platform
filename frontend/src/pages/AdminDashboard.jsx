@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchRequirements, getToken, setToken } from "../api/client";
+import { fetchRequirements, setToken } from "../api/client";
 
 export default function AdminDashboard() {
   const [requirements, setRequirements] = useState([]);
@@ -9,11 +9,6 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!getToken()) {
-      navigate("/admin/login");
-      return;
-    }
-
     fetchRequirements()
       .then(setRequirements)
       .catch((err) => {
