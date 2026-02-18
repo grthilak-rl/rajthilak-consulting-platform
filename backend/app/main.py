@@ -1,10 +1,35 @@
-from fastapi import Depends, FastAPI
+from contextlib import asynccontextmanager
+
+from fastapi import Depends, FastAPI, Request, status
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from app.api import public, auth, admin
 from app.core.deps import get_current_user
+from app.scripts.init_db import init_db
 
-app = FastAPI(title="Consulting Platform API")
+
+@asynccontextmanager
+async def lifespan(app):
+    init_db()
+    yield
+
+
+app = FastAPI(title="Consulting Platform API", lifespan=lifespan)
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    errors = []
+    for err in exc.errors():
+        field = " -> ".join(str(loc) for loc in err["loc"] if loc != "body")
+        errors.append(f"{field}: {err['msg']}")
+    return JSONResponse(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        content={"detail": "; ".join(errors)},
+    )
+
 
 app.add_middleware(
     CORSMiddleware,

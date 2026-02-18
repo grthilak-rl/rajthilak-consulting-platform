@@ -7,6 +7,7 @@ import {
   fetchNotes,
   createNote,
   getToken,
+  setToken,
 } from "../api/client";
 
 const STATUSES = ["new", "accepted", "in_progress", "completed", "rejected"];
@@ -18,7 +19,8 @@ export default function RequirementDetail() {
   const [requirement, setRequirement] = useState(null);
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [loadError, setLoadError] = useState("");
+  const [actionError, setActionError] = useState("");
 
   const [status, setStatus] = useState("");
   const [progress, setProgress] = useState(0);
@@ -26,6 +28,15 @@ export default function RequirementDetail() {
 
   const [noteContent, setNoteContent] = useState("");
   const [addingNote, setAddingNote] = useState(false);
+
+  function handleAuthError(err) {
+    if (err.status === 401 || err.status === 403) {
+      setToken(null);
+      navigate("/admin/login");
+      return true;
+    }
+    return false;
+  }
 
   useEffect(() => {
     if (!getToken()) {
@@ -40,7 +51,11 @@ export default function RequirementDetail() {
         setProgress(req.progress);
         setNotes(notesList);
       })
-      .catch((err) => setError(err.message))
+      .catch((err) => {
+        if (!handleAuthError(err)) {
+          setLoadError(err.message);
+        }
+      })
       .finally(() => setLoading(false));
   }, [id, navigate]);
 
@@ -48,12 +63,15 @@ export default function RequirementDetail() {
     const newStatus = e.target.value;
     setStatus(newStatus);
     setSaving(true);
+    setActionError("");
     try {
       const updated = await updateStatus(id, newStatus);
       setRequirement(updated);
     } catch (err) {
-      setError(err.message);
-      setStatus(requirement.status);
+      if (!handleAuthError(err)) {
+        setActionError(err.message);
+        setStatus(requirement.status);
+      }
     } finally {
       setSaving(false);
     }
@@ -61,12 +79,15 @@ export default function RequirementDetail() {
 
   async function handleProgressSave() {
     setSaving(true);
+    setActionError("");
     try {
       const updated = await updateProgress(id, progress);
       setRequirement(updated);
     } catch (err) {
-      setError(err.message);
-      setProgress(requirement.progress);
+      if (!handleAuthError(err)) {
+        setActionError(err.message);
+        setProgress(requirement.progress);
+      }
     } finally {
       setSaving(false);
     }
@@ -76,19 +97,22 @@ export default function RequirementDetail() {
     e.preventDefault();
     if (!noteContent.trim()) return;
     setAddingNote(true);
+    setActionError("");
     try {
       const note = await createNote(id, noteContent.trim());
       setNotes((prev) => [note, ...prev]);
       setNoteContent("");
     } catch (err) {
-      setError(err.message);
+      if (!handleAuthError(err)) {
+        setActionError(err.message);
+      }
     } finally {
       setAddingNote(false);
     }
   }
 
   if (loading) return <p>Loading...</p>;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
+  if (loadError) return <p style={{ color: "red" }}>{loadError}</p>;
   if (!requirement) return <p>Requirement not found.</p>;
 
   return (
@@ -98,6 +122,7 @@ export default function RequirementDetail() {
       </button>
 
       <h1>{requirement.title}</h1>
+      {actionError && <p style={{ color: "red" }}>{actionError}</p>}
 
       <table border="1" cellPadding="8" cellSpacing="0">
         <tbody>
