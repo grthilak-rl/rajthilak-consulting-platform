@@ -7,8 +7,6 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: consulting_platform
-    ports:
-      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
 
@@ -18,13 +16,19 @@ services:
       - "8000:8000"
     environment:
       DATABASE_URL: postgresql://postgres:postgres@db:5432/consulting_platform
+      ADMIN_EMAIL: admin@example.com
+      ADMIN_PASSWORD: changeme
+      JWT_SECRET: change-this-to-a-random-secret
+      JWT_EXPIRES_IN: "60"
     depends_on:
       - db
 
   frontend:
     build: ./frontend
     ports:
-      - "3000:3000"
+      - "3000:80"
+    depends_on:
+      - backend
 
 volumes:
   pgdata:
