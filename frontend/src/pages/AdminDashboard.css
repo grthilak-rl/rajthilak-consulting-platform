@@ -73,44 +73,8 @@
   background: var(--color-error-50);
 }
 
-/* Tabs */
-.admin-tabs {
-  display: flex;
-  gap: var(--space-1);
-  border-bottom: 1px solid var(--color-border);
-  margin-bottom: var(--space-8);
-}
-
-.admin-tab {
-  padding: var(--space-3) var(--space-5);
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--color-text-secondary);
-  background: transparent;
-  border: none;
-  border-bottom: 2px solid transparent;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  position: relative;
-  bottom: -1px;
-}
-
-.admin-tab:hover {
-  color: var(--color-text);
-}
-
-.admin-tab.active {
-  color: var(--color-primary);
-  border-bottom-color: var(--color-primary);
-  font-weight: 600;
-}
-
-/* Portfolio Section (Dashboard Tab) */
-.admin-portfolio-section {
-  min-height: 300px;
-}
-
-.admin-portfolio-actions {
+/* Quick Nav Links */
+.admin-nav-links {
   margin-bottom: var(--space-6);
 }
 

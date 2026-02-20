@@ -28,7 +28,6 @@ export default function AdminDashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
   const [filterType, setFilterType] = useState("All");
-  const [activeTab, setActiveTab] = useState<"requirements" | "portfolio">("requirements");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -139,40 +138,16 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Tabs */}
-        <div className="admin-tabs">
-          <button
-            className={`admin-tab${activeTab === "requirements" ? " active" : ""}`}
-            onClick={() => setActiveTab("requirements")}
-          >
-            Requirements
-          </button>
-          <button
-            className={`admin-tab${activeTab === "portfolio" ? " active" : ""}`}
-            onClick={() => setActiveTab("portfolio")}
-          >
-            Portfolio
-          </button>
+        {/* Quick Nav */}
+        <div className="admin-nav-links">
+          <Link to="/admin/portfolio" className="btn-manage-portfolio">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+            Manage Projects
+          </Link>
         </div>
 
-        {activeTab === "portfolio" ? (
-          <div className="admin-portfolio-section">
-            <div className="admin-portfolio-actions">
-              <Link to="/admin/portfolio" className="btn-manage-portfolio">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                </svg>
-                Manage Projects
-              </Link>
-            </div>
-            <div className="admin-empty">
-              <div className="admin-empty-icon">📁</div>
-              <h3>Portfolio Management</h3>
-              <p>Click "Manage Projects" to add, edit, or remove portfolio items.</p>
-            </div>
-          </div>
-        ) : (
-        <>
         {/* Stats */}
         <div className="admin-stats">
           <div className="admin-stat-card">
@@ -298,8 +273,6 @@ export default function AdminDashboard() {
               </tbody>
             </table>
           </div>
-        )}
-        </>
         )}
       </div>
     </div>
