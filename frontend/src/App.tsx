@@ -9,6 +9,7 @@ import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import RequirementDetail from "./pages/RequirementDetail";
 import ProtectedRoute from "./ProtectedRoute";
+import NotFoundPage from "./pages/NotFoundPage";
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
       <Route path="/admin/login" element={<AdminLogin />} />
       <Route path="/admin/dashboard" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
       <Route path="/admin/requirements/:id" element={<ProtectedRoute><RequirementDetail /></ProtectedRoute>} />
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }
