@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { fetchServices, fetchCaseStudies, fetchTestimonials } from '../api/client';
 import type { Service, CaseStudy, Testimonial } from '../types';
+import Skeleton from '../components/Skeleton';
 import './HomePage.css';
 
 // Icon mapping helper
@@ -162,13 +163,26 @@ export default function HomePage() {
 
           {loading && services.length === 0 ? (
             <div className="services-grid">
-              <div className="service-card">Loading services...</div>
+              {[0, 1, 2].map((i) => (
+                <div key={i} className="service-card" style={{ pointerEvents: 'none' }}>
+                  <Skeleton width={52} height={52} variant="rounded" />
+                  <Skeleton width="60%" height={20} style={{ marginTop: 20 }} />
+                  <Skeleton width="100%" height={14} style={{ marginTop: 12 }} />
+                  <Skeleton width="100%" height={14} style={{ marginTop: 8 }} />
+                  <Skeleton width="75%" height={14} style={{ marginTop: 8 }} />
+                  <div style={{ display: 'flex', gap: 8, marginTop: 20 }}>
+                    <Skeleton width={80} height={24} borderRadius="var(--radius-sm)" />
+                    <Skeleton width={90} height={24} borderRadius="var(--radius-sm)" />
+                    <Skeleton width={70} height={24} borderRadius="var(--radius-sm)" />
+                  </div>
+                </div>
+              ))}
             </div>
           ) : (
             <div className="services-grid">
               {services.length > 0 ? (
                 services.map((service) => (
-                  <div key={service.id} className="service-card">
+                  <Link key={service.id} to={`/services/${service.slug}`} className="service-card">
                     <div className="service-icon">
                       {getServiceIcon(service.icon)}
                     </div>
@@ -179,7 +193,7 @@ export default function HomePage() {
                         <span key={tag} className="service-tag">{tag}</span>
                       ))}
                     </div>
-                  </div>
+                  </Link>
                 ))
               ) : (
                 <>
@@ -240,13 +254,28 @@ export default function HomePage() {
 
           {loading && caseStudies.length === 0 ? (
             <div className="portfolio-grid">
-              <div className="port-card">Loading case studies...</div>
+              {[0, 1, 2].map((i) => (
+                <div key={i} className="port-card" style={{ pointerEvents: 'none' }}>
+                  <div className="port-card-top" style={{ background: 'var(--color-gray-100)' }} />
+                  <div className="port-card-body">
+                    <Skeleton width="50%" height={18} />
+                    <Skeleton width="40%" height={13} style={{ marginTop: 4 }} />
+                    <Skeleton width="100%" height={14} style={{ marginTop: 12 }} />
+                    <Skeleton width="85%" height={14} style={{ marginTop: 6 }} />
+                    <div style={{ display: 'flex', gap: 4, marginTop: 16 }}>
+                      <Skeleton width={60} height={22} borderRadius="var(--radius-sm)" />
+                      <Skeleton width={65} height={22} borderRadius="var(--radius-sm)" />
+                      <Skeleton width={55} height={22} borderRadius="var(--radius-sm)" />
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           ) : (
             <div className="portfolio-grid">
               {featuredCaseStudies.length > 0 ? (
                 featuredCaseStudies.map((caseStudy) => (
-                  <div key={caseStudy.id} className="port-card">
+                  <Link key={caseStudy.id} to={`/portfolio/${caseStudy.slug}`} className="port-card">
                     <div className={`port-card-top visual-${caseStudy.visual.color}`}>
                       <span className="card-icon">{getCaseStudyIcon(caseStudy.visual.icon)}</span>
                     </div>
@@ -260,7 +289,7 @@ export default function HomePage() {
                         ))}
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 ))
               ) : (
                 <>
@@ -344,7 +373,26 @@ export default function HomePage() {
 
           {loading && testimonials.length === 0 ? (
             <div className="testimonials-grid">
-              <div className="testimonial-card">Loading testimonials...</div>
+              {[0, 1, 2].map((i) => (
+                <div key={i} className="testimonial-card" style={{ pointerEvents: 'none' }}>
+                  <div style={{ display: 'flex', gap: 2, marginBottom: 16 }}>
+                    {[0, 1, 2, 3, 4].map((s) => (
+                      <Skeleton key={s} width={14} height={14} />
+                    ))}
+                  </div>
+                  <Skeleton width="100%" height={14} />
+                  <Skeleton width="100%" height={14} style={{ marginTop: 8 }} />
+                  <Skeleton width="100%" height={14} style={{ marginTop: 8 }} />
+                  <Skeleton width="60%" height={14} style={{ marginTop: 8 }} />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 24, paddingTop: 16, borderTop: '1px solid var(--color-border)' }}>
+                    <Skeleton width={40} height={40} variant="circle" />
+                    <div>
+                      <Skeleton width={100} height={14} />
+                      <Skeleton width={140} height={12} style={{ marginTop: 4 }} />
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           ) : (
             <div className="testimonials-grid">

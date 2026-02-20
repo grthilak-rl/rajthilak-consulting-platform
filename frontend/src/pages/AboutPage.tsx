@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import { fetchTestimonials } from '../api/client';
 import type { Testimonial } from '../types';
+import Skeleton from '../components/Skeleton';
 import './AboutPage.css';
 
 export default function AboutPage() {
@@ -366,7 +367,26 @@ export default function AboutPage() {
 
           {loading && testimonials.length === 0 ? (
             <div className="testimonials-grid">
-              <div className="testimonial-card">Loading testimonials...</div>
+              {[0, 1, 2].map((i) => (
+                <div key={i} className="testimonial-card" style={{ pointerEvents: 'none' }}>
+                  <div style={{ display: 'flex', gap: 2, marginBottom: 16 }}>
+                    {[0, 1, 2, 3, 4].map((s) => (
+                      <Skeleton key={s} width={14} height={14} />
+                    ))}
+                  </div>
+                  <Skeleton width="100%" height={14} />
+                  <Skeleton width="100%" height={14} style={{ marginTop: 8 }} />
+                  <Skeleton width="100%" height={14} style={{ marginTop: 8 }} />
+                  <Skeleton width="60%" height={14} style={{ marginTop: 8 }} />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 24, paddingTop: 16, borderTop: '1px solid var(--color-border)' }}>
+                    <Skeleton width={40} height={40} variant="circle" />
+                    <div>
+                      <Skeleton width={100} height={14} />
+                      <Skeleton width={140} height={12} style={{ marginTop: 4 }} />
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           ) : (
             <div className="testimonials-grid">

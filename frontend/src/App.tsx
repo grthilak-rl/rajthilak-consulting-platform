@@ -1,6 +1,8 @@
 import { Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import PortfolioPage from "./pages/PortfolioPage";
+import CaseStudyDetail from "./pages/CaseStudyDetail";
+import ServiceDetail from "./pages/ServiceDetail";
 import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
 import AdminLogin from "./pages/AdminLogin";
@@ -13,6 +15,8 @@ export default function App() {
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/portfolio" element={<PortfolioPage />} />
+      <Route path="/portfolio/:slug" element={<CaseStudyDetail />} />
+      <Route path="/services/:slug" element={<ServiceDetail />} />
       <Route path="/about" element={<AboutPage />} />
       <Route path="/submit" element={<ContactPage />} />
       <Route path="/admin/login" element={<AdminLogin />} />

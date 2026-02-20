@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { fetchCaseStudies } from '../api/client';
 import type { CaseStudy } from '../types';
+import Skeleton from '../components/Skeleton';
 import './PortfolioPage.css';
 
 export default function PortfolioPage() {
@@ -191,11 +193,44 @@ export default function PortfolioPage() {
       </div>
 
       {/* Featured Project */}
-      {featuredProject && (
+      {loading && caseStudies.length === 0 ? (
+        <section className="featured-section">
+          <div className="section-reveal">
+            <div className="section-label">Featured Project</div>
+            <div className="featured-card" style={{ pointerEvents: 'none' }}>
+              <div className="featured-visual" style={{ background: 'var(--color-gray-100)' }}>
+                <Skeleton width={80} height={80} borderRadius={20} />
+                <Skeleton width={120} height={14} style={{ marginTop: 24 }} />
+              </div>
+              <div className="featured-content">
+                <Skeleton width={80} height={24} borderRadius="var(--radius-pill)" />
+                <Skeleton width="70%" height={28} style={{ marginTop: 20 }} />
+                <Skeleton width="40%" height={14} style={{ marginTop: 8 }} />
+                <Skeleton width="100%" height={14} style={{ marginTop: 20 }} />
+                <Skeleton width="100%" height={14} style={{ marginTop: 8 }} />
+                <Skeleton width="75%" height={14} style={{ marginTop: 8 }} />
+                <div style={{ display: 'flex', gap: 8, marginTop: 24 }}>
+                  {[0, 1, 2, 3].map((i) => (
+                    <Skeleton key={i} width={70} height={26} borderRadius="var(--radius-sm)" />
+                  ))}
+                </div>
+                <div style={{ display: 'flex', gap: 32, marginTop: 32, paddingTop: 24, borderTop: '1px solid var(--color-border)' }}>
+                  {[0, 1, 2].map((i) => (
+                    <div key={i}>
+                      <Skeleton width={60} height={24} />
+                      <Skeleton width={100} height={12} style={{ marginTop: 4 }} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      ) : featuredProject ? (
         <section className="featured-section reveal" data-index={0}>
           <div className={`section-reveal ${visibleElements.has(0) ? 'visible' : ''}`}>
             <div className="section-label">Featured Project</div>
-            <div className="featured-card">
+            <Link to={`/portfolio/${featuredProject.slug}`} className="featured-card">
               <div className={`featured-visual visual-${featuredProject.visual.color}`}>
                 <div className="featured-icon">{getIconEmoji(featuredProject.visual.icon)}</div>
                 <div className="featured-visual-label">{featuredProject.slug} / v2.4</div>
@@ -223,10 +258,10 @@ export default function PortfolioPage() {
                   </div>
                 )}
               </div>
-            </div>
+            </Link>
           </div>
         </section>
-      )}
+      ) : null}
 
       {/* All Projects Grid */}
       <section className="projects-section reveal" data-index={1}>
@@ -238,12 +273,30 @@ export default function PortfolioPage() {
 
           {loading && caseStudies.length === 0 ? (
             <div className="projects-grid">
-              <div className="project-card">Loading projects...</div>
+              {[0, 1, 2, 3].map((i) => (
+                <div key={i} className="project-card" style={{ pointerEvents: 'none' }}>
+                  <div className="project-card-visual" style={{ background: 'var(--color-gray-100)' }}>
+                    <Skeleton width={48} height={48} variant="circle" style={{ position: 'relative', zIndex: 1, margin: 'auto' }} />
+                  </div>
+                  <div className="project-card-body">
+                    <Skeleton width="55%" height={18} />
+                    <Skeleton width="35%" height={13} style={{ marginTop: 4 }} />
+                    <Skeleton width="100%" height={14} style={{ marginTop: 12 }} />
+                    <Skeleton width="100%" height={14} style={{ marginTop: 6 }} />
+                    <Skeleton width="70%" height={14} style={{ marginTop: 6 }} />
+                    <div style={{ display: 'flex', gap: 4, marginTop: 16 }}>
+                      {[0, 1, 2].map((j) => (
+                        <Skeleton key={j} width={60} height={22} borderRadius="var(--radius-sm)" />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           ) : (
             <div className="projects-grid">
               {regularProjects.map((project) => (
-                <div key={project.id} className="project-card">
+                <Link key={project.id} to={`/portfolio/${project.slug}`} className="project-card">
                   <div className="project-card-visual">
                     <div className={`visual-bg visual-${project.visual.color}`}>
                       {getIconEmoji(project.visual.icon)}
@@ -267,7 +320,7 @@ export default function PortfolioPage() {
                       <polyline points="7 7 17 7 17 17"/>
                     </svg>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           )}
