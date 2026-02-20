@@ -209,6 +209,68 @@ h3 {
 }
 
 /* ============================================
+   STAGGERED REVEAL FOR CARD GRIDS
+   ============================================ */
+.stagger-children > * {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.visible .stagger-children > *,
+.stagger-children.visible > * {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.visible .stagger-children > *:nth-child(1),
+.stagger-children.visible > *:nth-child(1) { transition-delay: 0ms; }
+.visible .stagger-children > *:nth-child(2),
+.stagger-children.visible > *:nth-child(2) { transition-delay: 80ms; }
+.visible .stagger-children > *:nth-child(3),
+.stagger-children.visible > *:nth-child(3) { transition-delay: 160ms; }
+.visible .stagger-children > *:nth-child(4),
+.stagger-children.visible > *:nth-child(4) { transition-delay: 240ms; }
+.visible .stagger-children > *:nth-child(5),
+.stagger-children.visible > *:nth-child(5) { transition-delay: 320ms; }
+.visible .stagger-children > *:nth-child(6),
+.stagger-children.visible > *:nth-child(6) { transition-delay: 400ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .stagger-children > * {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ============================================
+   PAGE TRANSITION
+   ============================================ */
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-transition {
+  animation: pageEnter 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-transition {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* ============================================
    UTILITY CLASSES
    ============================================ */
 .container {

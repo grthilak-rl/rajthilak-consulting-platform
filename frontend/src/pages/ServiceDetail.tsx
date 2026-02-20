@@ -178,7 +178,7 @@ export default function ServiceDetail() {
         <section className="svc-other">
           <div className="svc-other-inner">
             <h2>Other Engagement Models</h2>
-            <div className="svc-other-grid">
+            <div className="svc-other-grid stagger-children visible">
               {otherServices.map((svc) => (
                 <Link key={svc.slug} to={`/services/${svc.slug}`} className="svc-other-card">
                   <div className="svc-other-icon">

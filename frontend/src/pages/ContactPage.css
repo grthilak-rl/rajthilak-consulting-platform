@@ -327,10 +327,20 @@
   color: var(--color-error);
 }
 
-/* Success State */
-.success-state {
+/* ============================================
+   SUCCESS PAGE
+   ============================================ */
+.success-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8);
   text-align: center;
-  padding: var(--space-12) var(--space-8);
+}
+
+.success-page-content {
+  max-width: 520px;
 }
 
 .success-icon {
@@ -345,20 +355,69 @@
   color: var(--color-success);
 }
 
-.success-state h2 {
-  font-size: 1.5rem;
-  font-weight: 700;
+.success-page-title {
+  font-size: 2.25rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
   margin-bottom: var(--space-3);
 }
 
-.success-state p {
-  font-size: 1rem;
+.success-page-subtitle {
+  font-size: 1.0625rem;
   color: var(--color-text-secondary);
-  margin-bottom: var(--space-8);
-  max-width: 420px;
-  margin-left: auto;
-  margin-right: auto;
   line-height: 1.6;
+  margin-bottom: var(--space-10);
+}
+
+.success-steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  text-align: left;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  margin-bottom: var(--space-10);
+}
+
+.success-step {
+  display: flex;
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.success-step-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--color-primary-50);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.success-step h4 {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.success-step p {
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.success-actions {
+  display: flex;
+  gap: var(--space-4);
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 .btn-primary {
@@ -380,6 +439,26 @@
   background: var(--color-primary-dark);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(79,70,229,0.3);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 12px 28px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  border-color: var(--color-primary-light);
+  color: var(--color-primary);
+  transform: translateY(-1px);
 }
 
 @media (max-width: 640px) {

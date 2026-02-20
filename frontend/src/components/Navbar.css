@@ -92,18 +92,28 @@
   color: #fff;
 }
 
-.nav-links a.active::after {
+.nav-links a::after {
   content: '';
   position: absolute;
   bottom: -4px;
-  left: 0;
-  right: 0;
+  left: 50%;
+  width: 0;
   height: 2px;
   background: var(--color-primary);
   border-radius: 1px;
+  transform: translateX(-50%);
+  transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.nav.transparent .nav-links a.active::after {
+.nav-links a:hover::after {
+  width: 60%;
+}
+
+.nav-links a.active::after {
+  width: 100%;
+}
+
+.nav.transparent .nav-links a::after {
   background: #fff;
 }
 

@@ -4,6 +4,7 @@ import Layout from '../components/Layout';
 import { fetchCaseStudies } from '../api/client';
 import type { CaseStudy } from '../types';
 import Skeleton from '../components/Skeleton';
+import useCountUp from '../hooks/useCountUp';
 import './PortfolioPage.css';
 
 export default function PortfolioPage() {
@@ -103,6 +104,10 @@ export default function PortfolioPage() {
   const allTechnologies = Array.from(new Set(caseStudies.flatMap(p => p.technologies)));
   const techFilters = allTechnologies.slice(0, 4); // Show top 4 technologies
 
+  const industryCount = useCountUp({ end: industries.length - 1, duration: 1000 });
+  const projectCount = useCountUp({ end: caseStudies.length, duration: 1200 });
+  const techCount = useCountUp({ end: allTechnologies.length, duration: 1400 });
+
   const filteredProjects = caseStudies.filter((p) => {
     const industryMatch = selectedIndustry === 'All Projects' || p.industry === selectedIndustry;
     const techMatch = selectedTech.length === 0 || selectedTech.some((tech) => p.technologies.includes(tech));
@@ -147,15 +152,15 @@ export default function PortfolioPage() {
 
         <div className="portfolio-hero-stats animate-in delay-3">
           <div className="stat">
-            <div className="stat-number">{industries.length - 1}+</div>
+            <div className="stat-number" ref={industryCount.ref}>{industryCount.count}+</div>
             <div className="stat-label">Industries</div>
           </div>
           <div className="stat">
-            <div className="stat-number">{caseStudies.length}+</div>
+            <div className="stat-number" ref={projectCount.ref}>{projectCount.count}+</div>
             <div className="stat-label">Projects Delivered</div>
           </div>
           <div className="stat">
-            <div className="stat-number">{allTechnologies.length}+</div>
+            <div className="stat-number" ref={techCount.ref}>{techCount.count}+</div>
             <div className="stat-label">Technologies</div>
           </div>
         </div>
@@ -294,7 +299,7 @@ export default function PortfolioPage() {
               ))}
             </div>
           ) : (
-            <div className="projects-grid">
+            <div className="projects-grid stagger-children">
               {regularProjects.map((project) => (
                 <Link key={project.id} to={`/portfolio/${project.slug}`} className="project-card">
                   <div className="project-card-visual">
@@ -335,7 +340,7 @@ export default function PortfolioPage() {
               <h2>Technical Expertise</h2>
               <p>Technologies and tools I work with across the full stack</p>
             </div>
-            <div className="skills-grid">
+            <div className="skills-grid stagger-children">
               <div className="skill-group">
                 <h3>Languages</h3>
                 <div className="skill-group-items">

@@ -168,7 +168,7 @@ export default function CaseStudyDetail() {
         <section className="detail-metrics">
           <div className="detail-metrics-inner">
             <h2>Key Results</h2>
-            <div className="detail-metrics-grid">
+            <div className="detail-metrics-grid stagger-children visible">
               {caseStudy.metrics.map((metric, i) => (
                 <div key={i} className="detail-metric-card">
                   <div className="detail-metric-value">{metric.value}</div>
@@ -200,7 +200,7 @@ export default function CaseStudyDetail() {
         <section className="detail-related">
           <div className="detail-related-inner">
             <h2>Other Projects</h2>
-            <div className="detail-related-grid">
+            <div className="detail-related-grid stagger-children visible">
               {relatedStudies.map((study) => (
                 <Link key={study.slug} to={`/portfolio/${study.slug}`} className="related-card">
                   <div className={`related-card-visual visual-${study.visual.color}`}>

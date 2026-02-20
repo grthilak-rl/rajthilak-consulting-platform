@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { submitRequirement } from '../api/client';
 import './ContactPage.css';
@@ -90,6 +91,58 @@ export default function ContactPage() {
     }
   }
 
+  if (success) {
+    return (
+      <Layout>
+        <section className="success-page">
+          <div className="success-page-content animate-in">
+            <div className="success-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+            </div>
+            <h1 className="success-page-title">Thank You!</h1>
+            <p className="success-page-subtitle">
+              Your requirement has been submitted successfully. I'll review it and get back to you within 24 hours with a plan of action.
+            </p>
+            <div className="success-steps">
+              <div className="success-step">
+                <div className="success-step-num">1</div>
+                <div>
+                  <h4>Reviewing your requirement</h4>
+                  <p>I'll go through the details you've shared</p>
+                </div>
+              </div>
+              <div className="success-step">
+                <div className="success-step-num">2</div>
+                <div>
+                  <h4>Proposal within 24 hours</h4>
+                  <p>You'll receive a detailed scope and timeline</p>
+                </div>
+              </div>
+              <div className="success-step">
+                <div className="success-step-num">3</div>
+                <div>
+                  <h4>Kickoff call</h4>
+                  <p>Once approved, we schedule a call and start building</p>
+                </div>
+              </div>
+            </div>
+            <div className="success-actions">
+              <button className="btn-primary" onClick={() => setSuccess(false)}>
+                Submit Another Requirement
+              </button>
+              <Link to="/" className="btn-secondary">
+                Back to Home
+              </Link>
+            </div>
+          </div>
+        </section>
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       {/* Page Header */}
@@ -105,21 +158,6 @@ export default function ContactPage() {
       <section className="form-layout">
         {/* Main Form */}
         <div className="form-card">
-          {success ? (
-            <div className="success-state">
-              <div className="success-icon">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                  <polyline points="22 4 12 14.01 9 11.01"/>
-                </svg>
-              </div>
-              <h2>Requirement Submitted Successfully!</h2>
-              <p>Thank you for reaching out. I have received your requirement and will review it shortly. You can expect a response within 24 hours.</p>
-              <button className="btn-primary" onClick={() => setSuccess(false)}>
-                Submit Another Requirement
-              </button>
-            </div>
-          ) : (
             <form onSubmit={handleSubmit}>
               {apiError && (
                 <div className="alert alert-error">
@@ -325,7 +363,6 @@ export default function ContactPage() {
                 )}
               </button>
             </form>
-          )}
         </div>
 
         {/* Sidebar */}

@@ -179,7 +179,7 @@ export default function HomePage() {
               ))}
             </div>
           ) : (
-            <div className="services-grid">
+            <div className="services-grid stagger-children">
               {services.length > 0 ? (
                 services.map((service) => (
                   <Link key={service.id} to={`/services/${service.slug}`} className="service-card">
@@ -272,7 +272,7 @@ export default function HomePage() {
               ))}
             </div>
           ) : (
-            <div className="portfolio-grid">
+            <div className="portfolio-grid stagger-children">
               {featuredCaseStudies.length > 0 ? (
                 featuredCaseStudies.map((caseStudy) => (
                   <Link key={caseStudy.id} to={`/portfolio/${caseStudy.slug}`} className="port-card">
@@ -395,7 +395,7 @@ export default function HomePage() {
               ))}
             </div>
           ) : (
-            <div className="testimonials-grid">
+            <div className="testimonials-grid stagger-children">
               {testimonials.length > 0 ? (
                 testimonials.slice(0, 3).map((testimonial) => (
                   <div key={testimonial.id} className="testimonial-card">

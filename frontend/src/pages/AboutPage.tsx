@@ -3,12 +3,16 @@ import Layout from '../components/Layout';
 import { fetchTestimonials } from '../api/client';
 import type { Testimonial } from '../types';
 import Skeleton from '../components/Skeleton';
+import useCountUp from '../hooks/useCountUp';
 import './AboutPage.css';
 
 export default function AboutPage() {
   const [visibleElements, setVisibleElements] = useState<Set<number>>(new Set());
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [loading, setLoading] = useState(true);
+  const yearsCounter = useCountUp({ end: 10, duration: 1200 });
+  const projectsCounter = useCountUp({ end: 20, duration: 1400 });
+  const industriesCounter = useCountUp({ end: 4, duration: 1000 });
 
   useEffect(() => {
     async function loadTestimonials() {
@@ -91,15 +95,15 @@ export default function AboutPage() {
             </p>
             <div className="about-hero-stats animate-in delay-3">
               <div className="about-stat">
-                <div className="about-stat-num">10+</div>
+                <div className="about-stat-num" ref={yearsCounter.ref}>{yearsCounter.count}+</div>
                 <div className="about-stat-label">Years Experience</div>
               </div>
               <div className="about-stat">
-                <div className="about-stat-num">20+</div>
+                <div className="about-stat-num" ref={projectsCounter.ref}>{projectsCounter.count}+</div>
                 <div className="about-stat-label">Projects Delivered</div>
               </div>
               <div className="about-stat">
-                <div className="about-stat-num">4</div>
+                <div className="about-stat-num" ref={industriesCounter.ref}>{industriesCounter.count}</div>
                 <div className="about-stat-label">Industries</div>
               </div>
             </div>
@@ -175,7 +179,7 @@ export default function AboutPage() {
             <p>Four principles that guide every project I take on, from architecture to deployment.</p>
           </div>
 
-          <div className="philosophy-grid">
+          <div className="philosophy-grid stagger-children">
             <div className="philosophy-card">
               <div className="philosophy-card-num">01</div>
               <h3>Ship Early, Iterate Fast</h3>
@@ -220,7 +224,7 @@ export default function AboutPage() {
             <p>Technologies and tools I use across the full stack, from infrastructure to frontend.</p>
           </div>
 
-          <div className="tech-grid">
+          <div className="tech-grid stagger-children">
             <div className="tech-category">
               <h3>Backend & APIs</h3>
               <div className="tech-items">
@@ -389,7 +393,7 @@ export default function AboutPage() {
               ))}
             </div>
           ) : (
-            <div className="testimonials-grid">
+            <div className="testimonials-grid stagger-children">
               {testimonials.slice(0, 3).map((testimonial) => (
                 <div key={testimonial.id} className="testimonial-card">
                   <div className="testimonial-stars">
