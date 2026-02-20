@@ -1,4 +1,4 @@
-import type { LoginResponse, Note, Requirement } from "../types";
+import type { LoginResponse, Note, Requirement, CaseStudy, Service, Testimonial, SiteContent } from "../types";
 
 const API_BASE = "/api";
 
@@ -118,4 +118,36 @@ export async function createNote(id: string, content: string): Promise<Note> {
     body: JSON.stringify({ content }),
   });
   return handleResponse<Note>(res);
+}
+
+// Public API endpoints for case studies, services, testimonials, and site content
+export async function fetchCaseStudies(): Promise<CaseStudy[]> {
+  const res = await safeFetch(`${API_BASE}/public/case-studies`);
+  return handleResponse<CaseStudy[]>(res);
+}
+
+export async function fetchCaseStudy(slug: string): Promise<CaseStudy> {
+  const res = await safeFetch(`${API_BASE}/public/case-studies/${slug}`);
+  return handleResponse<CaseStudy>(res);
+}
+
+export async function fetchServices(): Promise<Service[]> {
+  const res = await safeFetch(`${API_BASE}/public/services`);
+  return handleResponse<Service[]>(res);
+}
+
+export async function fetchService(slug: string): Promise<Service> {
+  const res = await safeFetch(`${API_BASE}/public/services/${slug}`);
+  return handleResponse<Service>(res);
+}
+
+export async function fetchTestimonials(): Promise<Testimonial[]> {
+  const res = await safeFetch(`${API_BASE}/public/testimonials`);
+  return handleResponse<Testimonial[]>(res);
+}
+
+export async function fetchSiteContent(key?: string): Promise<SiteContent[]> {
+  const url = key ? `${API_BASE}/public/site-content?key=${key}` : `${API_BASE}/public/site-content`;
+  const res = await safeFetch(url);
+  return handleResponse<SiteContent[]>(res);
 }

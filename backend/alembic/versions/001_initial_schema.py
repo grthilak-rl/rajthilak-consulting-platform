@@ -24,7 +24,7 @@ def upgrade() -> None:
         sa.Column("id", postgresql.UUID(as_uuid=True), primary_key=True),
         sa.Column("email", sa.String(), nullable=False),
         sa.Column("password_hash", sa.String(), nullable=False),
-        sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
+        sa.Column("created_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.text("now()")),
     )
     op.create_index("ix_users_email", "users", ["email"], unique=True)
 
@@ -52,8 +52,8 @@ def upgrade() -> None:
             nullable=False,
         ),
         sa.Column("progress", sa.Integer(), nullable=False, server_default="0"),
-        sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
-        sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
+        sa.Column("created_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.text("now()")),
+        sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.text("now()")),
     )
 
     op.create_table(
@@ -66,7 +66,7 @@ def upgrade() -> None:
             nullable=False,
         ),
         sa.Column("content", sa.Text(), nullable=False),
-        sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
+        sa.Column("created_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.text("now()")),
     )
 
 

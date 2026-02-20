@@ -10,6 +10,10 @@ from app.core.config import ADMIN_EMAIL, ADMIN_PASSWORD
 from app.core.database import engine, SessionLocal
 from app.models import User
 from app.models.requirement import Requirement, RequirementType, RequirementStatus
+from app.models.case_study import CaseStudy
+from app.models.service import Service
+from app.models.testimonial import Testimonial
+from app.models.site_content import SiteContent
 
 MAX_RETRIES = 10
 RETRY_DELAY = 2
@@ -40,6 +44,10 @@ def init_db():
 
     seed_admin()
     seed_requirements()
+    seed_case_studies()
+    seed_services()
+    seed_testimonials()
+    seed_site_content()
 
 
 def seed_admin():
@@ -100,6 +108,197 @@ def seed_requirements():
         db.add_all(requirements)
         db.commit()
         print(f"Seeded {len(requirements)} sample requirements.")
+    finally:
+        db.close()
+
+
+def seed_case_studies():
+    db = SessionLocal()
+    try:
+        count = db.query(CaseStudy).count()
+        if count > 0:
+            print(f"Case studies already seeded ({count} found). Skipping.")
+            return
+
+        studies = [
+            CaseStudy(
+                slug="ruth-ai",
+                title="Ruth AI",
+                role="AI/ML Engineer & Architect",
+                description="An AI-powered conversational assistant built to automate customer support, handle complex queries with context awareness, and reduce response times through intelligent routing.",
+                industry="AI / ML",
+                technologies=["Python", "LangChain", "OpenAI", "FastAPI", "React"],
+                featured=True,
+                metrics=[
+                    {"value": "60%", "label": "Faster Response Time"},
+                    {"value": "85%", "label": "Query Resolution Rate"},
+                    {"value": "24/7", "label": "Availability"},
+                ],
+                visual_color="ai",
+                visual_icon="microphone",
+                display_order=0,
+            ),
+            CaseStudy(
+                slug="hit-platform",
+                title="HIT Platform",
+                role="Lead Backend Engineer",
+                description="A healthcare information technology platform designed to streamline clinical workflows, improve patient data management, and enable seamless interoperability across hospital systems.",
+                industry="Healthcare",
+                technologies=["Python", "FastAPI", "React", "PostgreSQL", "Docker"],
+                featured=False,
+                visual_color="healthcare",
+                visual_icon="activity",
+                display_order=1,
+            ),
+            CaseStudy(
+                slug="vas-platform",
+                title="VAS Platform",
+                role="Full Stack Developer",
+                description="A value-added services platform enabling telecom operators to deliver digital content, subscription management, and billing integration at scale for millions of subscribers.",
+                industry="Telecom",
+                technologies=["Java", "Spring Boot", "Kafka", "Redis", "AWS"],
+                featured=False,
+                visual_color="telecom",
+                visual_icon="bar-chart",
+                display_order=2,
+            ),
+            CaseStudy(
+                slug="cloud-migration",
+                title="Cloud Migration Strategy",
+                role="Solutions Architect",
+                description="Architecture review, migration planning, and hands-on support for containerizing on-premise services and migrating infrastructure to AWS for a mid-size enterprise.",
+                industry="Cloud / DevOps",
+                technologies=["AWS", "Docker", "Kubernetes", "Terraform"],
+                featured=False,
+                visual_color="fintech",
+                visual_icon="cloud",
+                display_order=3,
+            ),
+        ]
+
+        db.add_all(studies)
+        db.commit()
+        print(f"Seeded {len(studies)} case studies.")
+    finally:
+        db.close()
+
+
+def seed_services():
+    db = SessionLocal()
+    try:
+        count = db.query(Service).count()
+        if count > 0:
+            print(f"Services already seeded ({count} found). Skipping.")
+            return
+
+        services = [
+            Service(
+                slug="full-time-consulting",
+                title="Full-Time Consulting",
+                description="Embedded within your team for extended engagements. I bring architecture leadership, code reviews, mentoring, and hands-on development to accelerate your roadmap.",
+                icon="briefcase",
+                tags=["Team Integration", "Architecture", "Mentoring"],
+                display_order=0,
+            ),
+            Service(
+                slug="contract-engagements",
+                title="Contract Engagements",
+                description="Scoped projects with clear deliverables and timelines. From API design and cloud migration to full-stack product development -- I own the outcome end to end.",
+                icon="edit",
+                tags=["Fixed Scope", "Clear Milestones", "Deliverables"],
+                display_order=1,
+            ),
+            Service(
+                slug="one-off-projects",
+                title="One-Off Projects",
+                description="Need a quick architecture review, tech stack recommendation, or proof-of-concept build? I offer focused engagements to solve specific technical challenges fast.",
+                icon="clock",
+                tags=["Architecture Review", "PoC Builds", "Tech Advisory"],
+                display_order=2,
+            ),
+        ]
+
+        db.add_all(services)
+        db.commit()
+        print(f"Seeded {len(services)} services.")
+    finally:
+        db.close()
+
+
+def seed_testimonials():
+    db = SessionLocal()
+    try:
+        count = db.query(Testimonial).count()
+        if count > 0:
+            print(f"Testimonials already seeded ({count} found). Skipping.")
+            return
+
+        testimonials = [
+            Testimonial(
+                author_name="Alice Johnson",
+                author_role="VP Engineering",
+                author_company="TechCorp",
+                author_initials="AJ",
+                content="Raj took our fragmented on-premise systems and designed a clean migration path to AWS. His architecture decisions saved us months of rework. Truly an engineer who thinks in systems.",
+                rating=5,
+                featured=True,
+            ),
+            Testimonial(
+                author_name="Bob Martinez",
+                author_role="CTO",
+                author_company="StartupXYZ",
+                author_initials="BM",
+                content="We needed someone who could both architect the system and write production code. Raj delivered our MVP two weeks ahead of schedule and the codebase was impeccable. Highly recommend.",
+                rating=5,
+                featured=True,
+            ),
+            Testimonial(
+                author_name="Sarah Kim",
+                author_role="Head of Product",
+                author_company="Ruth Labs",
+                author_initials="SK",
+                content="The AI assistant Raj built for our support team cut response times by 60% and handles 85% of incoming queries autonomously. The ROI was evident within the first month of deployment.",
+                rating=5,
+                featured=True,
+            ),
+        ]
+
+        db.add_all(testimonials)
+        db.commit()
+        print(f"Seeded {len(testimonials)} testimonials.")
+    finally:
+        db.close()
+
+
+def seed_site_content():
+    db = SessionLocal()
+    try:
+        count = db.query(SiteContent).count()
+        if count > 0:
+            print(f"Site content already seeded ({count} found). Skipping.")
+            return
+
+        content = [
+            SiteContent(
+                key="hero_tagline",
+                title="Hero Tagline",
+                content="Engineering Leader. Systems Architect. Technical Consultant.",
+            ),
+            SiteContent(
+                key="hero_description",
+                title="Hero Description",
+                content="I help companies design and build production-grade systems -- from cloud migrations and platform engineering to AI-powered products. Full-time, contract, or one-off.",
+            ),
+            SiteContent(
+                key="about_intro",
+                title="About Introduction",
+                content="I am Raj Thilak, a full-stack engineer and technical consultant with over a decade of experience designing and shipping production systems across healthcare, telecom, AI/ML, and fintech.",
+            ),
+        ]
+
+        db.add_all(content)
+        db.commit()
+        print(f"Seeded {len(content)} site content entries.")
     finally:
         db.close()
 

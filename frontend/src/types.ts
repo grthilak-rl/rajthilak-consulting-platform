@@ -31,3 +31,58 @@ export interface Project {
   tech_stack: string[];
   role: string;
 }
+
+export interface CaseStudy {
+  id: string;
+  slug: string;
+  title: string;
+  role: string;
+  description: string;
+  industry: string;
+  technologies: string[];
+  featured: boolean;
+  metrics?: {
+    value: string;
+    label: string;
+  }[];
+  visual: {
+    color: string;
+    icon: string;
+  };
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface Service {
+  id: string;
+  slug: string;
+  title: string;
+  description: string;
+  icon: string;
+  tags: string[];
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface Testimonial {
+  id: string;
+  author_name: string;
+  author_role: string;
+  author_company: string;
+  author_initials: string;
+  content: string;
+  rating: number;
+  featured: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface SiteContent {
+  id: string;
+  key: string;
+  title?: string;
+  content: string;
+  metadata?: Record<string, unknown>;
+  created_at?: string;
+  updated_at?: string;
+}
