@@ -10,8 +10,23 @@ import {
   setToken,
 } from "../api/client";
 import type { Requirement, Note } from "../types";
+import "./RequirementDetail.css";
 
 const STATUSES = ["new", "accepted", "in_progress", "completed", "rejected"];
+
+const STATUS_LABELS: Record<string, string> = {
+  new: "New",
+  accepted: "Accepted",
+  in_progress: "In Progress",
+  completed: "Completed",
+  rejected: "Rejected",
+};
+
+const TYPE_LABELS: Record<string, string> = {
+  full_time: "Full-Time",
+  contract: "Contract",
+  one_off: "One-Off",
+};
 
 export default function RequirementDetail() {
   const { id } = useParams<{ id: string }>();
@@ -112,109 +127,215 @@ export default function RequirementDetail() {
     }
   }
 
-  if (loading) return <p>Loading...</p>;
-  if (loadError) return <p style={{ color: "red" }}>{loadError}</p>;
-  if (!requirement) return <p>Requirement not found.</p>;
+  if (loading) {
+    return (
+      <div className="req-detail">
+        <div className="req-detail-inner">
+          <div className="req-detail-skeleton">
+            <div className="skel-block skel-title" />
+            <div className="skel-card">
+              <div className="skel-block" style={{ width: "80%" }} />
+              <div className="skel-block" style={{ width: "60%" }} />
+              <div className="skel-block" style={{ width: "70%" }} />
+              <div className="skel-block" style={{ width: "50%" }} />
+            </div>
+            <div className="skel-card">
+              <div className="skel-block" style={{ width: "40%" }} />
+              <div className="skel-block" style={{ width: "100%" }} />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="req-detail">
+        <div className="req-detail-inner">
+          <div className="admin-error">
+            <p>{loadError}</p>
+            <button onClick={() => window.location.reload()}>Retry</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!requirement) {
+    return (
+      <div className="req-detail">
+        <div className="req-detail-inner">
+          <div className="admin-empty">
+            <h3>Requirement not found</h3>
+            <p>This requirement may have been deleted.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div>
-      <button onClick={() => navigate("/admin/dashboard")}>
-        Back to Dashboard
-      </button>
+    <div className="req-detail">
+      <div className="req-detail-inner">
+        {/* Header */}
+        <div className="req-detail-header">
+          <button className="btn-back" onClick={() => navigate("/admin/dashboard")}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M10 12L6 8l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            Back
+          </button>
+          <div className="req-detail-title-row">
+            <h1>{requirement.title}</h1>
+            <div className="req-detail-meta">
+              <span className={`status-badge status-${requirement.status}`}>
+                {STATUS_LABELS[requirement.status]}
+              </span>
+              <span className="type-badge">{TYPE_LABELS[requirement.type]}</span>
+            </div>
+          </div>
+        </div>
 
-      <h1>{requirement.title}</h1>
-      {actionError && <p style={{ color: "red" }}>{actionError}</p>}
+        {actionError && (
+          <div className="alert-error">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5" />
+              <path d="M8 4.5v4M8 10.5v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+            {actionError}
+          </div>
+        )}
 
-      <table border={1} cellPadding="8" cellSpacing="0">
-        <tbody>
-          <tr>
-            <th>Name</th>
-            <td>{requirement.name}</td>
-          </tr>
-          <tr>
-            <th>Email</th>
-            <td>{requirement.email}</td>
-          </tr>
-          <tr>
-            <th>Company</th>
-            <td>{requirement.company || "-"}</td>
-          </tr>
-          <tr>
-            <th>Type</th>
-            <td>{requirement.type}</td>
-          </tr>
-          <tr>
-            <th>Description</th>
-            <td>{requirement.description}</td>
-          </tr>
-          <tr>
-            <th>Tech Stack</th>
-            <td>{requirement.tech_stack || "-"}</td>
-          </tr>
-          <tr>
-            <th>Timeline</th>
-            <td>{requirement.timeline || "-"}</td>
-          </tr>
-          <tr>
-            <th>Created</th>
-            <td>{new Date(requirement.created_at).toLocaleString()}</td>
-          </tr>
-          <tr>
-            <th>Updated</th>
-            <td>{new Date(requirement.updated_at).toLocaleString()}</td>
-          </tr>
-        </tbody>
-      </table>
+        {/* Info Card */}
+        <div className="req-info-card">
+          <h2>Requirement Details</h2>
+          <div className="req-info-grid">
+            <div className="req-info-item">
+              <span className="req-info-label">Client Name</span>
+              <span className="req-info-value">{requirement.name}</span>
+            </div>
+            <div className="req-info-item">
+              <span className="req-info-label">Email</span>
+              <span className="req-info-value">
+                <a href={`mailto:${requirement.email}`}>{requirement.email}</a>
+              </span>
+            </div>
+            <div className="req-info-item">
+              <span className="req-info-label">Company</span>
+              <span className="req-info-value">
+                {requirement.company || <span className="req-info-empty">Not specified</span>}
+              </span>
+            </div>
+            <div className="req-info-item">
+              <span className="req-info-label">Type</span>
+              <span className="req-info-value">{TYPE_LABELS[requirement.type]}</span>
+            </div>
+            <div className="req-info-item full-width">
+              <span className="req-info-label">Description</span>
+              <span className="req-info-value">{requirement.description}</span>
+            </div>
+            <div className="req-info-item">
+              <span className="req-info-label">Tech Stack</span>
+              <span className="req-info-value">
+                {requirement.tech_stack || <span className="req-info-empty">Not specified</span>}
+              </span>
+            </div>
+            <div className="req-info-item">
+              <span className="req-info-label">Timeline</span>
+              <span className="req-info-value">
+                {requirement.timeline || <span className="req-info-empty">Not specified</span>}
+              </span>
+            </div>
+          </div>
 
-      <h2>Status</h2>
-      <select value={status} onChange={handleStatusChange} disabled={saving}>
-        {STATUSES.map((s) => (
-          <option key={s} value={s}>
-            {s}
-          </option>
-        ))}
-      </select>
+          <div className="req-timestamps">
+            <div className="req-info-item">
+              <span className="req-info-label">Created</span>
+              <span className="req-info-value">{new Date(requirement.created_at).toLocaleString()}</span>
+            </div>
+            <div className="req-info-item">
+              <span className="req-info-label">Updated</span>
+              <span className="req-info-value">{new Date(requirement.updated_at).toLocaleString()}</span>
+            </div>
+          </div>
+        </div>
 
-      <h2>Progress</h2>
-      <input
-        type="number"
-        min="0"
-        max="100"
-        value={progress}
-        onChange={(e) => setProgress(Number(e.target.value))}
-        disabled={saving}
-      />
-      <span> %</span>
-      <button onClick={handleProgressSave} disabled={saving} style={{ marginLeft: 8 }}>
-        {saving ? "Saving..." : "Save Progress"}
-      </button>
+        {/* Controls Card */}
+        <div className="req-controls-card">
+          <h2>Manage</h2>
+          <div className="req-controls-grid">
+            <div className="req-control-group">
+              <span className="req-control-label">Status</span>
+              <select value={status} onChange={handleStatusChange} disabled={saving}>
+                {STATUSES.map((s) => (
+                  <option key={s} value={s}>
+                    {STATUS_LABELS[s]}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-      <h2>Notes</h2>
-      <form onSubmit={handleAddNote}>
-        <textarea
-          rows={3}
-          value={noteContent}
-          onChange={(e) => setNoteContent(e.target.value)}
-          placeholder="Add a note..."
-        />
-        <br />
-        <button type="submit" disabled={addingNote || !noteContent.trim()}>
-          {addingNote ? "Adding..." : "Add Note"}
-        </button>
-      </form>
+            <div className="req-control-group">
+              <span className="req-control-label">Progress</span>
+              <div className="progress-row">
+                <div className="progress-bar-wrap">
+                  <div className="progress-bar-fill" style={{ width: `${progress}%` }} />
+                </div>
+                <input
+                  className="progress-input"
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={progress}
+                  onChange={(e) => setProgress(Number(e.target.value))}
+                  disabled={saving}
+                />
+                <span className="progress-pct">%</span>
+                <button className="btn-save-progress" onClick={handleProgressSave} disabled={saving}>
+                  {saving ? "Saving…" : "Save"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
 
-      {notes.length === 0 ? (
-        <p>No notes yet.</p>
-      ) : (
-        <ul>
-          {notes.map((note) => (
-            <li key={note.id} style={{ marginBottom: 8 }}>
-              <p>{note.content}</p>
-              <small>{new Date(note.created_at).toLocaleString()}</small>
-            </li>
-          ))}
-        </ul>
-      )}
+        {/* Notes Card */}
+        <div className="req-notes-card">
+          <h2>Notes</h2>
+
+          <form className="note-form" onSubmit={handleAddNote}>
+            <textarea
+              rows={3}
+              value={noteContent}
+              onChange={(e) => setNoteContent(e.target.value)}
+              placeholder="Add a note about this requirement…"
+            />
+            <button
+              type="submit"
+              className="btn-add-note"
+              disabled={addingNote || !noteContent.trim()}
+            >
+              {addingNote ? "Adding…" : "Add Note"}
+            </button>
+          </form>
+
+          {notes.length === 0 ? (
+            <div className="notes-empty">No notes yet. Add one above.</div>
+          ) : (
+            <div className="notes-list">
+              {notes.map((note) => (
+                <div className="note-item" key={note.id}>
+                  <p>{note.content}</p>
+                  <span className="note-time">
+                    {new Date(note.created_at).toLocaleString()}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

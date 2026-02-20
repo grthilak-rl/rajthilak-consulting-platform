@@ -1,4 +1,4 @@
-import type { LoginResponse, Note, Requirement, CaseStudy, Service, Testimonial, SiteContent } from "../types";
+import type { LoginResponse, Note, Requirement, CaseStudy, CaseStudyFormData, Service, Testimonial, SiteContent } from "../types";
 
 const API_BASE = "/api";
 
@@ -150,4 +150,49 @@ export async function fetchSiteContent(key?: string): Promise<SiteContent[]> {
   const url = key ? `${API_BASE}/public/site-content?key=${key}` : `${API_BASE}/public/site-content`;
   const res = await safeFetch(url);
   return handleResponse<SiteContent[]>(res);
+}
+
+// Admin: Case Study Management
+export async function fetchCaseStudiesAdmin(): Promise<CaseStudy[]> {
+  const res = await safeFetch(`${API_BASE}/admin/case-studies`, {
+    headers: authHeaders(),
+  });
+  return handleResponse<CaseStudy[]>(res);
+}
+
+export async function fetchCaseStudyAdmin(id: string): Promise<CaseStudy> {
+  const res = await safeFetch(`${API_BASE}/admin/case-studies/${id}`, {
+    headers: authHeaders(),
+  });
+  return handleResponse<CaseStudy>(res);
+}
+
+export async function createCaseStudy(payload: CaseStudyFormData): Promise<CaseStudy> {
+  const res = await safeFetch(`${API_BASE}/admin/case-studies`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify(payload),
+  });
+  return handleResponse<CaseStudy>(res);
+}
+
+export async function updateCaseStudy(id: string, payload: Partial<CaseStudyFormData>): Promise<CaseStudy> {
+  const res = await safeFetch(`${API_BASE}/admin/case-studies/${id}`, {
+    method: "PATCH",
+    headers: authHeaders(),
+    body: JSON.stringify(payload),
+  });
+  return handleResponse<CaseStudy>(res);
+}
+
+export async function deleteCaseStudy(id: string): Promise<void> {
+  const res = await safeFetch(`${API_BASE}/admin/case-studies/${id}`, {
+    method: "DELETE",
+    headers: authHeaders(),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => null);
+    const message = (data as { detail?: string })?.detail || `Request failed (${res.status})`;
+    throw new ApiError(message, res.status);
+  }
 }

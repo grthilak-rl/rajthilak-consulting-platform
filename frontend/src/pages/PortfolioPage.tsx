@@ -38,7 +38,9 @@ export default function PortfolioPage() {
               { value: '85%', label: 'Query Resolution Rate' },
               { value: '24/7', label: 'Availability' }
             ],
-            visual: { color: 'ai', icon: 'microphone' }
+            visual: { color: 'ai', icon: 'microphone' },
+            display_order: 0,
+            is_active: true,
           },
           {
             id: 'hit-platform',
@@ -49,7 +51,9 @@ export default function PortfolioPage() {
             industry: 'Healthcare',
             technologies: ['Python', 'FastAPI', 'React', 'PostgreSQL', 'Docker'],
             featured: false,
-            visual: { color: 'healthcare', icon: 'activity' }
+            visual: { color: 'healthcare', icon: 'activity' },
+            display_order: 1,
+            is_active: true,
           },
           {
             id: 'vas-platform',
@@ -60,7 +64,9 @@ export default function PortfolioPage() {
             industry: 'Telecom',
             technologies: ['Java', 'Spring Boot', 'Kafka', 'Redis', 'AWS'],
             featured: false,
-            visual: { color: 'telecom', icon: 'bar-chart' }
+            visual: { color: 'telecom', icon: 'bar-chart' },
+            display_order: 2,
+            is_active: true,
           },
           {
             id: 'cloud-migration',
@@ -71,7 +77,9 @@ export default function PortfolioPage() {
             industry: 'Cloud / DevOps',
             technologies: ['AWS', 'Docker', 'Kubernetes', 'Terraform'],
             featured: false,
-            visual: { color: 'fintech', icon: 'cloud' }
+            visual: { color: 'fintech', icon: 'cloud' },
+            display_order: 3,
+            is_active: true,
           }
         ]);
       } finally {
@@ -142,7 +150,7 @@ export default function PortfolioPage() {
     <Layout>
       {/* Hero Section */}
       <section className="portfolio-hero">
-        <div className="portfolio-hero-overline animate-in">Case Studies & Projects</div>
+        <div className="portfolio-hero-overline animate-in">Projects & Portfolio</div>
         <h1 className="animate-in delay-1">
           Systems I Have <span className="highlight">Designed & Built</span>
         </h1>

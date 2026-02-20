@@ -49,8 +49,25 @@ export interface CaseStudy {
     color: string;
     icon: string;
   };
+  display_order: number;
+  is_active: boolean;
   created_at?: string;
   updated_at?: string;
+}
+
+export interface CaseStudyFormData {
+  slug: string;
+  title: string;
+  role: string;
+  description: string;
+  industry: string;
+  technologies: string[];
+  featured: boolean;
+  metrics: { value: string; label: string }[];
+  visual_color: string;
+  visual_icon: string;
+  display_order: number;
+  is_active: boolean;
 }
 
 export interface Service {

@@ -47,3 +47,71 @@ class CaseStudyResponse(BaseModel):
             created_at=obj.created_at,
             updated_at=obj.updated_at,
         )
+
+
+class CaseStudyAdminResponse(BaseModel):
+    id: UUID
+    slug: str
+    title: str
+    role: str
+    description: str
+    industry: str
+    technologies: list[str]
+    featured: bool
+    metrics: Optional[list[MetricItem]] = None
+    visual: VisualConfig
+    display_order: int
+    is_active: bool
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = {"from_attributes": True}
+
+    @classmethod
+    def from_orm_model(cls, obj):
+        return cls(
+            id=obj.id,
+            slug=obj.slug,
+            title=obj.title,
+            role=obj.role,
+            description=obj.description,
+            industry=obj.industry,
+            technologies=obj.technologies or [],
+            featured=obj.featured,
+            metrics=obj.metrics,
+            visual=VisualConfig(color=obj.visual_color, icon=obj.visual_icon),
+            display_order=obj.display_order,
+            is_active=obj.is_active,
+            created_at=obj.created_at,
+            updated_at=obj.updated_at,
+        )
+
+
+class CaseStudyCreate(BaseModel):
+    slug: str
+    title: str
+    role: str
+    description: str
+    industry: str
+    technologies: list[str] = []
+    featured: bool = False
+    metrics: Optional[list[MetricItem]] = None
+    visual_color: str = "primary"
+    visual_icon: str = "code"
+    display_order: int = 0
+    is_active: bool = True
+
+
+class CaseStudyUpdate(BaseModel):
+    slug: Optional[str] = None
+    title: Optional[str] = None
+    role: Optional[str] = None
+    description: Optional[str] = None
+    industry: Optional[str] = None
+    technologies: Optional[list[str]] = None
+    featured: Optional[bool] = None
+    metrics: Optional[list[MetricItem]] = None
+    visual_color: Optional[str] = None
+    visual_icon: Optional[str] = None
+    display_order: Optional[int] = None
+    is_active: Optional[bool] = None

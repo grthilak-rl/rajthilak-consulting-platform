@@ -1,12 +1,34 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { ApiError, fetchRequirements, setToken } from "../api/client";
 import type { Requirement } from "../types";
+import "./AdminDashboard.css";
+
+const STATUS_OPTIONS = ["All", "new", "accepted", "in_progress", "completed", "rejected"] as const;
+const TYPE_OPTIONS = ["All", "full_time", "contract", "one_off"] as const;
+
+const TYPE_LABELS: Record<string, string> = {
+  full_time: "Full-Time",
+  contract: "Contract",
+  one_off: "One-Off",
+};
+
+const STATUS_LABELS: Record<string, string> = {
+  new: "New",
+  accepted: "Accepted",
+  in_progress: "In Progress",
+  completed: "Completed",
+  rejected: "Rejected",
+};
 
 export default function AdminDashboard() {
   const [requirements, setRequirements] = useState<Requirement[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterStatus, setFilterStatus] = useState("All");
+  const [filterType, setFilterType] = useState("All");
+  const [activeTab, setActiveTab] = useState<"requirements" | "portfolio">("requirements");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,42 +45,263 @@ export default function AdminDashboard() {
       .finally(() => setLoading(false));
   }, [navigate]);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
+  const filtered = useMemo(() => {
+    let list = requirements;
+
+    if (filterStatus !== "All") {
+      list = list.filter((r) => r.status === filterStatus);
+    }
+    if (filterType !== "All") {
+      list = list.filter((r) => r.type === filterType);
+    }
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      list = list.filter(
+        (r) =>
+          r.title.toLowerCase().includes(q) ||
+          r.name.toLowerCase().includes(q) ||
+          r.email.toLowerCase().includes(q) ||
+          (r.company && r.company.toLowerCase().includes(q))
+      );
+    }
+
+    return list;
+  }, [requirements, filterStatus, filterType, searchQuery]);
+
+  const stats = useMemo(() => {
+    const total = requirements.length;
+    const newCount = requirements.filter((r) => r.status === "new").length;
+    const inProgress = requirements.filter((r) => r.status === "in_progress").length;
+    const completed = requirements.filter((r) => r.status === "completed").length;
+    return { total, newCount, inProgress, completed };
+  }, [requirements]);
+
+  function handleLogout() {
+    setToken(null);
+    navigate("/admin/login");
+  }
+
+  if (loading) {
+    return (
+      <div className="admin-dash">
+        <div className="admin-dash-inner">
+          <div className="admin-dash-header">
+            <h1>Dashboard</h1>
+          </div>
+          <div className="admin-table-wrap">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div className="admin-skeleton-row" key={i}>
+                <div className="skel-block" style={{ width: "30%" }} />
+                <div className="skel-block" style={{ width: "20%" }} />
+                <div className="skel-block" style={{ width: "15%" }} />
+                <div className="skel-block" style={{ width: "12%" }} />
+                <div className="skel-block" style={{ width: "15%" }} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="admin-dash">
+        <div className="admin-dash-inner">
+          <div className="admin-error">
+            <p>{error}</p>
+            <button onClick={() => window.location.reload()}>Retry</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div>
-      <h1>Admin Dashboard</h1>
-      {requirements.length === 0 ? (
-        <p>No requirements submitted yet.</p>
-      ) : (
-        <table border={1} cellPadding="8" cellSpacing="0">
-          <thead>
-            <tr>
-              <th>Title</th>
-              <th>Client Name</th>
-              <th>Type</th>
-              <th>Status</th>
-              <th>Created At</th>
-            </tr>
-          </thead>
-          <tbody>
-            {requirements.map((req) => (
-              <tr
-                key={req.id}
-                style={{ cursor: "pointer" }}
-                onClick={() => navigate(`/admin/requirements/${req.id}`)}
-              >
-                <td>{req.title}</td>
-                <td>{req.name}</td>
-                <td>{req.type}</td>
-                <td>{req.status}</td>
-                <td>{new Date(req.created_at).toLocaleDateString()}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+    <div className="admin-dash">
+      <div className="admin-dash-inner">
+        {/* Header */}
+        <div className="admin-dash-header">
+          <h1>Dashboard</h1>
+          <div className="admin-dash-actions">
+            <Link to="/" className="btn-view-site">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M6 3H3a1 1 0 00-1 1v9a1 1 0 001 1h9a1 1 0 001-1v-3M9 1h6m0 0v6m0-6L8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              View Site
+            </Link>
+            <button className="btn-logout" onClick={handleLogout}>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M6 2H3a1 1 0 00-1 1v10a1 1 0 001 1h3M11 11l3-3-3-3M14 8H6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              Logout
+            </button>
+          </div>
+        </div>
+
+        {/* Tabs */}
+        <div className="admin-tabs">
+          <button
+            className={`admin-tab${activeTab === "requirements" ? " active" : ""}`}
+            onClick={() => setActiveTab("requirements")}
+          >
+            Requirements
+          </button>
+          <button
+            className={`admin-tab${activeTab === "portfolio" ? " active" : ""}`}
+            onClick={() => setActiveTab("portfolio")}
+          >
+            Portfolio
+          </button>
+        </div>
+
+        {activeTab === "portfolio" ? (
+          <div className="admin-portfolio-section">
+            <div className="admin-portfolio-actions">
+              <Link to="/admin/portfolio" className="btn-manage-portfolio">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+                Manage Projects
+              </Link>
+            </div>
+            <div className="admin-empty">
+              <div className="admin-empty-icon">📁</div>
+              <h3>Portfolio Management</h3>
+              <p>Click "Manage Projects" to add, edit, or remove portfolio items.</p>
+            </div>
+          </div>
+        ) : (
+        <>
+        {/* Stats */}
+        <div className="admin-stats">
+          <div className="admin-stat-card">
+            <div className="admin-stat-label">Total</div>
+            <div className="admin-stat-value stat-primary">{stats.total}</div>
+          </div>
+          <div className="admin-stat-card">
+            <div className="admin-stat-label">New</div>
+            <div className="admin-stat-value stat-new">{stats.newCount}</div>
+          </div>
+          <div className="admin-stat-card">
+            <div className="admin-stat-label">In Progress</div>
+            <div className="admin-stat-value stat-progress">{stats.inProgress}</div>
+          </div>
+          <div className="admin-stat-card">
+            <div className="admin-stat-label">Completed</div>
+            <div className="admin-stat-value stat-done">{stats.completed}</div>
+          </div>
+        </div>
+
+        {/* Toolbar */}
+        <div className="admin-toolbar">
+          <div className="admin-search">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <circle cx="7" cy="7" r="5" stroke="currentColor" strokeWidth="1.5" />
+              <path d="M11 11l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+            <input
+              type="text"
+              placeholder="Search by title, name, email, or company…"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+
+          <div className="admin-filters">
+            <div className="admin-filter-group">
+              <span className="admin-filter-label">Status</span>
+              {STATUS_OPTIONS.map((s) => (
+                <button
+                  key={s}
+                  className={`filter-pill${filterStatus === s ? " active" : ""}`}
+                  onClick={() => setFilterStatus(s)}
+                >
+                  {s === "All" ? "All" : STATUS_LABELS[s]}
+                </button>
+              ))}
+            </div>
+
+            <div className="admin-filter-group">
+              <span className="admin-filter-label">Type</span>
+              {TYPE_OPTIONS.map((t) => (
+                <button
+                  key={t}
+                  className={`filter-pill${filterType === t ? " active" : ""}`}
+                  onClick={() => setFilterType(t)}
+                >
+                  {t === "All" ? "All" : TYPE_LABELS[t]}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Table */}
+        {filtered.length === 0 ? (
+          <div className="admin-table-wrap">
+            <div className="admin-empty">
+              <div className="admin-empty-icon">
+                {requirements.length === 0 ? "📋" : "🔍"}
+              </div>
+              <h3>
+                {requirements.length === 0
+                  ? "No requirements yet"
+                  : "No matching requirements"}
+              </h3>
+              <p>
+                {requirements.length === 0
+                  ? "Requirements will appear here once clients submit them."
+                  : "Try adjusting your search or filters."}
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="admin-table-wrap">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Client</th>
+                  <th>Type</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((req) => (
+                  <tr
+                    key={req.id}
+                    onClick={() => navigate(`/admin/requirements/${req.id}`)}
+                  >
+                    <td data-label="Title">
+                      <span className="req-title">{req.title}</span>
+                    </td>
+                    <td data-label="Client">
+                      <span className="req-client">{req.name}</span>
+                    </td>
+                    <td data-label="Type">
+                      <span className="type-badge">{TYPE_LABELS[req.type]}</span>
+                    </td>
+                    <td data-label="Status">
+                      <span className={`status-badge status-${req.status}`}>
+                        {STATUS_LABELS[req.status]}
+                      </span>
+                    </td>
+                    <td data-label="Date">
+                      <span className="req-date">
+                        {new Date(req.created_at).toLocaleDateString()}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+        </>
+        )}
+      </div>
     </div>
   );
 }

@@ -117,8 +117,8 @@ export default function CaseStudyDetail() {
     return (
       <Layout>
         <div className="detail-error">
-          <h2>Case study not found</h2>
-          <p>The case study you're looking for doesn't exist or has been removed.</p>
+          <h2>Project not found</h2>
+          <p>The project you're looking for doesn't exist or has been removed.</p>
           <Link to="/portfolio" className="back-link">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <line x1="19" y1="12" x2="5" y2="12"/>

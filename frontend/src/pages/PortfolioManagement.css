@@ -1,0 +1,166 @@
+/* ============================================
+   PORTFOLIO MANAGEMENT
+   ============================================ */
+.portfolio-mgmt {
+  min-height: 100vh;
+  background: var(--color-bg);
+  padding: var(--space-8);
+}
+
+.portfolio-mgmt-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* Case Study Table Cells */
+.case-study-title-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cs-title {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.cs-role {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+.cs-industry {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+}
+
+.cs-order {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+/* Active/Inactive Badges */
+.status-badge.status-active {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--color-success);
+}
+
+.status-badge.status-inactive {
+  background: var(--color-gray-100);
+  color: var(--color-text-muted);
+}
+
+/* Featured Badge */
+.featured-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--color-accent);
+  border-radius: var(--radius-full);
+}
+
+/* Table Actions */
+.table-actions {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.btn-table-action {
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.btn-table-action:hover {
+  background: var(--color-gray-50);
+}
+
+.btn-table-action.btn-edit:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.btn-table-action.btn-deactivate:hover {
+  border-color: var(--color-error);
+  color: var(--color-error);
+  background: var(--color-error-50);
+}
+
+.btn-table-action.btn-activate:hover {
+  border-color: var(--color-success);
+  color: var(--color-success);
+}
+
+/* Header Actions */
+.btn-back-dash {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.btn-back-dash:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.btn-new-cs {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 8px 16px;
+  background: var(--color-primary);
+  color: #fff;
+  border-radius: var(--radius-md);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.btn-new-cs:hover {
+  background: var(--color-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .portfolio-mgmt {
+    padding: var(--space-5);
+  }
+
+  .table-actions {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .portfolio-mgmt .admin-dash-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+}
