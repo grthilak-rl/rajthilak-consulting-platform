@@ -146,6 +146,12 @@ export default function AdminDashboard() {
             </svg>
             Manage Portfolio
           </Link>
+          <Link to="/admin/site" className="btn-manage-site">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M12.7 3.3a1 1 0 011.4 1.4l-8 8a1 1 0 01-.5.3l-2.5.6.6-2.5a1 1 0 01.3-.5l8-8z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            Manage Site
+          </Link>
         </div>
 
         {/* Stats */}

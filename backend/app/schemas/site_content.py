@@ -5,6 +5,20 @@ from uuid import UUID
 from pydantic import BaseModel
 
 
+class SiteContentCreate(BaseModel):
+    key: str
+    title: Optional[str] = None
+    content: str
+    metadata: Optional[dict] = None
+
+
+class SiteContentUpdate(BaseModel):
+    key: Optional[str] = None
+    title: Optional[str] = None
+    content: Optional[str] = None
+    metadata: Optional[dict] = None
+
+
 class SiteContentResponse(BaseModel):
     id: UUID
     key: str

@@ -10,6 +10,8 @@ import AdminDashboard from "./pages/AdminDashboard";
 import RequirementDetail from "./pages/RequirementDetail";
 import PortfolioManagement from "./pages/PortfolioManagement";
 import CaseStudyForm from "./pages/CaseStudyForm";
+import SiteManagement from "./pages/SiteManagement";
+import SiteContentForm from "./pages/SiteContentForm";
 import ProtectedRoute from "./ProtectedRoute";
 import NotFoundPage from "./pages/NotFoundPage";
 
@@ -27,6 +29,8 @@ export default function App() {
       <Route path="/admin/requirements/:id" element={<ProtectedRoute><RequirementDetail /></ProtectedRoute>} />
       <Route path="/admin/portfolio" element={<ProtectedRoute><PortfolioManagement /></ProtectedRoute>} />
       <Route path="/admin/portfolio/:id" element={<ProtectedRoute><CaseStudyForm /></ProtectedRoute>} />
+      <Route path="/admin/site" element={<ProtectedRoute><SiteManagement /></ProtectedRoute>} />
+      <Route path="/admin/site/:id" element={<ProtectedRoute><SiteContentForm /></ProtectedRoute>} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );

@@ -103,3 +103,10 @@ export interface SiteContent {
   created_at?: string;
   updated_at?: string;
 }
+
+export interface SiteContentFormData {
+  key: string;
+  title?: string;
+  content: string;
+  metadata?: Record<string, unknown>;
+}

@@ -1,0 +1,32 @@
+/* ============================================
+   SITE CONTENT FORM — extends CaseStudyForm.css
+   ============================================ */
+
+/* Stats Grid (3 stats, each with value/suffix/label) */
+.sc-stats-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.sc-stat-row {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-end;
+}
+
+.sc-stat-row .cs-form-field {
+  flex: 1;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .sc-stat-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sc-stat-row .cs-form-field {
+    flex: none !important;
+  }
+}

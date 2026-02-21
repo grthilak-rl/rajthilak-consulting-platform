@@ -294,6 +294,25 @@ def seed_site_content():
                 title="About Introduction",
                 content="I am Raj Thilak, a full-stack engineer and technical consultant with over a decade of experience designing and shipping production systems across healthcare, telecom, AI/ML, and fintech.",
             ),
+            SiteContent(
+                key="about_hero",
+                title="About Hero Section",
+                content="I am Raj Thilak, a full-stack engineer and technical consultant with over a decade of experience designing and shipping production systems across healthcare, telecom, AI/ML, and fintech.",
+                metadata_={
+                    "overline": "About Me",
+                    "heading": 'Building <span class="highlight">Scalable Systems</span> That Ship',
+                    "stats": [
+                        {"value": 10, "suffix": "+", "label": "Years Experience"},
+                        {"value": 20, "suffix": "+", "label": "Projects Delivered"},
+                        {"value": 4, "suffix": "", "label": "Industries"},
+                    ],
+                    "avatar": {
+                        "initials": "RT",
+                        "name": "Raj Thilak",
+                        "title": "Engineering Consultant & Architect",
+                    },
+                },
+            ),
         ]
 
         db.add_all(content)

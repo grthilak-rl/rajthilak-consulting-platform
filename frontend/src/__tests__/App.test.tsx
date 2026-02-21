@@ -37,6 +37,12 @@ vi.mock("../pages/PortfolioManagement", () => ({
 vi.mock("../pages/CaseStudyForm", () => ({
   default: () => <div>CaseStudyForm</div>,
 }));
+vi.mock("../pages/SiteManagement", () => ({
+  default: () => <div>SiteManagement</div>,
+}));
+vi.mock("../pages/SiteContentForm", () => ({
+  default: () => <div>SiteContentForm</div>,
+}));
 vi.mock("../pages/NotFoundPage", () => ({
   default: () => <div>NotFoundPage</div>,
 }));
@@ -106,5 +112,22 @@ describe("App routing", () => {
     sessionStorage.setItem("auth_token", "valid");
     renderApp("/admin/portfolio");
     expect(screen.getByText("PortfolioManagement")).toBeInTheDocument();
+  });
+
+  it("/admin/site redirects to login when no token", () => {
+    renderApp("/admin/site");
+    expect(screen.getByText("AdminLogin")).toBeInTheDocument();
+  });
+
+  it("/admin/site renders when authenticated", () => {
+    sessionStorage.setItem("auth_token", "valid");
+    renderApp("/admin/site");
+    expect(screen.getByText("SiteManagement")).toBeInTheDocument();
+  });
+
+  it("/admin/site/:id renders when authenticated", () => {
+    sessionStorage.setItem("auth_token", "valid");
+    renderApp("/admin/site/some-uuid");
+    expect(screen.getByText("SiteContentForm")).toBeInTheDocument();
   });
 });

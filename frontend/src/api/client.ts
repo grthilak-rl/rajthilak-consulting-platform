@@ -1,4 +1,4 @@
-import type { LoginResponse, Note, Requirement, CaseStudy, CaseStudyFormData, Service, Testimonial, SiteContent } from "../types";
+import type { LoginResponse, Note, Requirement, CaseStudy, CaseStudyFormData, Service, Testimonial, SiteContent, SiteContentFormData } from "../types";
 
 const API_BASE = "/api";
 
@@ -187,6 +187,44 @@ export async function updateCaseStudy(id: string, payload: Partial<CaseStudyForm
 
 export async function deleteCaseStudy(id: string): Promise<void> {
   const res = await safeFetch(`${API_BASE}/admin/case-studies/${id}`, {
+    method: "DELETE",
+    headers: authHeaders(),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => null);
+    const message = (data as { detail?: string })?.detail || `Request failed (${res.status})`;
+    throw new ApiError(message, res.status);
+  }
+}
+
+// Admin: Site Content Management
+export async function fetchSiteContentAdmin(): Promise<SiteContent[]> {
+  const res = await safeFetch(`${API_BASE}/admin/site-content`, {
+    headers: authHeaders(),
+  });
+  return handleResponse<SiteContent[]>(res);
+}
+
+export async function createSiteContent(payload: SiteContentFormData): Promise<SiteContent> {
+  const res = await safeFetch(`${API_BASE}/admin/site-content`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify(payload),
+  });
+  return handleResponse<SiteContent>(res);
+}
+
+export async function updateSiteContent(id: string, payload: Partial<SiteContentFormData>): Promise<SiteContent> {
+  const res = await safeFetch(`${API_BASE}/admin/site-content/${id}`, {
+    method: "PATCH",
+    headers: authHeaders(),
+    body: JSON.stringify(payload),
+  });
+  return handleResponse<SiteContent>(res);
+}
+
+export async function deleteSiteContent(id: string): Promise<void> {
+  const res = await safeFetch(`${API_BASE}/admin/site-content/${id}`, {
     method: "DELETE",
     headers: authHeaders(),
   });

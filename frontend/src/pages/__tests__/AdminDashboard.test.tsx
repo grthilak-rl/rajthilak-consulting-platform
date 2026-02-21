@@ -166,6 +166,18 @@ describe("AdminDashboard", () => {
     expect(link).toHaveAttribute("href", "/admin/portfolio");
   });
 
+  it("has Manage Site link", async () => {
+    mockFetchRequirements.mockResolvedValue(MOCK_REQUIREMENTS);
+    renderDashboard();
+
+    await waitFor(() => {
+      expect(screen.getByText("Manage Site")).toBeInTheDocument();
+    });
+
+    const link = screen.getByText("Manage Site").closest("a");
+    expect(link).toHaveAttribute("href", "/admin/site");
+  });
+
   it("has View Site link pointing to /", async () => {
     mockFetchRequirements.mockResolvedValue(MOCK_REQUIREMENTS);
     renderDashboard();

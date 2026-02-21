@@ -7,6 +7,7 @@ from app.core.database import get_db
 from app.models.case_study import CaseStudy
 from app.models.note import Note
 from app.models.requirement import Requirement
+from app.models.site_content import SiteContent
 from app.schemas.case_study import (
     CaseStudyAdminResponse,
     CaseStudyCreate,
@@ -17,6 +18,11 @@ from app.schemas.requirement import (
     ProgressUpdate,
     RequirementResponse,
     StatusUpdate,
+)
+from app.schemas.site_content import (
+    SiteContentCreate,
+    SiteContentResponse,
+    SiteContentUpdate,
 )
 
 router = APIRouter()
@@ -238,4 +244,83 @@ def delete_case_study(case_study_id: UUID, db: Session = Depends(get_db)):
             detail="Case study not found",
         )
     study.is_active = False
+    db.commit()
+
+
+# ── Site Content ─────────────────────────────────────────────
+
+
+@router.get("/site-content", response_model=list[SiteContentResponse])
+def list_site_content(db: Session = Depends(get_db)):
+    items = db.query(SiteContent).order_by(SiteContent.key).all()
+    return [SiteContentResponse.from_orm_model(i) for i in items]
+
+
+@router.post(
+    "/site-content",
+    response_model=SiteContentResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def create_site_content(body: SiteContentCreate, db: Session = Depends(get_db)):
+    existing = db.query(SiteContent).filter(SiteContent.key == body.key).first()
+    if existing:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Key '{body.key}' already exists",
+        )
+    item = SiteContent(
+        key=body.key,
+        title=body.title,
+        content=body.content,
+        metadata_=body.metadata,
+    )
+    db.add(item)
+    db.commit()
+    db.refresh(item)
+    return SiteContentResponse.from_orm_model(item)
+
+
+@router.patch("/site-content/{content_id}", response_model=SiteContentResponse)
+def update_site_content(
+    content_id: UUID,
+    body: SiteContentUpdate,
+    db: Session = Depends(get_db),
+):
+    item = db.query(SiteContent).filter(SiteContent.id == content_id).first()
+    if not item:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Site content not found",
+        )
+    update_data = body.model_dump(exclude_unset=True)
+    if "key" in update_data and update_data["key"] != item.key:
+        existing = (
+            db.query(SiteContent).filter(SiteContent.key == update_data["key"]).first()
+        )
+        if existing:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Key '{update_data['key']}' already exists",
+            )
+    if "metadata" in update_data:
+        update_data["metadata_"] = update_data.pop("metadata")
+    for field, value in update_data.items():
+        setattr(item, field, value)
+    db.commit()
+    db.refresh(item)
+    return SiteContentResponse.from_orm_model(item)
+
+
+@router.delete(
+    "/site-content/{content_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+def delete_site_content(content_id: UUID, db: Session = Depends(get_db)):
+    item = db.query(SiteContent).filter(SiteContent.id == content_id).first()
+    if not item:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Site content not found",
+        )
+    db.delete(item)
     db.commit()

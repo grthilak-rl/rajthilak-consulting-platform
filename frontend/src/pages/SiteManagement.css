@@ -1,0 +1,103 @@
+/* ============================================
+   SITE MANAGEMENT
+   ============================================ */
+.site-mgmt {
+  min-height: 100vh;
+  background: var(--color-bg);
+  padding: var(--space-8);
+}
+
+.site-mgmt-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* Content Cards */
+.site-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--space-4);
+}
+
+.site-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.site-card:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.site-card-skeleton {
+  pointer-events: none;
+}
+
+.site-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.site-card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0 0 4px;
+}
+
+.site-card-key {
+  display: inline-block;
+  padding: 2px 8px;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  background: var(--color-gray-100);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+}
+
+.site-card-actions {
+  display: flex;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.site-card-preview {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.site-card-meta {
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .site-mgmt {
+    padding: var(--space-5);
+  }
+
+  .site-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .site-mgmt .admin-dash-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+}
