@@ -19,11 +19,39 @@ const HERO_DEFAULTS = {
   avatar: { initials: "RT", name: "Raj Thilak", title: "Engineering Consultant & Architect" },
 };
 
+const STORY_DEFAULT = (
+  "<p>I started my career as a backend developer at a telecom company, building value-added services that reached millions of subscribers. The scale forced me to think deeply about <strong>distributed systems, data pipelines, and fault tolerance</strong> from day one.</p>" +
+  "<p>After working on backend platforms in Java and Spring Boot, I transitioned to healthcare technology, where I led the development of a <strong>clinical workflow platform</strong> serving hospitals. This experience taught me how to design systems under regulatory constraints while maintaining performance and usability.</p>" +
+  "<hr>" +
+  "<p>More recently, I have been building <strong>AI-powered products</strong> using Python, LangChain, and OpenAI APIs. One of my flagship projects, Ruth AI, is a conversational assistant that handles customer support queries with 85% autonomous resolution and 60% faster response times.</p>" +
+  "<p>Today, I work as an independent consultant, helping startups and mid-size companies architect, build, and ship production systems. Whether it is a cloud migration, an MVP build, or an AI integration -- I bring hands-on engineering, architectural clarity, and a commitment to delivery.</p>"
+);
+
+const WHY_PLATFORM_DEFAULT = (
+  "<p>Most consulting engagements start with email threads, scattered proposals, and unclear expectations. I built this platform to bring <strong>structure, transparency, and clarity</strong> to how I work with clients.</p>" +
+  "<p>Here, you can submit a requirement, track its progress, and communicate directly with me through a single interface. No middlemen, no ambiguity -- just a streamlined workflow designed to get your project off the ground faster.</p>"
+);
+
+const PHILOSOPHY_DEFAULTS = {
+  overline: "Engineering Philosophy",
+  heading: "How I Approach Engineering",
+  subtitle: "Four principles that guide every project I take on, from architecture to deployment.",
+  cards: [
+    { title: "Ship Early, Iterate Fast", description: "I prioritize getting a working system in front of users as quickly as possible. Early feedback beats perfect architecture every time. Start with an MVP, learn from real usage, and iterate based on what actually matters." },
+    { title: "Boring Tech Over Hype", description: "I default to proven, well-documented technologies unless there is a clear reason to do otherwise. PostgreSQL over a trendy NoSQL database. FastAPI over experimental frameworks. Battle-tested tools ship faster and break less." },
+    { title: "Design for Observability", description: "Systems will fail. When they do, you need to know exactly what went wrong. I build with structured logging, metrics, and monitoring from day one -- not as an afterthought. If you cannot measure it, you cannot improve it." },
+    { title: "Write Code People Can Read", description: "Code is read far more often than it is written. I optimize for clarity over cleverness. Good variable names, small functions, and clear separation of concerns make systems easier to extend, debug, and hand off to your team." },
+  ],
+};
+
 export default function AboutPage() {
   const [visibleElements, setVisibleElements] = useState<Set<number>>(new Set());
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [loading, setLoading] = useState(true);
   const [heroContent, setHeroContent] = useState<SiteContent | null>(null);
+  const [storyHtml, setStoryHtml] = useState(STORY_DEFAULT);
+  const [whyPlatformHtml, setWhyPlatformHtml] = useState(WHY_PLATFORM_DEFAULT);
+  const [philosophy, setPhilosophy] = useState(PHILOSOPHY_DEFAULTS);
 
   // Derive hero display values from API data or fallbacks
   const meta = heroContent?.metadata as Record<string, unknown> | undefined;
@@ -43,7 +71,7 @@ export default function AboutPage() {
         setLoading(true);
         const [testimonialsData, siteContentData] = await Promise.allSettled([
           fetchTestimonials(),
-          fetchSiteContent("about_hero"),
+          fetchSiteContent(),
         ]);
 
         if (testimonialsData.status === "fulfilled") {
@@ -84,8 +112,24 @@ export default function AboutPage() {
           ]);
         }
 
-        if (siteContentData.status === "fulfilled" && siteContentData.value.length > 0) {
-          setHeroContent(siteContentData.value[0] ?? null);
+        if (siteContentData.status === "fulfilled") {
+          const items = siteContentData.value;
+          const hero = items.find((i) => i.key === "about_hero");
+          const story = items.find((i) => i.key === "about_story");
+          const whyPlatform = items.find((i) => i.key === "about_why_platform");
+          const philItem = items.find((i) => i.key === "about_philosophy");
+          if (hero) setHeroContent(hero);
+          if (story) setStoryHtml(story.content);
+          if (whyPlatform) setWhyPlatformHtml(whyPlatform.content);
+          if (philItem) {
+            const pm = philItem.metadata as Record<string, unknown> | undefined;
+            setPhilosophy({
+              overline: (pm?.overline as string) || PHILOSOPHY_DEFAULTS.overline,
+              heading: (pm?.heading as string) || PHILOSOPHY_DEFAULTS.heading,
+              subtitle: philItem.content || PHILOSOPHY_DEFAULTS.subtitle,
+              cards: (pm?.cards as typeof PHILOSOPHY_DEFAULTS.cards) || PHILOSOPHY_DEFAULTS.cards,
+            });
+          }
         }
       } finally {
         setLoading(false);
@@ -169,19 +213,7 @@ export default function AboutPage() {
       <section className="story reveal" data-index={0}>
         <div className={`story-inner ${visibleElements.has(0) ? 'visible' : ''}`}>
           <h2>My Story</h2>
-          <p>
-            I started my career as a backend developer at a telecom company, building value-added services that reached millions of subscribers. The scale forced me to think deeply about <strong>distributed systems, data pipelines, and fault tolerance</strong> from day one.
-          </p>
-          <p>
-            After working on backend platforms in Java and Spring Boot, I transitioned to healthcare technology, where I led the development of a <strong>clinical workflow platform</strong> serving hospitals. This experience taught me how to design systems under regulatory constraints while maintaining performance and usability.
-          </p>
-          <div className="story-divider"></div>
-          <p>
-            More recently, I have been building <strong>AI-powered products</strong> using Python, LangChain, and OpenAI APIs. One of my flagship projects, Ruth AI, is a conversational assistant that handles customer support queries with 85% autonomous resolution and 60% faster response times.
-          </p>
-          <p>
-            Today, I work as an independent consultant, helping startups and mid-size companies architect, build, and ship production systems. Whether it is a cloud migration, an MVP build, or an AI integration -- I bring hands-on engineering, architectural clarity, and a commitment to delivery.
-          </p>
+          <div dangerouslySetInnerHTML={{ __html: storyHtml }} />
         </div>
       </section>
 
@@ -189,12 +221,7 @@ export default function AboutPage() {
       <section className="why-platform reveal" data-index={1}>
         <div className={`why-platform-inner ${visibleElements.has(1) ? 'visible' : ''}`}>
           <h2>Why I Built This Platform</h2>
-          <p>
-            Most consulting engagements start with email threads, scattered proposals, and unclear expectations. I built this platform to bring <strong>structure, transparency, and clarity</strong> to how I work with clients.
-          </p>
-          <p>
-            Here, you can submit a requirement, track its progress, and communicate directly with me through a single interface. No middlemen, no ambiguity -- just a streamlined workflow designed to get your project off the ground faster.
-          </p>
+          <div dangerouslySetInnerHTML={{ __html: whyPlatformHtml }} />
         </div>
       </section>
 
@@ -202,43 +229,19 @@ export default function AboutPage() {
       <section className="philosophy reveal" data-index={2}>
         <div className={`philosophy-inner ${visibleElements.has(2) ? 'visible' : ''}`}>
           <div className="philosophy-header">
-            <div className="overline">Engineering Philosophy</div>
-            <h2>How I Approach Engineering</h2>
-            <p>Four principles that guide every project I take on, from architecture to deployment.</p>
+            <div className="overline">{philosophy.overline}</div>
+            <h2>{philosophy.heading}</h2>
+            <p>{philosophy.subtitle}</p>
           </div>
 
           <div className="philosophy-grid stagger-children">
-            <div className="philosophy-card">
-              <div className="philosophy-card-num">01</div>
-              <h3>Ship Early, Iterate Fast</h3>
-              <p>
-                I prioritize getting a working system in front of users as quickly as possible. Early feedback beats perfect architecture every time. Start with an MVP, learn from real usage, and iterate based on what actually matters.
-              </p>
-            </div>
-
-            <div className="philosophy-card">
-              <div className="philosophy-card-num">02</div>
-              <h3>Boring Tech Over Hype</h3>
-              <p>
-                I default to proven, well-documented technologies unless there is a clear reason to do otherwise. PostgreSQL over a trendy NoSQL database. FastAPI over experimental frameworks. Battle-tested tools ship faster and break less.
-              </p>
-            </div>
-
-            <div className="philosophy-card">
-              <div className="philosophy-card-num">03</div>
-              <h3>Design for Observability</h3>
-              <p>
-                Systems will fail. When they do, you need to know exactly what went wrong. I build with structured logging, metrics, and monitoring from day one -- not as an afterthought. If you cannot measure it, you cannot improve it.
-              </p>
-            </div>
-
-            <div className="philosophy-card">
-              <div className="philosophy-card-num">04</div>
-              <h3>Write Code People Can Read</h3>
-              <p>
-                Code is read far more often than it is written. I optimize for clarity over cleverness. Good variable names, small functions, and clear separation of concerns make systems easier to extend, debug, and hand off to your team.
-              </p>
-            </div>
+            {philosophy.cards.map((card, i) => (
+              <div key={i} className="philosophy-card">
+                <div className="philosophy-card-num">{String(i + 1).padStart(2, "0")}</div>
+                <h3>{card.title}</h3>
+                <p>{card.description}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>

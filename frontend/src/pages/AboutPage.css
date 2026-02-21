@@ -214,10 +214,12 @@
   font-weight: 600;
 }
 
-.story-divider {
+.story-divider,
+.story-inner hr {
   width: 48px;
   height: 3px;
   background: var(--color-primary);
+  border: none;
   border-radius: 2px;
   margin: var(--space-10) 0;
 }

@@ -273,32 +273,24 @@ def seed_testimonials():
 def seed_site_content():
     db = SessionLocal()
     try:
-        count = db.query(SiteContent).count()
-        if count > 0:
-            print(f"Site content already seeded ({count} found). Skipping.")
-            return
+        existing_keys = {row.key for row in db.query(SiteContent.key).all()}
 
-        content = [
-            SiteContent(
-                key="hero_tagline",
-                title="Hero Tagline",
-                content="Engineering Leader. Systems Architect. Technical Consultant.",
-            ),
-            SiteContent(
-                key="hero_description",
-                title="Hero Description",
-                content="I help companies design and build production-grade systems -- from cloud migrations and platform engineering to AI-powered products. Full-time, contract, or one-off.",
-            ),
-            SiteContent(
-                key="about_intro",
-                title="About Introduction",
-                content="I am Raj Thilak, a full-stack engineer and technical consultant with over a decade of experience designing and shipping production systems across healthcare, telecom, AI/ML, and fintech.",
-            ),
-            SiteContent(
-                key="about_hero",
-                title="About Hero Section",
-                content="I am Raj Thilak, a full-stack engineer and technical consultant with over a decade of experience designing and shipping production systems across healthcare, telecom, AI/ML, and fintech.",
-                metadata_={
+        entries = [
+            {
+                "key": "hero_tagline",
+                "title": "Hero Tagline",
+                "content": "Engineering Leader. Systems Architect. Technical Consultant.",
+            },
+            {
+                "key": "hero_description",
+                "title": "Hero Description",
+                "content": "I help companies design and build production-grade systems -- from cloud migrations and platform engineering to AI-powered products. Full-time, contract, or one-off.",
+            },
+            {
+                "key": "about_hero",
+                "title": "About Hero Section",
+                "content": "I am Raj Thilak, a full-stack engineer and technical consultant with over a decade of experience designing and shipping production systems across healthcare, telecom, AI/ML, and fintech.",
+                "metadata_": {
                     "overline": "About Me",
                     "heading": 'Building <span class="highlight">Scalable Systems</span> That Ship',
                     "stats": [
@@ -312,12 +304,85 @@ def seed_site_content():
                         "title": "Engineering Consultant & Architect",
                     },
                 },
-            ),
+            },
+            {
+                "key": "about_story",
+                "title": "My Story",
+                "content": (
+                    "<p>I started my career as a backend developer at a telecom company, "
+                    "building value-added services that reached millions of subscribers. "
+                    "The scale forced me to think deeply about <strong>distributed systems, "
+                    "data pipelines, and fault tolerance</strong> from day one.</p>"
+                    "<p>After working on backend platforms in Java and Spring Boot, I "
+                    "transitioned to healthcare technology, where I led the development of "
+                    "a <strong>clinical workflow platform</strong> serving hospitals. This "
+                    "experience taught me how to design systems under regulatory constraints "
+                    "while maintaining performance and usability.</p>"
+                    "<hr>"
+                    "<p>More recently, I have been building <strong>AI-powered products</strong> "
+                    "using Python, LangChain, and OpenAI APIs. One of my flagship projects, "
+                    "Ruth AI, is a conversational assistant that handles customer support "
+                    "queries with 85% autonomous resolution and 60% faster response times.</p>"
+                    "<p>Today, I work as an independent consultant, helping startups and "
+                    "mid-size companies architect, build, and ship production systems. Whether "
+                    "it is a cloud migration, an MVP build, or an AI integration -- I bring "
+                    "hands-on engineering, architectural clarity, and a commitment to delivery.</p>"
+                ),
+            },
+            {
+                "key": "about_philosophy",
+                "title": "Engineering Philosophy",
+                "content": "Four principles that guide every project I take on, from architecture to deployment.",
+                "metadata_": {
+                    "overline": "Engineering Philosophy",
+                    "heading": "How I Approach Engineering",
+                    "cards": [
+                        {
+                            "title": "Ship Early, Iterate Fast",
+                            "description": "I prioritize getting a working system in front of users as quickly as possible. Early feedback beats perfect architecture every time. Start with an MVP, learn from real usage, and iterate based on what actually matters.",
+                        },
+                        {
+                            "title": "Boring Tech Over Hype",
+                            "description": "I default to proven, well-documented technologies unless there is a clear reason to do otherwise. PostgreSQL over a trendy NoSQL database. FastAPI over experimental frameworks. Battle-tested tools ship faster and break less.",
+                        },
+                        {
+                            "title": "Design for Observability",
+                            "description": "Systems will fail. When they do, you need to know exactly what went wrong. I build with structured logging, metrics, and monitoring from day one -- not as an afterthought. If you cannot measure it, you cannot improve it.",
+                        },
+                        {
+                            "title": "Write Code People Can Read",
+                            "description": "Code is read far more often than it is written. I optimize for clarity over cleverness. Good variable names, small functions, and clear separation of concerns make systems easier to extend, debug, and hand off to your team.",
+                        },
+                    ],
+                },
+            },
+            {
+                "key": "about_why_platform",
+                "title": "Why I Built This Platform",
+                "content": (
+                    "<p>Most consulting engagements start with email threads, scattered "
+                    "proposals, and unclear expectations. I built this platform to bring "
+                    "<strong>structure, transparency, and clarity</strong> to how I work "
+                    "with clients.</p>"
+                    "<p>Here, you can submit a requirement, track its progress, and "
+                    "communicate directly with me through a single interface. No middlemen, "
+                    "no ambiguity -- just a streamlined workflow designed to get your project "
+                    "off the ground faster.</p>"
+                ),
+            },
         ]
 
-        db.add_all(content)
+        new_entries = [
+            SiteContent(**entry) for entry in entries if entry["key"] not in existing_keys
+        ]
+
+        if not new_entries:
+            print(f"Site content already seeded ({len(existing_keys)} found). Skipping.")
+            return
+
+        db.add_all(new_entries)
         db.commit()
-        print(f"Seeded {len(content)} site content entries.")
+        print(f"Seeded {len(new_entries)} new site content entries ({len(existing_keys)} already existed).")
     finally:
         db.close()
 

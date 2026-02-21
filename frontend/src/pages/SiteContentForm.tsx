@@ -28,6 +28,28 @@ const DEFAULT_HERO_META: AboutHeroMeta = {
   avatar: { initials: "RT", name: "Raj Thilak", title: "Engineering Consultant & Architect" },
 };
 
+interface PhilosophyCard {
+  title: string;
+  description: string;
+}
+
+interface PhilosophyMeta {
+  overline: string;
+  heading: string;
+  cards: PhilosophyCard[];
+}
+
+const DEFAULT_PHILOSOPHY_META: PhilosophyMeta = {
+  overline: "Engineering Philosophy",
+  heading: "How I Approach Engineering",
+  cards: [
+    { title: "Ship Early, Iterate Fast", description: "" },
+    { title: "Boring Tech Over Hype", description: "" },
+    { title: "Design for Observability", description: "" },
+    { title: "Write Code People Can Read", description: "" },
+  ],
+};
+
 export default function SiteContentForm() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -41,8 +63,11 @@ export default function SiteContentForm() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [heroMeta, setHeroMeta] = useState<AboutHeroMeta>({ ...DEFAULT_HERO_META });
+  const [philosMeta, setPhilosMeta] = useState<PhilosophyMeta>({ ...DEFAULT_PHILOSOPHY_META });
 
   const isAboutHero = key === "about_hero";
+  const isPhilosophy = key === "about_philosophy";
+  const isHtmlContent = key === "about_story" || key === "about_why_platform";
 
   useEffect(() => {
     if (!isEditMode || !id) return;
@@ -65,6 +90,15 @@ export default function SiteContentForm() {
             heading: m.heading || DEFAULT_HERO_META.heading,
             stats: m.stats?.length ? m.stats : DEFAULT_HERO_META.stats,
             avatar: m.avatar || DEFAULT_HERO_META.avatar,
+          });
+        }
+
+        if (item.key === "about_philosophy" && item.metadata) {
+          const m = item.metadata as unknown as PhilosophyMeta;
+          setPhilosMeta({
+            overline: m.overline || DEFAULT_PHILOSOPHY_META.overline,
+            heading: m.heading || DEFAULT_PHILOSOPHY_META.heading,
+            cards: m.cards?.length ? m.cards : DEFAULT_PHILOSOPHY_META.cards,
           });
         }
       })
@@ -95,7 +129,11 @@ export default function SiteContentForm() {
       key,
       title: title || undefined,
       content,
-      metadata: isAboutHero ? (heroMeta as unknown as Record<string, unknown>) : undefined,
+      metadata: isAboutHero
+        ? (heroMeta as unknown as Record<string, unknown>)
+        : isPhilosophy
+          ? (philosMeta as unknown as Record<string, unknown>)
+          : undefined,
     };
 
     try {
@@ -190,7 +228,7 @@ export default function SiteContentForm() {
                 <label htmlFor="sc-content">Content</label>
                 <textarea
                   id="sc-content"
-                  rows={4}
+                  rows={isHtmlContent ? 12 : 4}
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   placeholder="Main content text…"
@@ -198,6 +236,14 @@ export default function SiteContentForm() {
                 />
                 {isAboutHero && (
                   <span className="field-hint">This is the lead paragraph displayed below the heading.</span>
+                )}
+                {isPhilosophy && (
+                  <span className="field-hint">This is the subtitle displayed below the section heading.</span>
+                )}
+                {isHtmlContent && (
+                  <span className="field-hint">
+                    HTML supported. Use &lt;p&gt; for paragraphs, &lt;strong&gt; for bold, &lt;hr&gt; for dividers.
+                  </span>
                 )}
               </div>
             </div>
@@ -311,6 +357,80 @@ export default function SiteContentForm() {
                       placeholder="Engineering Consultant & Architect"
                     />
                   </div>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Philosophy — Structured Fields */}
+          {isPhilosophy && (
+            <>
+              <div className="cs-form-section">
+                <h2>Section Display</h2>
+                <div className="cs-form-grid">
+                  <div className="cs-form-field">
+                    <label htmlFor="phil-overline">Overline</label>
+                    <input
+                      id="phil-overline"
+                      type="text"
+                      value={philosMeta.overline}
+                      onChange={(e) => setPhilosMeta((p) => ({ ...p, overline: e.target.value }))}
+                      placeholder="Engineering Philosophy"
+                    />
+                  </div>
+                  <div className="cs-form-field">
+                    <label htmlFor="phil-heading">Heading</label>
+                    <input
+                      id="phil-heading"
+                      type="text"
+                      value={philosMeta.heading}
+                      onChange={(e) => setPhilosMeta((p) => ({ ...p, heading: e.target.value }))}
+                      placeholder="How I Approach Engineering"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="cs-form-section">
+                <h2>Philosophy Cards</h2>
+                <div className="sc-cards-grid">
+                  {philosMeta.cards.map((card, i) => (
+                    <div key={i} className="sc-card-editor">
+                      <div className="sc-card-num">{String(i + 1).padStart(2, "0")}</div>
+                      <div className="cs-form-field">
+                        <label>Title</label>
+                        <input
+                          type="text"
+                          value={card.title}
+                          onChange={(e) =>
+                            setPhilosMeta((p) => ({
+                              ...p,
+                              cards: p.cards.map((c, ci) =>
+                                ci === i ? { ...c, title: e.target.value } : c
+                              ),
+                            }))
+                          }
+                          placeholder="Card title"
+                        />
+                      </div>
+                      <div className="cs-form-field">
+                        <label>Description</label>
+                        <textarea
+                          rows={3}
+                          value={card.description}
+                          onChange={(e) =>
+                            setPhilosMeta((p) => ({
+                              ...p,
+                              cards: p.cards.map((c, ci) =>
+                                ci === i ? { ...c, description: e.target.value } : c
+                              ),
+                            }))
+                          }
+                          placeholder="Card description…"
+                        />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </>

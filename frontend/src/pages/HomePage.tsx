@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '../components/Layout';
-import { fetchServices, fetchCaseStudies, fetchTestimonials } from '../api/client';
+import { fetchServices, fetchCaseStudies, fetchTestimonials, fetchSiteContent } from '../api/client';
 import type { Service, CaseStudy, Testimonial } from '../types';
 import Skeleton from '../components/Skeleton';
 import './HomePage.css';
@@ -54,27 +54,38 @@ const getCaseStudyIcon = (icon: string) => {
   }
 };
 
+const TAGLINE_DEFAULT = "Engineering Leader. Systems Architect. Technical Consultant.";
+const DESCRIPTION_DEFAULT = "I help companies design and build production-grade systems -- from cloud migrations and platform engineering to AI-powered products. Full-time, contract, or one-off.";
+
 export default function HomePage() {
   const [visibleElements, setVisibleElements] = useState<Set<number>>(new Set());
   const [services, setServices] = useState<Service[]>([]);
   const [caseStudies, setCaseStudies] = useState<CaseStudy[]>([]);
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [loading, setLoading] = useState(true);
+  const [heroTagline, setHeroTagline] = useState(TAGLINE_DEFAULT);
+  const [heroDescription, setHeroDescription] = useState(DESCRIPTION_DEFAULT);
 
   useEffect(() => {
     async function loadData() {
       try {
         setLoading(true);
-        const [servicesData, caseStudiesData, testimonialsData] = await Promise.all([
-          fetchServices().catch(() => []),
-          fetchCaseStudies().catch(() => []),
-          fetchTestimonials().catch(() => []),
+        const [servicesData, caseStudiesData, testimonialsData, siteContentData] = await Promise.allSettled([
+          fetchServices(),
+          fetchCaseStudies(),
+          fetchTestimonials(),
+          fetchSiteContent(),
         ]);
-        setServices(servicesData);
-        setCaseStudies(caseStudiesData);
-        setTestimonials(testimonialsData);
-      } catch (err) {
-        // Silently use fallback data on error
+        if (servicesData.status === "fulfilled") setServices(servicesData.value);
+        if (caseStudiesData.status === "fulfilled") setCaseStudies(caseStudiesData.value);
+        if (testimonialsData.status === "fulfilled") setTestimonials(testimonialsData.value);
+        if (siteContentData.status === "fulfilled") {
+          const items = siteContentData.value;
+          const tagline = items.find((i) => i.key === "hero_tagline");
+          const description = items.find((i) => i.key === "hero_description");
+          if (tagline) setHeroTagline(tagline.content);
+          if (description) setHeroDescription(description.content);
+        }
       } finally {
         setLoading(false);
       }
@@ -118,13 +129,19 @@ export default function HomePage() {
           </div>
 
           <h1 className="animate-in delay-1">
-            Engineering Leader.<br />
-            <span className="line-2">Systems Architect.</span><br />
-            <span className="highlight">Technical Consultant.</span>
+            {(() => {
+              const lines = heroTagline.split(".").map((s) => s.trim()).filter(Boolean);
+              return lines.map((line, i) => {
+                const text = `${line}.`;
+                if (i === lines.length - 1) return <span key={i}><span className="highlight">{text}</span></span>;
+                if (i === 1) return <span key={i}><span className="line-2">{text}</span><br /></span>;
+                return <span key={i}>{text}<br /></span>;
+              });
+            })()}
           </h1>
 
           <p className="home-hero-desc animate-in delay-2">
-            I help companies design and build production-grade systems -- from cloud migrations and platform engineering to AI-powered products. Full-time, contract, or one-off.
+            {heroDescription}
           </p>
 
           <div className="home-hero-actions animate-in delay-3">
