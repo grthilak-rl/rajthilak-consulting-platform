@@ -12,7 +12,7 @@ export default function Footer() {
           <li><Link to="/">Home</Link></li>
           <li><Link to="/portfolio">Portfolio</Link></li>
           <li><Link to="/submit">Submit Requirement</Link></li>
-          <li><Link to="/admin/login">Admin</Link></li>
+          <li><Link to="/admin/dashboard">Admin</Link></li>
         </ul>
         <div className="footer-copy">2026 Raj Thilak. All rights reserved.</div>
       </div>
