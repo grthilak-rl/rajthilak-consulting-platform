@@ -50,11 +50,22 @@ const DEFAULT_PHILOSOPHY_META: PhilosophyMeta = {
   ],
 };
 
+interface HeroDescMeta {
+  clients_label: string;
+  clients: string[];
+}
+
+const DEFAULT_HERO_DESC_META: HeroDescMeta = {
+  clients_label: "Trusted by teams at",
+  clients: ["TechCorp", "StartupXYZ", "HealthSys Inc.", "TelecomOne"],
+};
+
 interface ServiceCard {
   title: string;
   description: string;
   icon: string;
   tags: string[];
+  tagsRaw?: string;
 }
 
 interface ServicesMeta {
@@ -88,8 +99,11 @@ export default function SiteContentForm() {
   const [heroMeta, setHeroMeta] = useState<AboutHeroMeta>({ ...DEFAULT_HERO_META });
   const [philosMeta, setPhilosMeta] = useState<PhilosophyMeta>({ ...DEFAULT_PHILOSOPHY_META });
   const [servicesMeta, setServicesMeta] = useState<ServicesMeta>({ ...DEFAULT_SERVICES_META });
+  const [heroDescLabel, setHeroDescLabel] = useState(DEFAULT_HERO_DESC_META.clients_label);
+  const [heroDescClientsRaw, setHeroDescClientsRaw] = useState(DEFAULT_HERO_DESC_META.clients.join(", "));
 
   const isAboutHero = key === "about_hero";
+  const isHeroDesc = key === "hero_description";
   const isPhilosophy = key === "about_philosophy";
   const isServices = key === "home_services";
   const isHtmlContent = key === "about_story" || key === "about_why_platform";
@@ -118,6 +132,13 @@ export default function SiteContentForm() {
           });
         }
 
+        if (item.key === "hero_description" && item.metadata) {
+          const m = item.metadata as unknown as HeroDescMeta;
+          setHeroDescLabel(m.clients_label || DEFAULT_HERO_DESC_META.clients_label);
+          const clients = m.clients?.length ? m.clients : DEFAULT_HERO_DESC_META.clients;
+          setHeroDescClientsRaw(clients.join(", "));
+        }
+
         if (item.key === "about_philosophy" && item.metadata) {
           const m = item.metadata as unknown as PhilosophyMeta;
           setPhilosMeta({
@@ -129,10 +150,11 @@ export default function SiteContentForm() {
 
         if (item.key === "home_services" && item.metadata) {
           const m = item.metadata as unknown as ServicesMeta;
+          const cards = m.cards?.length ? m.cards : DEFAULT_SERVICES_META.cards;
           setServicesMeta({
             overline: m.overline || DEFAULT_SERVICES_META.overline,
             heading: m.heading || DEFAULT_SERVICES_META.heading,
-            cards: m.cards?.length ? m.cards : DEFAULT_SERVICES_META.cards,
+            cards: cards.map((c) => ({ ...c, tagsRaw: c.tags.join(", ") })),
           });
         }
       })
@@ -165,11 +187,19 @@ export default function SiteContentForm() {
       content,
       metadata: isAboutHero
         ? (heroMeta as unknown as Record<string, unknown>)
-        : isPhilosophy
-          ? (philosMeta as unknown as Record<string, unknown>)
-          : isServices
-            ? (servicesMeta as unknown as Record<string, unknown>)
-            : undefined,
+        : isHeroDesc
+          ? ({ clients_label: heroDescLabel, clients: heroDescClientsRaw.split(",").map((c) => c.trim()).filter(Boolean) } as Record<string, unknown>)
+          : isPhilosophy
+            ? (philosMeta as unknown as Record<string, unknown>)
+            : isServices
+              ? ({
+                  ...servicesMeta,
+                  cards: servicesMeta.cards.map(({ tagsRaw, ...c }) => ({
+                    ...c,
+                    tags: (tagsRaw ?? c.tags.join(", ")).split(",").map((t) => t.trim()).filter(Boolean),
+                  })),
+                } as unknown as Record<string, unknown>)
+              : undefined,
     };
 
     try {
@@ -401,6 +431,36 @@ export default function SiteContentForm() {
             </>
           )}
 
+          {/* Hero Description — Clients Fields */}
+          {isHeroDesc && (
+            <div className="cs-form-section">
+              <h2>Trusted By Section</h2>
+              <div className="cs-form-grid">
+                <div className="cs-form-field">
+                  <label htmlFor="clients-label">Label</label>
+                  <input
+                    id="clients-label"
+                    type="text"
+                    value={heroDescLabel}
+                    onChange={(e) => setHeroDescLabel(e.target.value)}
+                    placeholder="Trusted by teams at"
+                  />
+                </div>
+                <div className="cs-form-field full-width">
+                  <label htmlFor="clients-list">Client Names</label>
+                  <input
+                    id="clients-list"
+                    type="text"
+                    value={heroDescClientsRaw}
+                    onChange={(e) => setHeroDescClientsRaw(e.target.value)}
+                    placeholder="TechCorp, StartupXYZ, HealthSys Inc."
+                  />
+                  <span className="field-hint">Comma-separated list of client/company names.</span>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Philosophy — Structured Fields */}
           {isPhilosophy && (
             <>
@@ -565,12 +625,12 @@ export default function SiteContentForm() {
                         <label>Tags</label>
                         <input
                           type="text"
-                          value={card.tags.join(", ")}
+                          value={card.tagsRaw ?? card.tags.join(", ")}
                           onChange={(e) =>
                             setServicesMeta((p) => ({
                               ...p,
                               cards: p.cards.map((c, ci) =>
-                                ci === i ? { ...c, tags: e.target.value.split(",").map((t) => t.trim()).filter(Boolean) } : c
+                                ci === i ? { ...c, tagsRaw: e.target.value } : c
                               ),
                             }))
                           }

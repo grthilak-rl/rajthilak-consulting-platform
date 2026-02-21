@@ -56,6 +56,10 @@ const getCaseStudyIcon = (icon: string) => {
 
 const TAGLINE_DEFAULT = "Engineering Leader. Systems Architect. Technical Consultant.";
 const DESCRIPTION_DEFAULT = "I help companies design and build production-grade systems -- from cloud migrations and platform engineering to AI-powered products. Full-time, contract, or one-off.";
+const CLIENTS_DEFAULTS = {
+  label: "Trusted by teams at",
+  names: ["TechCorp", "StartupXYZ", "HealthSys Inc.", "TelecomOne"],
+};
 
 const SERVICES_DEFAULTS = {
   overline: "What I Do",
@@ -75,6 +79,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [heroTagline, setHeroTagline] = useState(TAGLINE_DEFAULT);
   const [heroDescription, setHeroDescription] = useState(DESCRIPTION_DEFAULT);
+  const [heroClients, setHeroClients] = useState(CLIENTS_DEFAULTS);
   const [servicesSection, setServicesSection] = useState(SERVICES_DEFAULTS);
 
   useEffect(() => {
@@ -93,7 +98,16 @@ export default function HomePage() {
           const tagline = items.find((i) => i.key === "hero_tagline");
           const description = items.find((i) => i.key === "hero_description");
           if (tagline) setHeroTagline(tagline.content);
-          if (description) setHeroDescription(description.content);
+          if (description) {
+            setHeroDescription(description.content);
+            const dm = description.metadata as Record<string, unknown> | undefined;
+            if (dm) {
+              setHeroClients({
+                label: (dm.clients_label as string) || CLIENTS_DEFAULTS.label,
+                names: (dm.clients as string[]) || CLIENTS_DEFAULTS.names,
+              });
+            }
+          }
           const svcItem = items.find((i) => i.key === "home_services");
           if (svcItem) {
             const m = svcItem.metadata as Record<string, unknown> | undefined;
@@ -177,12 +191,11 @@ export default function HomePage() {
           </div>
 
           <div className="home-hero-clients animate-in delay-5">
-            <div className="home-hero-clients-label">Trusted by teams at</div>
+            <div className="home-hero-clients-label">{heroClients.label}</div>
             <div className="home-hero-clients-logos">
-              <span className="client-logo">TechCorp</span>
-              <span className="client-logo">StartupXYZ</span>
-              <span className="client-logo">HealthSys Inc.</span>
-              <span className="client-logo">TelecomOne</span>
+              {heroClients.names.map((name) => (
+                <span key={name} className="client-logo">{name}</span>
+              ))}
             </div>
           </div>
         </div>

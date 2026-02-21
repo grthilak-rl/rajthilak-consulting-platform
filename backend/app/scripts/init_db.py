@@ -285,6 +285,10 @@ def seed_site_content():
                 "key": "hero_description",
                 "title": "Hero Description",
                 "content": "I help companies design and build production-grade systems -- from cloud migrations and platform engineering to AI-powered products. Full-time, contract, or one-off.",
+                "metadata_": {
+                    "clients_label": "Trusted by teams at",
+                    "clients": ["TechCorp", "StartupXYZ", "HealthSys Inc.", "TelecomOne"],
+                },
             },
             {
                 "key": "about_hero",
