@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '../components/Layout';
-import { fetchServices, fetchCaseStudies, fetchTestimonials, fetchSiteContent } from '../api/client';
-import type { Service, CaseStudy, Testimonial } from '../types';
+import { fetchCaseStudies, fetchTestimonials, fetchSiteContent } from '../api/client';
+import type { CaseStudy, Testimonial } from '../types';
 import Skeleton from '../components/Skeleton';
 import './HomePage.css';
 
@@ -57,26 +57,35 @@ const getCaseStudyIcon = (icon: string) => {
 const TAGLINE_DEFAULT = "Engineering Leader. Systems Architect. Technical Consultant.";
 const DESCRIPTION_DEFAULT = "I help companies design and build production-grade systems -- from cloud migrations and platform engineering to AI-powered products. Full-time, contract, or one-off.";
 
+const SERVICES_DEFAULTS = {
+  overline: "What I Do",
+  heading: "Engagement Models",
+  subtitle: "Flexible consulting arrangements tailored to your project needs, timeline, and budget.",
+  cards: [
+    { title: "Full-Time Consulting", description: "Embedded within your team for extended engagements. I bring architecture leadership, code reviews, mentoring, and hands-on development to accelerate your roadmap.", icon: "briefcase", tags: ["Team Integration", "Architecture", "Mentoring"] },
+    { title: "Contract Engagements", description: "Scoped projects with clear deliverables and timelines. From API design and cloud migration to full-stack product development -- I own the outcome end to end.", icon: "edit", tags: ["Fixed Scope", "Clear Milestones", "Deliverables"] },
+    { title: "One-Off Projects", description: "Need a quick architecture review, tech stack recommendation, or proof-of-concept build? I offer focused engagements to solve specific technical challenges fast.", icon: "clock", tags: ["Architecture Review", "PoC Builds", "Tech Advisory"] },
+  ],
+};
+
 export default function HomePage() {
   const [visibleElements, setVisibleElements] = useState<Set<number>>(new Set());
-  const [services, setServices] = useState<Service[]>([]);
   const [caseStudies, setCaseStudies] = useState<CaseStudy[]>([]);
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [loading, setLoading] = useState(true);
   const [heroTagline, setHeroTagline] = useState(TAGLINE_DEFAULT);
   const [heroDescription, setHeroDescription] = useState(DESCRIPTION_DEFAULT);
+  const [servicesSection, setServicesSection] = useState(SERVICES_DEFAULTS);
 
   useEffect(() => {
     async function loadData() {
       try {
         setLoading(true);
-        const [servicesData, caseStudiesData, testimonialsData, siteContentData] = await Promise.allSettled([
-          fetchServices(),
+        const [caseStudiesData, testimonialsData, siteContentData] = await Promise.allSettled([
           fetchCaseStudies(),
           fetchTestimonials(),
           fetchSiteContent(),
         ]);
-        if (servicesData.status === "fulfilled") setServices(servicesData.value);
         if (caseStudiesData.status === "fulfilled") setCaseStudies(caseStudiesData.value);
         if (testimonialsData.status === "fulfilled") setTestimonials(testimonialsData.value);
         if (siteContentData.status === "fulfilled") {
@@ -85,6 +94,16 @@ export default function HomePage() {
           const description = items.find((i) => i.key === "hero_description");
           if (tagline) setHeroTagline(tagline.content);
           if (description) setHeroDescription(description.content);
+          const svcItem = items.find((i) => i.key === "home_services");
+          if (svcItem) {
+            const m = svcItem.metadata as Record<string, unknown> | undefined;
+            setServicesSection({
+              overline: (m?.overline as string) || SERVICES_DEFAULTS.overline,
+              heading: (m?.heading as string) || SERVICES_DEFAULTS.heading,
+              subtitle: svcItem.content || SERVICES_DEFAULTS.subtitle,
+              cards: (m?.cards as typeof SERVICES_DEFAULTS.cards) || SERVICES_DEFAULTS.cards,
+            });
+          }
         }
       } finally {
         setLoading(false);
@@ -109,7 +128,7 @@ export default function HomePage() {
     document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
 
     return () => observer.disconnect();
-  }, [services, caseStudies, testimonials]);
+  }, [caseStudies, testimonials]);
 
   // Get featured case studies for portfolio section (limit to 3)
   const featuredCaseStudies = caseStudies.slice(0, 3);
@@ -173,12 +192,12 @@ export default function HomePage() {
       <section className="services reveal" data-index={0}>
         <div className={`services-inner ${visibleElements.has(0) ? 'visible' : ''}`}>
           <div className="section-header">
-            <div className="section-overline">What I Do</div>
-            <h2 className="section-title">Engagement Models</h2>
-            <p className="section-subtitle">Flexible consulting arrangements tailored to your project needs, timeline, and budget.</p>
+            <div className="section-overline">{servicesSection.overline}</div>
+            <h2 className="section-title">{servicesSection.heading}</h2>
+            <p className="section-subtitle">{servicesSection.subtitle}</p>
           </div>
 
-          {loading && services.length === 0 ? (
+          {loading ? (
             <div className="services-grid">
               {[0, 1, 2].map((i) => (
                 <div key={i} className="service-card" style={{ pointerEvents: 'none' }}>
@@ -197,64 +216,20 @@ export default function HomePage() {
             </div>
           ) : (
             <div className="services-grid stagger-children">
-              {services.length > 0 ? (
-                services.map((service) => (
-                  <Link key={service.id} to={`/services/${service.slug}`} className="service-card">
-                    <div className="service-icon">
-                      {getServiceIcon(service.icon)}
-                    </div>
-                    <h3>{service.title}</h3>
-                    <p>{service.description}</p>
-                    <div className="service-tags">
-                      {service.tags.map((tag) => (
-                        <span key={tag} className="service-tag">{tag}</span>
-                      ))}
-                    </div>
-                  </Link>
-                ))
-              ) : (
-                <>
-                  {/* Fallback hardcoded services if API fails */}
-                  <div className="service-card">
-                    <div className="service-icon">
-                      {getServiceIcon('briefcase')}
-                    </div>
-                    <h3>Full-Time Consulting</h3>
-                    <p>Embedded within your team for extended engagements. I bring architecture leadership, code reviews, mentoring, and hands-on development to accelerate your roadmap.</p>
-                    <div className="service-tags">
-                      <span className="service-tag">Team Integration</span>
-                      <span className="service-tag">Architecture</span>
-                      <span className="service-tag">Mentoring</span>
-                    </div>
+              {servicesSection.cards.map((card, i) => (
+                <div key={i} className="service-card">
+                  <div className="service-icon">
+                    {getServiceIcon(card.icon)}
                   </div>
-
-                  <div className="service-card">
-                    <div className="service-icon">
-                      {getServiceIcon('edit')}
-                    </div>
-                    <h3>Contract Engagements</h3>
-                    <p>Scoped projects with clear deliverables and timelines. From API design and cloud migration to full-stack product development -- I own the outcome end to end.</p>
-                    <div className="service-tags">
-                      <span className="service-tag">Fixed Scope</span>
-                      <span className="service-tag">Clear Milestones</span>
-                      <span className="service-tag">Deliverables</span>
-                    </div>
+                  <h3>{card.title}</h3>
+                  <p>{card.description}</p>
+                  <div className="service-tags">
+                    {card.tags.map((tag) => (
+                      <span key={tag} className="service-tag">{tag}</span>
+                    ))}
                   </div>
-
-                  <div className="service-card">
-                    <div className="service-icon">
-                      {getServiceIcon('clock')}
-                    </div>
-                    <h3>One-Off Projects</h3>
-                    <p>Need a quick architecture review, tech stack recommendation, or proof-of-concept build? I offer focused engagements to solve specific technical challenges fast.</p>
-                    <div className="service-tags">
-                      <span className="service-tag">Architecture Review</span>
-                      <span className="service-tag">PoC Builds</span>
-                      <span className="service-tag">Tech Advisory</span>
-                    </div>
-                  </div>
-                </>
-              )}
+                </div>
+              ))}
             </div>
           )}
         </div>

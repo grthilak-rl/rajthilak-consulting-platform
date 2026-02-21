@@ -357,6 +357,35 @@ def seed_site_content():
                 },
             },
             {
+                "key": "home_services",
+                "title": "Services Section",
+                "content": "Flexible consulting arrangements tailored to your project needs, timeline, and budget.",
+                "metadata_": {
+                    "overline": "What I Do",
+                    "heading": "Engagement Models",
+                    "cards": [
+                        {
+                            "title": "Full-Time Consulting",
+                            "description": "Embedded within your team for extended engagements. I bring architecture leadership, code reviews, mentoring, and hands-on development to accelerate your roadmap.",
+                            "icon": "briefcase",
+                            "tags": ["Team Integration", "Architecture", "Mentoring"],
+                        },
+                        {
+                            "title": "Contract Engagements",
+                            "description": "Scoped projects with clear deliverables and timelines. From API design and cloud migration to full-stack product development -- I own the outcome end to end.",
+                            "icon": "edit",
+                            "tags": ["Fixed Scope", "Clear Milestones", "Deliverables"],
+                        },
+                        {
+                            "title": "One-Off Projects",
+                            "description": "Need a quick architecture review, tech stack recommendation, or proof-of-concept build? I offer focused engagements to solve specific technical challenges fast.",
+                            "icon": "clock",
+                            "tags": ["Architecture Review", "PoC Builds", "Tech Advisory"],
+                        },
+                    ],
+                },
+            },
+            {
                 "key": "about_why_platform",
                 "title": "Why I Built This Platform",
                 "content": (

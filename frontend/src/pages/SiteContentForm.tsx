@@ -50,6 +50,29 @@ const DEFAULT_PHILOSOPHY_META: PhilosophyMeta = {
   ],
 };
 
+interface ServiceCard {
+  title: string;
+  description: string;
+  icon: string;
+  tags: string[];
+}
+
+interface ServicesMeta {
+  overline: string;
+  heading: string;
+  cards: ServiceCard[];
+}
+
+const DEFAULT_SERVICES_META: ServicesMeta = {
+  overline: "What I Do",
+  heading: "Engagement Models",
+  cards: [
+    { title: "Full-Time Consulting", description: "", icon: "briefcase", tags: ["Team Integration", "Architecture", "Mentoring"] },
+    { title: "Contract Engagements", description: "", icon: "edit", tags: ["Fixed Scope", "Clear Milestones", "Deliverables"] },
+    { title: "One-Off Projects", description: "", icon: "clock", tags: ["Architecture Review", "PoC Builds", "Tech Advisory"] },
+  ],
+};
+
 export default function SiteContentForm() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -64,9 +87,11 @@ export default function SiteContentForm() {
   const [content, setContent] = useState("");
   const [heroMeta, setHeroMeta] = useState<AboutHeroMeta>({ ...DEFAULT_HERO_META });
   const [philosMeta, setPhilosMeta] = useState<PhilosophyMeta>({ ...DEFAULT_PHILOSOPHY_META });
+  const [servicesMeta, setServicesMeta] = useState<ServicesMeta>({ ...DEFAULT_SERVICES_META });
 
   const isAboutHero = key === "about_hero";
   const isPhilosophy = key === "about_philosophy";
+  const isServices = key === "home_services";
   const isHtmlContent = key === "about_story" || key === "about_why_platform";
 
   useEffect(() => {
@@ -101,6 +126,15 @@ export default function SiteContentForm() {
             cards: m.cards?.length ? m.cards : DEFAULT_PHILOSOPHY_META.cards,
           });
         }
+
+        if (item.key === "home_services" && item.metadata) {
+          const m = item.metadata as unknown as ServicesMeta;
+          setServicesMeta({
+            overline: m.overline || DEFAULT_SERVICES_META.overline,
+            heading: m.heading || DEFAULT_SERVICES_META.heading,
+            cards: m.cards?.length ? m.cards : DEFAULT_SERVICES_META.cards,
+          });
+        }
       })
       .catch((err: unknown) => {
         if (err instanceof ApiError && (err.status === 401 || err.status === 403)) {
@@ -133,7 +167,9 @@ export default function SiteContentForm() {
         ? (heroMeta as unknown as Record<string, unknown>)
         : isPhilosophy
           ? (philosMeta as unknown as Record<string, unknown>)
-          : undefined,
+          : isServices
+            ? (servicesMeta as unknown as Record<string, unknown>)
+            : undefined,
     };
 
     try {
@@ -238,6 +274,9 @@ export default function SiteContentForm() {
                   <span className="field-hint">This is the lead paragraph displayed below the heading.</span>
                 )}
                 {isPhilosophy && (
+                  <span className="field-hint">This is the subtitle displayed below the section heading.</span>
+                )}
+                {isServices && (
                   <span className="field-hint">This is the subtitle displayed below the section heading.</span>
                 )}
                 {isHtmlContent && (
@@ -428,6 +467,116 @@ export default function SiteContentForm() {
                           }
                           placeholder="Card description…"
                         />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Services — Structured Fields */}
+          {isServices && (
+            <>
+              <div className="cs-form-section">
+                <h2>Section Display</h2>
+                <div className="cs-form-grid">
+                  <div className="cs-form-field">
+                    <label htmlFor="svc-overline">Overline</label>
+                    <input
+                      id="svc-overline"
+                      type="text"
+                      value={servicesMeta.overline}
+                      onChange={(e) => setServicesMeta((p) => ({ ...p, overline: e.target.value }))}
+                      placeholder="What I Do"
+                    />
+                  </div>
+                  <div className="cs-form-field">
+                    <label htmlFor="svc-heading">Heading</label>
+                    <input
+                      id="svc-heading"
+                      type="text"
+                      value={servicesMeta.heading}
+                      onChange={(e) => setServicesMeta((p) => ({ ...p, heading: e.target.value }))}
+                      placeholder="Engagement Models"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="cs-form-section">
+                <h2>Service Cards</h2>
+                <div className="sc-cards-grid">
+                  {servicesMeta.cards.map((card, i) => (
+                    <div key={i} className="sc-card-editor">
+                      <div className="cs-form-grid">
+                        <div className="cs-form-field" style={{ flex: 2 }}>
+                          <label>Title</label>
+                          <input
+                            type="text"
+                            value={card.title}
+                            onChange={(e) =>
+                              setServicesMeta((p) => ({
+                                ...p,
+                                cards: p.cards.map((c, ci) =>
+                                  ci === i ? { ...c, title: e.target.value } : c
+                                ),
+                              }))
+                            }
+                            placeholder="Service title"
+                          />
+                        </div>
+                        <div className="cs-form-field">
+                          <label>Icon</label>
+                          <select
+                            value={card.icon}
+                            onChange={(e) =>
+                              setServicesMeta((p) => ({
+                                ...p,
+                                cards: p.cards.map((c, ci) =>
+                                  ci === i ? { ...c, icon: e.target.value } : c
+                                ),
+                              }))
+                            }
+                          >
+                            <option value="briefcase">Briefcase</option>
+                            <option value="edit">Edit / Pen</option>
+                            <option value="clock">Clock</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div className="cs-form-field">
+                        <label>Description</label>
+                        <textarea
+                          rows={3}
+                          value={card.description}
+                          onChange={(e) =>
+                            setServicesMeta((p) => ({
+                              ...p,
+                              cards: p.cards.map((c, ci) =>
+                                ci === i ? { ...c, description: e.target.value } : c
+                              ),
+                            }))
+                          }
+                          placeholder="Service description…"
+                        />
+                      </div>
+                      <div className="cs-form-field">
+                        <label>Tags</label>
+                        <input
+                          type="text"
+                          value={card.tags.join(", ")}
+                          onChange={(e) =>
+                            setServicesMeta((p) => ({
+                              ...p,
+                              cards: p.cards.map((c, ci) =>
+                                ci === i ? { ...c, tags: e.target.value.split(",").map((t) => t.trim()).filter(Boolean) } : c
+                              ),
+                            }))
+                          }
+                          placeholder="Tag 1, Tag 2, Tag 3"
+                        />
+                        <span className="field-hint">Comma-separated list of tags.</span>
                       </div>
                     </div>
                   ))}
