@@ -109,6 +109,39 @@ const DEFAULT_TECH_STACK_META: TechStackFormMeta = {
   ],
 };
 
+interface PortfolioSkillGroup {
+  name: string;
+  techs: string[];
+  techsRaw?: string;
+}
+
+interface PortfolioMeta {
+  overline: string;
+  heading: string;
+  skills_title: string;
+  skills_subtitle: string;
+  skills: PortfolioSkillGroup[];
+  cta_heading: string;
+  cta_description: string;
+  cta_button: string;
+}
+
+const DEFAULT_PORTFOLIO_META: PortfolioMeta = {
+  overline: "Projects & Portfolio",
+  heading: 'Systems I Have <span class="highlight">Designed & Built</span>',
+  skills_title: "Technical Expertise",
+  skills_subtitle: "Technologies and tools I work with across the full stack",
+  skills: [
+    { name: "Languages", techs: ["Python", "Java", "TypeScript", "JavaScript", "SQL"] },
+    { name: "Frameworks", techs: ["FastAPI", "React", "Spring Boot", "LangChain", "SQLAlchemy"] },
+    { name: "Infrastructure", techs: ["AWS", "Docker", "Kubernetes", "Terraform", "Nginx"] },
+    { name: "Data & Messaging", techs: ["PostgreSQL", "Redis", "Kafka", "OpenAI API", "Alembic"] },
+  ],
+  cta_heading: "Have a project in mind?",
+  cta_description: "Whether it is a cloud migration, an MVP build, or an AI integration -- let us talk about how I can help your team ship.",
+  cta_button: "Submit a Requirement",
+};
+
 export default function SiteContentForm() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -127,12 +160,14 @@ export default function SiteContentForm() {
   const [heroDescLabel, setHeroDescLabel] = useState(DEFAULT_HERO_DESC_META.clients_label);
   const [heroDescClientsRaw, setHeroDescClientsRaw] = useState(DEFAULT_HERO_DESC_META.clients.join(", "));
   const [techStackMeta, setTechStackMeta] = useState<TechStackFormMeta>({ ...DEFAULT_TECH_STACK_META });
+  const [portfolioMeta, setPortfolioMeta] = useState<PortfolioMeta>({ ...DEFAULT_PORTFOLIO_META });
 
   const isAboutHero = key === "about_hero";
   const isHeroDesc = key === "hero_description";
   const isPhilosophy = key === "about_philosophy";
   const isServices = key === "home_services";
   const isTechStack = key === "about_tech_stack";
+  const isPortfolio = key === "portfolio_hero";
   const isHtmlContent = key === "about_story" || key === "about_why_platform";
 
   useEffect(() => {
@@ -195,6 +230,22 @@ export default function SiteContentForm() {
               : DEFAULT_TECH_STACK_META.categories,
           });
         }
+
+        if (item.key === "portfolio_hero" && item.metadata) {
+          const m = item.metadata as unknown as PortfolioMeta;
+          setPortfolioMeta({
+            overline: m.overline || DEFAULT_PORTFOLIO_META.overline,
+            heading: m.heading || DEFAULT_PORTFOLIO_META.heading,
+            skills_title: m.skills_title || DEFAULT_PORTFOLIO_META.skills_title,
+            skills_subtitle: m.skills_subtitle || DEFAULT_PORTFOLIO_META.skills_subtitle,
+            skills: m.skills?.length
+              ? m.skills.map((s) => ({ ...s, techsRaw: s.techs.join(", ") }))
+              : DEFAULT_PORTFOLIO_META.skills,
+            cta_heading: m.cta_heading || DEFAULT_PORTFOLIO_META.cta_heading,
+            cta_description: m.cta_description || DEFAULT_PORTFOLIO_META.cta_description,
+            cta_button: m.cta_button || DEFAULT_PORTFOLIO_META.cta_button,
+          });
+        }
       })
       .catch((err: unknown) => {
         if (err instanceof ApiError && (err.status === 401 || err.status === 403)) {
@@ -246,7 +297,21 @@ export default function SiteContentForm() {
                       techs: (techsRaw ?? c.techs.join(", ")).split(",").map((t) => t.trim()).filter(Boolean),
                     })),
                   } as unknown as Record<string, unknown>)
-                : undefined,
+                : isPortfolio
+                  ? ({
+                      overline: portfolioMeta.overline,
+                      heading: portfolioMeta.heading,
+                      skills_title: portfolioMeta.skills_title,
+                      skills_subtitle: portfolioMeta.skills_subtitle,
+                      skills: portfolioMeta.skills.map(({ techsRaw, ...s }) => ({
+                        ...s,
+                        techs: (techsRaw ?? s.techs.join(", ")).split(",").map((t) => t.trim()).filter(Boolean),
+                      })),
+                      cta_heading: portfolioMeta.cta_heading,
+                      cta_description: portfolioMeta.cta_description,
+                      cta_button: portfolioMeta.cta_button,
+                    } as unknown as Record<string, unknown>)
+                  : undefined,
     };
 
     try {
@@ -358,6 +423,9 @@ export default function SiteContentForm() {
                 )}
                 {isTechStack && (
                   <span className="field-hint">This is the subtitle displayed below the section heading.</span>
+                )}
+                {isPortfolio && (
+                  <span className="field-hint">This is the subtitle displayed below the hero heading.</span>
                 )}
                 {isHtmlContent && (
                   <span className="field-hint">
@@ -830,6 +898,172 @@ export default function SiteContentForm() {
                       </button>
                     </div>
                   ))}
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Portfolio — Structured Fields */}
+          {isPortfolio && (
+            <>
+              <div className="cs-form-section">
+                <h2>Hero Section</h2>
+                <div className="cs-form-grid">
+                  <div className="cs-form-field">
+                    <label htmlFor="pf-overline">Overline</label>
+                    <input
+                      id="pf-overline"
+                      type="text"
+                      value={portfolioMeta.overline}
+                      onChange={(e) => setPortfolioMeta((p) => ({ ...p, overline: e.target.value }))}
+                      placeholder="Projects & Portfolio"
+                    />
+                  </div>
+                  <div className="cs-form-field full-width">
+                    <label htmlFor="pf-heading">Heading</label>
+                    <input
+                      id="pf-heading"
+                      type="text"
+                      value={portfolioMeta.heading}
+                      onChange={(e) => setPortfolioMeta((p) => ({ ...p, heading: e.target.value }))}
+                      placeholder='Systems I Have <span class="highlight">Designed & Built</span>'
+                    />
+                    <span className="field-hint">
+                      Use &lt;span class="highlight"&gt;…&lt;/span&gt; for accent-colored text.
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="cs-form-section">
+                <h2>Skills Section</h2>
+                <div className="cs-form-grid">
+                  <div className="cs-form-field">
+                    <label htmlFor="pf-skills-title">Title</label>
+                    <input
+                      id="pf-skills-title"
+                      type="text"
+                      value={portfolioMeta.skills_title}
+                      onChange={(e) => setPortfolioMeta((p) => ({ ...p, skills_title: e.target.value }))}
+                      placeholder="Technical Expertise"
+                    />
+                  </div>
+                  <div className="cs-form-field full-width">
+                    <label htmlFor="pf-skills-subtitle">Subtitle</label>
+                    <input
+                      id="pf-skills-subtitle"
+                      type="text"
+                      value={portfolioMeta.skills_subtitle}
+                      onChange={(e) => setPortfolioMeta((p) => ({ ...p, skills_subtitle: e.target.value }))}
+                      placeholder="Technologies and tools I work with across the full stack"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="cs-form-section">
+                <h2>
+                  Skill Groups
+                  <button
+                    type="button"
+                    className="btn-add-card"
+                    onClick={() =>
+                      setPortfolioMeta((p) => ({
+                        ...p,
+                        skills: [...p.skills, { name: "", techs: [], techsRaw: "" }],
+                      }))
+                    }
+                  >
+                    + Add Group
+                  </button>
+                </h2>
+                <div className="sc-cards-grid">
+                  {portfolioMeta.skills.map((group, i) => (
+                    <div key={i} className="sc-card-editor">
+                      <div className="sc-card-num">{String(i + 1).padStart(2, "0")}</div>
+                      <div className="cs-form-field">
+                        <label>Group Name</label>
+                        <input
+                          type="text"
+                          value={group.name}
+                          onChange={(e) =>
+                            setPortfolioMeta((p) => ({
+                              ...p,
+                              skills: p.skills.map((s, si) =>
+                                si === i ? { ...s, name: e.target.value } : s
+                              ),
+                            }))
+                          }
+                          placeholder="Languages"
+                        />
+                      </div>
+                      <div className="cs-form-field">
+                        <label>Technologies</label>
+                        <textarea
+                          rows={3}
+                          value={group.techsRaw ?? group.techs.join(", ")}
+                          onChange={(e) =>
+                            setPortfolioMeta((p) => ({
+                              ...p,
+                              skills: p.skills.map((s, si) =>
+                                si === i ? { ...s, techsRaw: e.target.value } : s
+                              ),
+                            }))
+                          }
+                          placeholder="Python, Java, TypeScript, JavaScript"
+                        />
+                        <span className="field-hint">Comma-separated list of technologies.</span>
+                      </div>
+                      <button
+                        type="button"
+                        className="btn-remove-card"
+                        onClick={() =>
+                          setPortfolioMeta((p) => ({
+                            ...p,
+                            skills: p.skills.filter((_, si) => si !== i),
+                          }))
+                        }
+                      >
+                        Remove Group
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="cs-form-section">
+                <h2>Call to Action</h2>
+                <div className="cs-form-grid">
+                  <div className="cs-form-field">
+                    <label htmlFor="pf-cta-heading">Heading</label>
+                    <input
+                      id="pf-cta-heading"
+                      type="text"
+                      value={portfolioMeta.cta_heading}
+                      onChange={(e) => setPortfolioMeta((p) => ({ ...p, cta_heading: e.target.value }))}
+                      placeholder="Have a project in mind?"
+                    />
+                  </div>
+                  <div className="cs-form-field full-width">
+                    <label htmlFor="pf-cta-desc">Description</label>
+                    <textarea
+                      id="pf-cta-desc"
+                      rows={3}
+                      value={portfolioMeta.cta_description}
+                      onChange={(e) => setPortfolioMeta((p) => ({ ...p, cta_description: e.target.value }))}
+                      placeholder="Whether it is a cloud migration, an MVP build, or an AI integration..."
+                    />
+                  </div>
+                  <div className="cs-form-field">
+                    <label htmlFor="pf-cta-button">Button Text</label>
+                    <input
+                      id="pf-cta-button"
+                      type="text"
+                      value={portfolioMeta.cta_button}
+                      onChange={(e) => setPortfolioMeta((p) => ({ ...p, cta_button: e.target.value }))}
+                      placeholder="Submit a Requirement"
+                    />
+                  </div>
                 </div>
               </div>
             </>

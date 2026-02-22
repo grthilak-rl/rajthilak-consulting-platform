@@ -410,6 +410,26 @@ def seed_site_content():
                 },
             },
             {
+                "key": "portfolio_hero",
+                "title": "Portfolio Page",
+                "content": "From healthcare platforms processing thousands of patient records to AI assistants handling millions of conversations -- here is the work that defines my engineering practice.",
+                "metadata_": {
+                    "overline": "Projects & Portfolio",
+                    "heading": 'Systems I Have <span class="highlight">Designed & Built</span>',
+                    "skills_title": "Technical Expertise",
+                    "skills_subtitle": "Technologies and tools I work with across the full stack",
+                    "skills": [
+                        {"name": "Languages", "techs": ["Python", "Java", "TypeScript", "JavaScript", "SQL"]},
+                        {"name": "Frameworks", "techs": ["FastAPI", "React", "Spring Boot", "LangChain", "SQLAlchemy"]},
+                        {"name": "Infrastructure", "techs": ["AWS", "Docker", "Kubernetes", "Terraform", "Nginx"]},
+                        {"name": "Data & Messaging", "techs": ["PostgreSQL", "Redis", "Kafka", "OpenAI API", "Alembic"]},
+                    ],
+                    "cta_heading": "Have a project in mind?",
+                    "cta_description": "Whether it is a cloud migration, an MVP build, or an AI integration -- let us talk about how I can help your team ship.",
+                    "cta_button": "Submit a Requirement",
+                },
+            },
+            {
                 "key": "about_why_platform",
                 "title": "Why I Built This Platform",
                 "content": (

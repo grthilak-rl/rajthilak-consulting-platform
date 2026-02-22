@@ -1,11 +1,33 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '../components/Layout';
-import { fetchCaseStudies } from '../api/client';
+import { fetchCaseStudies, fetchSiteContent } from '../api/client';
 import type { CaseStudy } from '../types';
 import Skeleton from '../components/Skeleton';
 import useCountUp from '../hooks/useCountUp';
 import './PortfolioPage.css';
+
+interface SkillGroup {
+  name: string;
+  techs: string[];
+}
+
+const PORTFOLIO_DEFAULTS = {
+  overline: "Projects & Portfolio",
+  heading: 'Systems I Have <span class="highlight">Designed & Built</span>',
+  subtitle: "From healthcare platforms processing thousands of patient records to AI assistants handling millions of conversations -- here is the work that defines my engineering practice.",
+  skills_title: "Technical Expertise",
+  skills_subtitle: "Technologies and tools I work with across the full stack",
+  skills: [
+    { name: "Languages", techs: ["Python", "Java", "TypeScript", "JavaScript", "SQL"] },
+    { name: "Frameworks", techs: ["FastAPI", "React", "Spring Boot", "LangChain", "SQLAlchemy"] },
+    { name: "Infrastructure", techs: ["AWS", "Docker", "Kubernetes", "Terraform", "Nginx"] },
+    { name: "Data & Messaging", techs: ["PostgreSQL", "Redis", "Kafka", "OpenAI API", "Alembic"] },
+  ] as SkillGroup[],
+  cta_heading: "Have a project in mind?",
+  cta_description: "Whether it is a cloud migration, an MVP build, or an AI integration -- let us talk about how I can help your team ship.",
+  cta_button: "Submit a Requirement",
+};
 
 export default function PortfolioPage() {
   const [selectedIndustry, setSelectedIndustry] = useState('All Projects');
@@ -14,79 +36,80 @@ export default function PortfolioPage() {
   const [loading, setLoading] = useState(true);
   const [visibleElements, setVisibleElements] = useState<Set<number>>(new Set());
 
+  const [heroOverline, setHeroOverline] = useState(PORTFOLIO_DEFAULTS.overline);
+  const [heroHeading, setHeroHeading] = useState(PORTFOLIO_DEFAULTS.heading);
+  const [heroSubtitle, setHeroSubtitle] = useState(PORTFOLIO_DEFAULTS.subtitle);
+  const [skillsTitle, setSkillsTitle] = useState(PORTFOLIO_DEFAULTS.skills_title);
+  const [skillsSubtitle, setSkillsSubtitle] = useState(PORTFOLIO_DEFAULTS.skills_subtitle);
+  const [skillGroups, setSkillGroups] = useState<SkillGroup[]>(PORTFOLIO_DEFAULTS.skills);
+  const [ctaHeading, setCtaHeading] = useState(PORTFOLIO_DEFAULTS.cta_heading);
+  const [ctaDesc, setCtaDesc] = useState(PORTFOLIO_DEFAULTS.cta_description);
+  const [ctaButton, setCtaButton] = useState(PORTFOLIO_DEFAULTS.cta_button);
+
   useEffect(() => {
-    async function loadCaseStudies() {
+    async function loadData() {
       try {
         setLoading(true);
-        const data = await fetchCaseStudies();
-        setCaseStudies(data);
-      } catch (err) {
-        // Use fallback mock data on error
-        // Fallback mock data if API fails
-        setCaseStudies([
-          {
-            id: 'ruth-ai',
-            slug: 'ruth-ai',
-            title: 'Ruth AI',
-            role: 'AI/ML Engineer & Architect',
-            description: 'An AI-powered conversational assistant built to automate customer support, handle complex queries with context awareness, and reduce response times through intelligent routing.',
-            industry: 'AI / ML',
-            technologies: ['Python', 'LangChain', 'OpenAI', 'FastAPI', 'React'],
-            featured: true,
-            metrics: [
-              { value: '60%', label: 'Faster Response Time' },
-              { value: '85%', label: 'Query Resolution Rate' },
-              { value: '24/7', label: 'Availability' }
-            ],
-            visual: { color: 'ai', icon: 'microphone' },
-            display_order: 0,
-            is_active: true,
-          },
-          {
-            id: 'hit-platform',
-            slug: 'hit-platform',
-            title: 'HIT Platform',
-            role: 'Lead Backend Engineer',
-            description: 'A healthcare information technology platform designed to streamline clinical workflows, improve patient data management, and enable seamless interoperability across hospital systems.',
-            industry: 'Healthcare',
-            technologies: ['Python', 'FastAPI', 'React', 'PostgreSQL', 'Docker'],
-            featured: false,
-            visual: { color: 'healthcare', icon: 'activity' },
-            display_order: 1,
-            is_active: true,
-          },
-          {
-            id: 'vas-platform',
-            slug: 'vas-platform',
-            title: 'VAS Platform',
-            role: 'Full Stack Developer',
-            description: 'A value-added services platform enabling telecom operators to deliver digital content, subscription management, and billing integration at scale for millions of subscribers.',
-            industry: 'Telecom',
-            technologies: ['Java', 'Spring Boot', 'Kafka', 'Redis', 'AWS'],
-            featured: false,
-            visual: { color: 'telecom', icon: 'bar-chart' },
-            display_order: 2,
-            is_active: true,
-          },
-          {
-            id: 'cloud-migration',
-            slug: 'cloud-migration',
-            title: 'Cloud Migration Strategy',
-            role: 'Solutions Architect',
-            description: 'Architecture review, migration planning, and hands-on support for containerizing on-premise services and migrating infrastructure to AWS for a mid-size enterprise.',
-            industry: 'Cloud / DevOps',
-            technologies: ['AWS', 'Docker', 'Kubernetes', 'Terraform'],
-            featured: false,
-            visual: { color: 'fintech', icon: 'cloud' },
-            display_order: 3,
-            is_active: true,
-          }
+        const [caseStudiesData, siteContentData] = await Promise.allSettled([
+          fetchCaseStudies(),
+          fetchSiteContent(),
         ]);
+
+        if (caseStudiesData.status === "fulfilled") {
+          setCaseStudies(caseStudiesData.value);
+        } else {
+          setCaseStudies([
+            {
+              id: 'ruth-ai', slug: 'ruth-ai', title: 'Ruth AI', role: 'AI/ML Engineer & Architect',
+              description: 'An AI-powered conversational assistant built to automate customer support, handle complex queries with context awareness, and reduce response times through intelligent routing.',
+              industry: 'AI / ML', technologies: ['Python', 'LangChain', 'OpenAI', 'FastAPI', 'React'],
+              featured: true, metrics: [{ value: '60%', label: 'Faster Response Time' }, { value: '85%', label: 'Query Resolution Rate' }, { value: '24/7', label: 'Availability' }],
+              visual: { color: 'ai', icon: 'microphone' }, display_order: 0, is_active: true,
+            },
+            {
+              id: 'hit-platform', slug: 'hit-platform', title: 'HIT Platform', role: 'Lead Backend Engineer',
+              description: 'A healthcare information technology platform designed to streamline clinical workflows, improve patient data management, and enable seamless interoperability across hospital systems.',
+              industry: 'Healthcare', technologies: ['Python', 'FastAPI', 'React', 'PostgreSQL', 'Docker'],
+              featured: false, visual: { color: 'healthcare', icon: 'activity' }, display_order: 1, is_active: true,
+            },
+            {
+              id: 'vas-platform', slug: 'vas-platform', title: 'VAS Platform', role: 'Full Stack Developer',
+              description: 'A value-added services platform enabling telecom operators to deliver digital content, subscription management, and billing integration at scale for millions of subscribers.',
+              industry: 'Telecom', technologies: ['Java', 'Spring Boot', 'Kafka', 'Redis', 'AWS'],
+              featured: false, visual: { color: 'telecom', icon: 'bar-chart' }, display_order: 2, is_active: true,
+            },
+            {
+              id: 'cloud-migration', slug: 'cloud-migration', title: 'Cloud Migration Strategy', role: 'Solutions Architect',
+              description: 'Architecture review, migration planning, and hands-on support for containerizing on-premise services and migrating infrastructure to AWS for a mid-size enterprise.',
+              industry: 'Cloud / DevOps', technologies: ['AWS', 'Docker', 'Kubernetes', 'Terraform'],
+              featured: false, visual: { color: 'fintech', icon: 'cloud' }, display_order: 3, is_active: true,
+            },
+          ]);
+        }
+
+        if (siteContentData.status === "fulfilled") {
+          const items = siteContentData.value;
+          const portfolio = items.find((i) => i.key === "portfolio_hero");
+          if (portfolio) {
+            setHeroSubtitle(portfolio.content || PORTFOLIO_DEFAULTS.subtitle);
+            const m = portfolio.metadata as Record<string, unknown> | undefined;
+            if (m) {
+              setHeroOverline((m.overline as string) || PORTFOLIO_DEFAULTS.overline);
+              setHeroHeading((m.heading as string) || PORTFOLIO_DEFAULTS.heading);
+              setSkillsTitle((m.skills_title as string) || PORTFOLIO_DEFAULTS.skills_title);
+              setSkillsSubtitle((m.skills_subtitle as string) || PORTFOLIO_DEFAULTS.skills_subtitle);
+              if (m.skills) setSkillGroups(m.skills as SkillGroup[]);
+              setCtaHeading((m.cta_heading as string) || PORTFOLIO_DEFAULTS.cta_heading);
+              setCtaDesc((m.cta_description as string) || PORTFOLIO_DEFAULTS.cta_description);
+              setCtaButton((m.cta_button as string) || PORTFOLIO_DEFAULTS.cta_button);
+            }
+          }
+        }
       } finally {
         setLoading(false);
       }
     }
-    loadCaseStudies();
+    loadData();
   }, []);
 
   useEffect(() => {
@@ -150,12 +173,10 @@ export default function PortfolioPage() {
     <Layout>
       {/* Hero Section */}
       <section className="portfolio-hero">
-        <div className="portfolio-hero-overline animate-in">Projects & Portfolio</div>
-        <h1 className="animate-in delay-1">
-          Systems I Have <span className="highlight">Designed & Built</span>
-        </h1>
+        <div className="portfolio-hero-overline animate-in">{heroOverline}</div>
+        <h1 className="animate-in delay-1" dangerouslySetInnerHTML={{ __html: heroHeading }} />
         <p className="portfolio-hero-subtitle animate-in delay-2">
-          From healthcare platforms processing thousands of patient records to AI assistants handling millions of conversations -- here is the work that defines my engineering practice.
+          {heroSubtitle}
         </p>
 
         <div className="portfolio-hero-stats animate-in delay-3">
@@ -345,50 +366,23 @@ export default function PortfolioPage() {
         <div className={`section-reveal ${visibleElements.has(2) ? 'visible' : ''}`}>
           <div className="skills-card">
             <div className="skills-header">
-              <h2>Technical Expertise</h2>
-              <p>Technologies and tools I work with across the full stack</p>
+              <h2>{skillsTitle}</h2>
+              <p>{skillsSubtitle}</p>
             </div>
             <div className="skills-grid stagger-children">
-              <div className="skill-group">
-                <h3>Languages</h3>
-                <div className="skill-group-items">
-                  <div className="skill-item"><span className="skill-dot"></span><span className="skill-name">Python</span></div>
-                  <div className="skill-item"><span className="skill-dot"></span><span className="skill-name">Java</span></div>
-                  <div className="skill-item"><span className="skill-dot"></span><span className="skill-name">TypeScript</span></div>
-                  <div className="skill-item"><span className="skill-dot"></span><span className="skill-name">JavaScript</span></div>
-                  <div className="skill-item"><span className="skill-dot"></span><span className="skill-name">SQL</span></div>
+              {skillGroups.map((group) => (
+                <div key={group.name} className="skill-group">
+                  <h3>{group.name}</h3>
+                  <div className="skill-group-items">
+                    {group.techs.map((tech) => (
+                      <div key={tech} className="skill-item">
+                        <span className="skill-dot"></span>
+                        <span className="skill-name">{tech}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-              <div className="skill-group">
-                <h3>Frameworks</h3>
-                <div className="skill-group-items">
-                  <div className="skill-item"><span className="skill-dot"></span><span className="skill-name">FastAPI</span></div>
-                  <div className="skill-item"><span className="skill-dot"></span><span className="skill-name">React</span></div>
-                  <div className="skill-item"><span className="skill-dot"></span><span className="skill-name">Spring Boot</span></div>
-                  <div className="skill-item"><span className="skill-dot"></span><span className="skill-name">LangChain</span></div>
-                  <div className="skill-item"><span className="skill-dot"></span><span className="skill-name">SQLAlchemy</span></div>
-                </div>
-              </div>
-              <div className="skill-group">
-                <h3>Infrastructure</h3>
-                <div className="skill-group-items">
-                  <div className="skill-item"><span className="skill-dot"></span><span className="skill-name">AWS</span></div>
-                  <div className="skill-item"><span className="skill-dot"></span><span className="skill-name">Docker</span></div>
-                  <div className="skill-item"><span className="skill-dot"></span><span className="skill-name">Kubernetes</span></div>
-                  <div className="skill-item"><span className="skill-dot"></span><span className="skill-name">Terraform</span></div>
-                  <div className="skill-item"><span className="skill-dot"></span><span className="skill-name">Nginx</span></div>
-                </div>
-              </div>
-              <div className="skill-group">
-                <h3>Data & Messaging</h3>
-                <div className="skill-group-items">
-                  <div className="skill-item"><span className="skill-dot"></span><span className="skill-name">PostgreSQL</span></div>
-                  <div className="skill-item"><span className="skill-dot"></span><span className="skill-name">Redis</span></div>
-                  <div className="skill-item"><span className="skill-dot"></span><span className="skill-name">Kafka</span></div>
-                  <div className="skill-item"><span className="skill-dot"></span><span className="skill-name">OpenAI API</span></div>
-                  <div className="skill-item"><span className="skill-dot"></span><span className="skill-name">Alembic</span></div>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
@@ -399,10 +393,10 @@ export default function PortfolioPage() {
         <div className={`section-reveal ${visibleElements.has(3) ? 'visible' : ''}`}>
           <div className="cta-card">
             <div className="cta-content">
-              <h2>Have a project in mind?</h2>
-              <p>Whether it is a cloud migration, an MVP build, or an AI integration -- let us talk about how I can help your team ship.</p>
+              <h2>{ctaHeading}</h2>
+              <p>{ctaDesc}</p>
               <a href="/submit" className="cta-button">
-                Submit a Requirement
+                {ctaButton}
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="5" y1="12" x2="19" y2="12"/>
                   <polyline points="12 5 19 12 12 19"/>
