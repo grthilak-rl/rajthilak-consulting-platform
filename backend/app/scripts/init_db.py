@@ -352,13 +352,8 @@ def seed_site_content():
 
         entries = [
             {
-                "key": "hero_tagline",
-                "title": "Hero Tagline",
-                "content": "Engineering Leader. Systems Architect. Technical Consultant.",
-            },
-            {
                 "key": "hero_description",
-                "title": "Hero Description",
+                "title": "Engineering Leader. Systems Architect. Technical Consultant.",
                 "content": "I help companies design and build production-grade systems -- from cloud migrations and platform engineering to AI-powered products. Full-time, contract, or one-off.",
                 "metadata_": {
                     "clients_label": "Trusted by teams at",

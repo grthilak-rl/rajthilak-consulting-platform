@@ -1,14 +1,43 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ApiError, fetchSiteContentAdmin, deleteSiteContent, setToken } from "../api/client";
 import type { SiteContent } from "../types";
 import "./SiteManagement.css";
+
+const PAGE_GROUPS: { label: string; prefixes: string[] }[] = [
+  { label: "Home", prefixes: ["hero_", "home_"] },
+  { label: "Portfolio", prefixes: ["portfolio_"] },
+  { label: "About", prefixes: ["about_"] },
+];
+
+const CARD_LABELS: Record<string, string> = {
+  hero_description: "Hero Section",
+};
+
+function getPageGroup(key: string): string {
+  for (const group of PAGE_GROUPS) {
+    if (group.prefixes.some((p) => key.startsWith(p))) return group.label;
+  }
+  return "Other";
+}
 
 export default function SiteManagement() {
   const [items, setItems] = useState<SiteContent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+
+  const groupedItems = useMemo(() => {
+    const groupOrder = [...PAGE_GROUPS.map((g) => g.label), "Other"];
+    const groups: Record<string, SiteContent[]> = {};
+    for (const item of items) {
+      const group = getPageGroup(item.key);
+      (groups[group] ??= []).push(item);
+    }
+    return groupOrder
+      .filter((label) => groups[label]?.length)
+      .map((label) => ({ label, items: groups[label]! }));
+  }, [items]);
 
   useEffect(() => {
     fetchSiteContentAdmin()
@@ -103,46 +132,51 @@ export default function SiteManagement() {
             </div>
           </div>
         ) : (
-          <div className="site-cards">
-            {items.map((item) => (
-              <div key={item.id} className="site-card">
-                <div className="site-card-header">
-                  <div>
-                    <h3 className="site-card-title">{item.title || item.key}</h3>
-                    <span className="site-card-key">{item.key}</span>
+          groupedItems.map((group) => (
+            <div key={group.label} className="site-group">
+              <h2 className="site-group-label">{group.label}</h2>
+              <div className="site-cards">
+                {group.items.map((item) => (
+                  <div key={item.id} className="site-card">
+                    <div className="site-card-header">
+                      <div>
+                        <h3 className="site-card-title">{CARD_LABELS[item.key] || item.title || item.key}</h3>
+                        <span className="site-card-key">{item.key}</span>
+                      </div>
+                      <div className="site-card-actions">
+                        <Link
+                          to={`/admin/site/${item.id}`}
+                          className="btn-table-action btn-edit"
+                          title="Edit"
+                        >
+                          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                            <path d="M11.5 1.5l3 3-9 9H2.5v-3l9-9z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        </Link>
+                        <button
+                          className="btn-table-action btn-deactivate"
+                          onClick={() => handleDelete(item.id, item.title || item.key)}
+                          title="Delete"
+                        >
+                          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                            <path d="M3 4h10M6 4V3a1 1 0 011-1h2a1 1 0 011 1v1M5 4v8a1 1 0 001 1h4a1 1 0 001-1V4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                    <p className="site-card-preview">
+                      {item.content.length > 120 ? item.content.slice(0, 120) + "..." : item.content}
+                    </p>
+                    {item.updated_at && (
+                      <div className="site-card-meta">
+                        Updated {new Date(item.updated_at).toLocaleDateString()}
+                      </div>
+                    )}
                   </div>
-                  <div className="site-card-actions">
-                    <Link
-                      to={`/admin/site/${item.id}`}
-                      className="btn-table-action btn-edit"
-                      title="Edit"
-                    >
-                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                        <path d="M11.5 1.5l3 3-9 9H2.5v-3l9-9z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </Link>
-                    <button
-                      className="btn-table-action btn-deactivate"
-                      onClick={() => handleDelete(item.id, item.title || item.key)}
-                      title="Delete"
-                    >
-                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                        <path d="M3 4h10M6 4V3a1 1 0 011-1h2a1 1 0 011 1v1M5 4v8a1 1 0 001 1h4a1 1 0 001-1V4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-                <p className="site-card-preview">
-                  {item.content.length > 120 ? item.content.slice(0, 120) + "…" : item.content}
-                </p>
-                {item.updated_at && (
-                  <div className="site-card-meta">
-                    Updated {new Date(item.updated_at).toLocaleDateString()}
-                  </div>
-                )}
+                ))}
               </div>
-            ))}
-          </div>
+            </div>
+          ))
         )}
       </div>
     </div>

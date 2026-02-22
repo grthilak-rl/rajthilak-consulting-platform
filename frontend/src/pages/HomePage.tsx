@@ -95,10 +95,9 @@ export default function HomePage() {
         if (testimonialsData.status === "fulfilled") setTestimonials(testimonialsData.value);
         if (siteContentData.status === "fulfilled") {
           const items = siteContentData.value;
-          const tagline = items.find((i) => i.key === "hero_tagline");
           const description = items.find((i) => i.key === "hero_description");
-          if (tagline) setHeroTagline(tagline.content);
           if (description) {
+            if (description.title) setHeroTagline(description.title);
             setHeroDescription(description.content);
             const dm = description.metadata as Record<string, unknown> | undefined;
             if (dm) {

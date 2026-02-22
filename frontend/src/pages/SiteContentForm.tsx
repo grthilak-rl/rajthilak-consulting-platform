@@ -365,14 +365,17 @@ export default function SiteContentForm() {
                 <span className="field-hint">Unique identifier (lowercase, underscores)</span>
               </div>
               <div className="cs-form-field">
-                <label htmlFor="sc-title">Title</label>
+                <label htmlFor="sc-title">{isHeroDesc ? "Tagline" : "Title"}</label>
                 <input
                   id="sc-title"
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Display title"
+                  placeholder={isHeroDesc ? "Engineering Leader. Systems Architect." : "Display title"}
                 />
+                {isHeroDesc && (
+                  <span className="field-hint">The multi-line heading on the homepage hero</span>
+                )}
               </div>
               <div className="cs-form-field full-width">
                 <label htmlFor="sc-content">Content</label>

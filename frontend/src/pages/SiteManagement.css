@@ -12,6 +12,26 @@
   margin: 0 auto;
 }
 
+/* Groups */
+.site-group {
+  margin-bottom: var(--space-8);
+}
+
+.site-group:last-child {
+  margin-bottom: 0;
+}
+
+.site-group-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
 /* Content Cards */
 .site-cards {
   display: grid;
