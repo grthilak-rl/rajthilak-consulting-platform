@@ -5,6 +5,11 @@ from uuid import UUID
 from pydantic import BaseModel
 
 
+class TechnologyItem(BaseModel):
+    name: str
+    category: str
+
+
 class MetricItem(BaseModel):
     value: str
     label: str
@@ -22,7 +27,7 @@ class CaseStudyResponse(BaseModel):
     role: str
     description: str
     industry: str
-    technologies: list[str]
+    technologies: list[TechnologyItem]
     featured: bool
     metrics: Optional[list[MetricItem]] = None
     visual: VisualConfig
@@ -56,7 +61,7 @@ class CaseStudyAdminResponse(BaseModel):
     role: str
     description: str
     industry: str
-    technologies: list[str]
+    technologies: list[TechnologyItem]
     featured: bool
     metrics: Optional[list[MetricItem]] = None
     visual: VisualConfig
@@ -93,7 +98,7 @@ class CaseStudyCreate(BaseModel):
     role: str
     description: str
     industry: str
-    technologies: list[str] = []
+    technologies: list[TechnologyItem] = []
     featured: bool = False
     metrics: Optional[list[MetricItem]] = None
     visual_color: str = "primary"
@@ -108,7 +113,7 @@ class CaseStudyUpdate(BaseModel):
     role: Optional[str] = None
     description: Optional[str] = None
     industry: Optional[str] = None
-    technologies: Optional[list[str]] = None
+    technologies: Optional[list[TechnologyItem]] = None
     featured: Optional[bool] = None
     metrics: Optional[list[MetricItem]] = None
     visual_color: Optional[str] = None

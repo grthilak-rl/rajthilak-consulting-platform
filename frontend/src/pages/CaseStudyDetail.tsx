@@ -151,7 +151,7 @@ export default function CaseStudyDetail() {
 
             <div className="detail-tech-list">
               {caseStudy.technologies.map((tech) => (
-                <span key={tech} className="tech-badge">{tech}</span>
+                <span key={tech.name} className="tech-badge">{tech.name}</span>
               ))}
             </div>
           </div>

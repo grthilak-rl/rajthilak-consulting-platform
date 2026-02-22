@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { fetchCaseStudies, fetchSiteContent } from '../api/client';
@@ -7,27 +7,17 @@ import Skeleton from '../components/Skeleton';
 import useCountUp from '../hooks/useCountUp';
 import './PortfolioPage.css';
 
-interface SkillGroup {
-  name: string;
-  techs: string[];
-}
-
 const PORTFOLIO_DEFAULTS = {
   overline: "Projects & Portfolio",
   heading: 'Systems I Have <span class="highlight">Designed & Built</span>',
   subtitle: "From healthcare platforms processing thousands of patient records to AI assistants handling millions of conversations -- here is the work that defines my engineering practice.",
-  skills_title: "Technical Expertise",
-  skills_subtitle: "Technologies and tools I work with across the full stack",
-  skills: [
-    { name: "Languages", techs: ["Python", "Java", "TypeScript", "JavaScript", "SQL"] },
-    { name: "Frameworks", techs: ["FastAPI", "React", "Spring Boot", "LangChain", "SQLAlchemy"] },
-    { name: "Infrastructure", techs: ["AWS", "Docker", "Kubernetes", "Terraform", "Nginx"] },
-    { name: "Data & Messaging", techs: ["PostgreSQL", "Redis", "Kafka", "OpenAI API", "Alembic"] },
-  ] as SkillGroup[],
   cta_heading: "Have a project in mind?",
   cta_description: "Whether it is a cloud migration, an MVP build, or an AI integration -- let us talk about how I can help your team ship.",
   cta_button: "Submit a Requirement",
 };
+
+/** Order in which categories appear in the skills section */
+const CATEGORY_ORDER = ["Language", "Framework", "Infrastructure", "Data & Messaging", "AI & ML", "Tools"];
 
 export default function PortfolioPage() {
   const [selectedIndustry, setSelectedIndustry] = useState('All Projects');
@@ -39,9 +29,6 @@ export default function PortfolioPage() {
   const [heroOverline, setHeroOverline] = useState(PORTFOLIO_DEFAULTS.overline);
   const [heroHeading, setHeroHeading] = useState(PORTFOLIO_DEFAULTS.heading);
   const [heroSubtitle, setHeroSubtitle] = useState(PORTFOLIO_DEFAULTS.subtitle);
-  const [skillsTitle, setSkillsTitle] = useState(PORTFOLIO_DEFAULTS.skills_title);
-  const [skillsSubtitle, setSkillsSubtitle] = useState(PORTFOLIO_DEFAULTS.skills_subtitle);
-  const [skillGroups, setSkillGroups] = useState<SkillGroup[]>(PORTFOLIO_DEFAULTS.skills);
   const [ctaHeading, setCtaHeading] = useState(PORTFOLIO_DEFAULTS.cta_heading);
   const [ctaDesc, setCtaDesc] = useState(PORTFOLIO_DEFAULTS.cta_description);
   const [ctaButton, setCtaButton] = useState(PORTFOLIO_DEFAULTS.cta_button);
@@ -62,26 +49,30 @@ export default function PortfolioPage() {
             {
               id: 'ruth-ai', slug: 'ruth-ai', title: 'Ruth AI', role: 'AI/ML Engineer & Architect',
               description: 'An AI-powered conversational assistant built to automate customer support, handle complex queries with context awareness, and reduce response times through intelligent routing.',
-              industry: 'AI / ML', technologies: ['Python', 'LangChain', 'OpenAI', 'FastAPI', 'React'],
+              industry: 'AI / ML',
+              technologies: [{ name: 'Python', category: 'Language' }, { name: 'LangChain', category: 'AI & ML' }, { name: 'OpenAI', category: 'AI & ML' }, { name: 'FastAPI', category: 'Framework' }, { name: 'React', category: 'Framework' }],
               featured: true, metrics: [{ value: '60%', label: 'Faster Response Time' }, { value: '85%', label: 'Query Resolution Rate' }, { value: '24/7', label: 'Availability' }],
               visual: { color: 'ai', icon: 'microphone' }, display_order: 0, is_active: true,
             },
             {
               id: 'hit-platform', slug: 'hit-platform', title: 'HIT Platform', role: 'Lead Backend Engineer',
               description: 'A healthcare information technology platform designed to streamline clinical workflows, improve patient data management, and enable seamless interoperability across hospital systems.',
-              industry: 'Healthcare', technologies: ['Python', 'FastAPI', 'React', 'PostgreSQL', 'Docker'],
+              industry: 'Healthcare',
+              technologies: [{ name: 'Python', category: 'Language' }, { name: 'FastAPI', category: 'Framework' }, { name: 'React', category: 'Framework' }, { name: 'PostgreSQL', category: 'Data & Messaging' }, { name: 'Docker', category: 'Infrastructure' }],
               featured: false, visual: { color: 'healthcare', icon: 'activity' }, display_order: 1, is_active: true,
             },
             {
               id: 'vas-platform', slug: 'vas-platform', title: 'VAS Platform', role: 'Full Stack Developer',
               description: 'A value-added services platform enabling telecom operators to deliver digital content, subscription management, and billing integration at scale for millions of subscribers.',
-              industry: 'Telecom', technologies: ['Java', 'Spring Boot', 'Kafka', 'Redis', 'AWS'],
+              industry: 'Telecom',
+              technologies: [{ name: 'Java', category: 'Language' }, { name: 'Spring Boot', category: 'Framework' }, { name: 'Kafka', category: 'Data & Messaging' }, { name: 'Redis', category: 'Data & Messaging' }, { name: 'AWS', category: 'Infrastructure' }],
               featured: false, visual: { color: 'telecom', icon: 'bar-chart' }, display_order: 2, is_active: true,
             },
             {
               id: 'cloud-migration', slug: 'cloud-migration', title: 'Cloud Migration Strategy', role: 'Solutions Architect',
               description: 'Architecture review, migration planning, and hands-on support for containerizing on-premise services and migrating infrastructure to AWS for a mid-size enterprise.',
-              industry: 'Cloud / DevOps', technologies: ['AWS', 'Docker', 'Kubernetes', 'Terraform'],
+              industry: 'Cloud / DevOps',
+              technologies: [{ name: 'AWS', category: 'Infrastructure' }, { name: 'Docker', category: 'Infrastructure' }, { name: 'Kubernetes', category: 'Infrastructure' }, { name: 'Terraform', category: 'Infrastructure' }],
               featured: false, visual: { color: 'fintech', icon: 'cloud' }, display_order: 3, is_active: true,
             },
           ]);
@@ -96,9 +87,6 @@ export default function PortfolioPage() {
             if (m) {
               setHeroOverline((m.overline as string) || PORTFOLIO_DEFAULTS.overline);
               setHeroHeading((m.heading as string) || PORTFOLIO_DEFAULTS.heading);
-              setSkillsTitle((m.skills_title as string) || PORTFOLIO_DEFAULTS.skills_title);
-              setSkillsSubtitle((m.skills_subtitle as string) || PORTFOLIO_DEFAULTS.skills_subtitle);
-              if (m.skills) setSkillGroups(m.skills as SkillGroup[]);
               setCtaHeading((m.cta_heading as string) || PORTFOLIO_DEFAULTS.cta_heading);
               setCtaDesc((m.cta_description as string) || PORTFOLIO_DEFAULTS.cta_description);
               setCtaButton((m.cta_button as string) || PORTFOLIO_DEFAULTS.cta_button);
@@ -132,18 +120,37 @@ export default function PortfolioPage() {
 
   // Dynamically build filter options from actual data
   const industries = ['All Projects', ...Array.from(new Set(caseStudies.map(p => p.industry)))];
-  const allTechnologies = Array.from(new Set(caseStudies.flatMap(p => p.technologies)));
-  const techFilters = allTechnologies.slice(0, 4); // Show top 4 technologies
+  const allTechNames = Array.from(new Set(caseStudies.flatMap(p => p.technologies.map(t => t.name))));
+  const techFilters = allTechNames.slice(0, 4); // Show top 4 technologies
 
   const industryCount = useCountUp({ end: industries.length - 1, duration: 1000 });
   const projectCount = useCountUp({ end: caseStudies.length, duration: 1200 });
-  const techCount = useCountUp({ end: allTechnologies.length, duration: 1400 });
+  const techCount = useCountUp({ end: allTechNames.length, duration: 1400 });
 
   const filteredProjects = caseStudies.filter((p) => {
     const industryMatch = selectedIndustry === 'All Projects' || p.industry === selectedIndustry;
-    const techMatch = selectedTech.length === 0 || selectedTech.some((tech) => p.technologies.includes(tech));
+    const techMatch = selectedTech.length === 0 || selectedTech.some((tech) => p.technologies.some(t => t.name === tech));
     return industryMatch && techMatch;
   });
+
+  // Auto-generate skill groups from case study technologies
+  const autoSkillGroups = useMemo(() => {
+    const categoryMap = new Map<string, Set<string>>();
+    for (const cs of caseStudies) {
+      for (const tech of cs.technologies) {
+        if (!categoryMap.has(tech.category)) categoryMap.set(tech.category, new Set());
+        categoryMap.get(tech.category)!.add(tech.name);
+      }
+    }
+    // Sort categories by predefined order, unknown categories at the end
+    return Array.from(categoryMap.entries())
+      .sort(([a], [b]) => {
+        const ia = CATEGORY_ORDER.indexOf(a);
+        const ib = CATEGORY_ORDER.indexOf(b);
+        return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
+      })
+      .map(([name, techs]) => ({ name, techs: Array.from(techs) }));
+  }, [caseStudies]);
 
   const featuredProject = caseStudies.find((p) => p.featured);
   const regularProjects = filteredProjects.filter((p) => !p.featured);
@@ -278,7 +285,7 @@ export default function PortfolioPage() {
                 <p className="featured-desc">{featuredProject.description}</p>
                 <div className="featured-tech">
                   {featuredProject.technologies.map((tech) => (
-                    <span key={tech} className="tech-badge">{tech}</span>
+                    <span key={tech.name} className="tech-badge">{tech.name}</span>
                   ))}
                 </div>
                 {featuredProject.metrics && (
@@ -344,7 +351,7 @@ export default function PortfolioPage() {
                     <p className="project-card-desc">{project.description}</p>
                     <div className="project-card-footer">
                       {project.technologies.map((tech) => (
-                        <span key={tech} className="tech-badge">{tech}</span>
+                        <span key={tech.name} className="tech-badge">{tech.name}</span>
                       ))}
                     </div>
                   </div>
@@ -366,11 +373,11 @@ export default function PortfolioPage() {
         <div className={`section-reveal ${visibleElements.has(2) ? 'visible' : ''}`}>
           <div className="skills-card">
             <div className="skills-header">
-              <h2>{skillsTitle}</h2>
-              <p>{skillsSubtitle}</p>
+              <h2>Technical Expertise</h2>
+              <p>Technologies and tools I work with across the full stack</p>
             </div>
             <div className="skills-grid stagger-children">
-              {skillGroups.map((group) => (
+              {autoSkillGroups.map((group) => (
                 <div key={group.name} className="skill-group">
                   <h3>{group.name}</h3>
                   <div className="skill-group-items">

@@ -32,6 +32,11 @@ export interface Project {
   role: string;
 }
 
+export interface TechnologyItem {
+  name: string;
+  category: string;
+}
+
 export interface CaseStudy {
   id: string;
   slug: string;
@@ -39,7 +44,7 @@ export interface CaseStudy {
   role: string;
   description: string;
   industry: string;
-  technologies: string[];
+  technologies: TechnologyItem[];
   featured: boolean;
   metrics?: {
     value: string;
@@ -61,7 +66,7 @@ export interface CaseStudyFormData {
   role: string;
   description: string;
   industry: string;
-  technologies: string[];
+  technologies: TechnologyItem[];
   featured: boolean;
   metrics: { value: string; label: string }[];
   visual_color: string;

@@ -184,7 +184,7 @@ def create_case_study(body: CaseStudyCreate, db: Session = Depends(get_db)):
         role=body.role,
         description=body.description,
         industry=body.industry,
-        technologies=body.technologies,
+        technologies=[t.model_dump() for t in body.technologies],
         featured=body.featured,
         metrics=[m.model_dump() for m in body.metrics] if body.metrics else None,
         visual_color=body.visual_color,
@@ -220,6 +220,11 @@ def update_case_study(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"Slug '{update_data['slug']}' already exists",
             )
+    if "technologies" in update_data and update_data["technologies"] is not None:
+        update_data["technologies"] = [
+            t.model_dump() if hasattr(t, "model_dump") else t
+            for t in update_data["technologies"]
+        ]
     if "metrics" in update_data and update_data["metrics"] is not None:
         update_data["metrics"] = [
             m.model_dump() if hasattr(m, "model_dump") else m

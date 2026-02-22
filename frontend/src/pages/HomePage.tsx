@@ -290,7 +290,7 @@ export default function HomePage() {
                       <p className="port-card-desc">{caseStudy.description}</p>
                       <div className="port-card-tech">
                         {caseStudy.technologies.map((tech) => (
-                          <span key={tech} className="tech-pill">{tech}</span>
+                          <span key={tech.name} className="tech-pill">{tech.name}</span>
                         ))}
                       </div>
                     </div>

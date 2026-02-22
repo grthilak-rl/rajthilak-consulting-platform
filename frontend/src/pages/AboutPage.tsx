@@ -61,12 +61,12 @@ const TECH_STACK_DEFAULTS: TechStackData = {
   heading: "What I Work With",
   subtitle: "Technologies and tools I use across the full stack, from infrastructure to frontend.",
   categories: [
-    { name: "Backend & APIs", techs: ["Python / FastAPI", "Java / Spring Boot", "Node.js / Express", "GraphQL / REST"] },
-    { name: "Frontend", techs: ["React / TypeScript", "Next.js", "Vue.js", "TailwindCSS"] },
+    { name: "Backend & APIs", techs: ["Python", "FastAPI", "Java", "Spring Boot", "Node.js", "GraphQL"] },
+    { name: "Frontend", techs: ["React", "TypeScript", "Next.js", "Vue.js", "TailwindCSS"] },
     { name: "Data & Messaging", techs: ["PostgreSQL", "Redis", "Kafka", "MongoDB"] },
-    { name: "Cloud & DevOps", techs: ["AWS (EC2, S3, RDS, Lambda)", "Docker / Kubernetes", "Terraform", "CI/CD (GitHub Actions)"] },
-    { name: "AI & ML", techs: ["OpenAI API", "LangChain", "Vector DBs (Pinecone, Weaviate)", "Hugging Face"] },
-    { name: "Tools & Practices", techs: ["Git / GitHub", "Testing (pytest, Jest)", "API Documentation (OpenAPI)", "Code Review & Mentoring"] },
+    { name: "Cloud & DevOps", techs: ["AWS", "Docker", "Kubernetes", "Terraform", "GitHub Actions"] },
+    { name: "AI & ML", techs: ["OpenAI", "LangChain", "Pinecone", "Hugging Face"] },
+    { name: "Tools & Practices", techs: ["Git", "pytest", "Jest", "OpenAPI"] },
   ],
 };
 
@@ -101,7 +101,7 @@ export default function AboutPage() {
     const countMap = new Map<string, number>();
     for (const cs of caseStudies) {
       for (const tech of cs.technologies) {
-        const k = tech.toLowerCase();
+        const k = tech.name.toLowerCase();
         countMap.set(k, (countMap.get(k) || 0) + 1);
       }
     }

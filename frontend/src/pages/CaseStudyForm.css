@@ -158,6 +158,18 @@
   padding: 0;
 }
 
+.tag-category {
+  font-size: 0.6875rem;
+  font-weight: 400;
+  color: var(--color-text-muted);
+  margin-left: var(--space-1);
+}
+
+.tech-category-select {
+  min-width: 140px;
+  flex-shrink: 0;
+}
+
 /* Metric Input */
 .metric-input-row {
   display: flex;

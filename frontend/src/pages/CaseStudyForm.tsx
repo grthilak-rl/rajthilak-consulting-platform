@@ -10,6 +10,10 @@ import {
 import type { CaseStudyFormData } from "../types";
 import "./CaseStudyForm.css";
 
+const TECH_CATEGORIES = [
+  "Language", "Framework", "Infrastructure", "Data & Messaging", "AI & ML", "Tools",
+];
+
 const ICON_OPTIONS = [
   "code", "microphone", "activity", "bar-chart", "cloud",
   "briefcase", "cpu", "database", "rocket", "shield",
@@ -47,6 +51,7 @@ export default function CaseStudyForm() {
 
   // Temp inputs for array fields
   const [techInput, setTechInput] = useState("");
+  const [techCategory, setTechCategory] = useState<string>("Language");
   const [metricValue, setMetricValue] = useState("");
   const [metricLabel, setMetricLabel] = useState("");
 
@@ -88,8 +93,8 @@ export default function CaseStudyForm() {
   function addTechnology() {
     const tech = techInput.trim();
     if (!tech) return;
-    if (formData.technologies.includes(tech)) { setTechInput(""); return; }
-    setFormData((prev) => ({ ...prev, technologies: [...prev.technologies, tech] }));
+    if (formData.technologies.some((t) => t.name === tech)) { setTechInput(""); return; }
+    setFormData((prev) => ({ ...prev, technologies: [...prev.technologies, { name: tech, category: techCategory }] }));
     setTechInput("");
   }
 
@@ -270,6 +275,15 @@ export default function CaseStudyForm() {
                   }}
                   placeholder="React, Python, AWS…"
                 />
+                <select
+                  className="tech-category-select"
+                  value={techCategory}
+                  onChange={(e) => setTechCategory(e.target.value)}
+                >
+                  {TECH_CATEGORIES.map((cat) => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                </select>
                 <button type="button" className="btn-add-tag" onClick={addTechnology}>
                   Add
                 </button>
@@ -278,7 +292,8 @@ export default function CaseStudyForm() {
                 <div className="tag-list">
                   {formData.technologies.map((tech, i) => (
                     <span key={i} className="tag">
-                      {tech}
+                      {tech.name}
+                      <span className="tag-category">{tech.category}</span>
                       <button type="button" onClick={() => removeTechnology(i)}>×</button>
                     </span>
                   ))}

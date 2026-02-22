@@ -140,7 +140,7 @@ describe("createCaseStudy", () => {
       role: "Dev",
       description: "Desc",
       industry: "Tech",
-      technologies: ["React"],
+      technologies: [{ name: "React", category: "Framework" }],
       featured: false,
       metrics: [],
       visual_color: "primary",

@@ -109,18 +109,9 @@ const DEFAULT_TECH_STACK_META: TechStackFormMeta = {
   ],
 };
 
-interface PortfolioSkillGroup {
-  name: string;
-  techs: string[];
-  techsRaw?: string;
-}
-
 interface PortfolioMeta {
   overline: string;
   heading: string;
-  skills_title: string;
-  skills_subtitle: string;
-  skills: PortfolioSkillGroup[];
   cta_heading: string;
   cta_description: string;
   cta_button: string;
@@ -129,14 +120,6 @@ interface PortfolioMeta {
 const DEFAULT_PORTFOLIO_META: PortfolioMeta = {
   overline: "Projects & Portfolio",
   heading: 'Systems I Have <span class="highlight">Designed & Built</span>',
-  skills_title: "Technical Expertise",
-  skills_subtitle: "Technologies and tools I work with across the full stack",
-  skills: [
-    { name: "Languages", techs: ["Python", "Java", "TypeScript", "JavaScript", "SQL"] },
-    { name: "Frameworks", techs: ["FastAPI", "React", "Spring Boot", "LangChain", "SQLAlchemy"] },
-    { name: "Infrastructure", techs: ["AWS", "Docker", "Kubernetes", "Terraform", "Nginx"] },
-    { name: "Data & Messaging", techs: ["PostgreSQL", "Redis", "Kafka", "OpenAI API", "Alembic"] },
-  ],
   cta_heading: "Have a project in mind?",
   cta_description: "Whether it is a cloud migration, an MVP build, or an AI integration -- let us talk about how I can help your team ship.",
   cta_button: "Submit a Requirement",
@@ -236,11 +219,6 @@ export default function SiteContentForm() {
           setPortfolioMeta({
             overline: m.overline || DEFAULT_PORTFOLIO_META.overline,
             heading: m.heading || DEFAULT_PORTFOLIO_META.heading,
-            skills_title: m.skills_title || DEFAULT_PORTFOLIO_META.skills_title,
-            skills_subtitle: m.skills_subtitle || DEFAULT_PORTFOLIO_META.skills_subtitle,
-            skills: m.skills?.length
-              ? m.skills.map((s) => ({ ...s, techsRaw: s.techs.join(", ") }))
-              : DEFAULT_PORTFOLIO_META.skills,
             cta_heading: m.cta_heading || DEFAULT_PORTFOLIO_META.cta_heading,
             cta_description: m.cta_description || DEFAULT_PORTFOLIO_META.cta_description,
             cta_button: m.cta_button || DEFAULT_PORTFOLIO_META.cta_button,
@@ -301,12 +279,6 @@ export default function SiteContentForm() {
                   ? ({
                       overline: portfolioMeta.overline,
                       heading: portfolioMeta.heading,
-                      skills_title: portfolioMeta.skills_title,
-                      skills_subtitle: portfolioMeta.skills_subtitle,
-                      skills: portfolioMeta.skills.map(({ techsRaw, ...s }) => ({
-                        ...s,
-                        techs: (techsRaw ?? s.techs.join(", ")).split(",").map((t) => t.trim()).filter(Boolean),
-                      })),
                       cta_heading: portfolioMeta.cta_heading,
                       cta_description: portfolioMeta.cta_description,
                       cta_button: portfolioMeta.cta_button,
@@ -932,102 +904,6 @@ export default function SiteContentForm() {
                       Use &lt;span class="highlight"&gt;…&lt;/span&gt; for accent-colored text.
                     </span>
                   </div>
-                </div>
-              </div>
-
-              <div className="cs-form-section">
-                <h2>Skills Section</h2>
-                <div className="cs-form-grid">
-                  <div className="cs-form-field">
-                    <label htmlFor="pf-skills-title">Title</label>
-                    <input
-                      id="pf-skills-title"
-                      type="text"
-                      value={portfolioMeta.skills_title}
-                      onChange={(e) => setPortfolioMeta((p) => ({ ...p, skills_title: e.target.value }))}
-                      placeholder="Technical Expertise"
-                    />
-                  </div>
-                  <div className="cs-form-field full-width">
-                    <label htmlFor="pf-skills-subtitle">Subtitle</label>
-                    <input
-                      id="pf-skills-subtitle"
-                      type="text"
-                      value={portfolioMeta.skills_subtitle}
-                      onChange={(e) => setPortfolioMeta((p) => ({ ...p, skills_subtitle: e.target.value }))}
-                      placeholder="Technologies and tools I work with across the full stack"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="cs-form-section">
-                <h2>
-                  Skill Groups
-                  <button
-                    type="button"
-                    className="btn-add-card"
-                    onClick={() =>
-                      setPortfolioMeta((p) => ({
-                        ...p,
-                        skills: [...p.skills, { name: "", techs: [], techsRaw: "" }],
-                      }))
-                    }
-                  >
-                    + Add Group
-                  </button>
-                </h2>
-                <div className="sc-cards-grid">
-                  {portfolioMeta.skills.map((group, i) => (
-                    <div key={i} className="sc-card-editor">
-                      <div className="sc-card-num">{String(i + 1).padStart(2, "0")}</div>
-                      <div className="cs-form-field">
-                        <label>Group Name</label>
-                        <input
-                          type="text"
-                          value={group.name}
-                          onChange={(e) =>
-                            setPortfolioMeta((p) => ({
-                              ...p,
-                              skills: p.skills.map((s, si) =>
-                                si === i ? { ...s, name: e.target.value } : s
-                              ),
-                            }))
-                          }
-                          placeholder="Languages"
-                        />
-                      </div>
-                      <div className="cs-form-field">
-                        <label>Technologies</label>
-                        <textarea
-                          rows={3}
-                          value={group.techsRaw ?? group.techs.join(", ")}
-                          onChange={(e) =>
-                            setPortfolioMeta((p) => ({
-                              ...p,
-                              skills: p.skills.map((s, si) =>
-                                si === i ? { ...s, techsRaw: e.target.value } : s
-                              ),
-                            }))
-                          }
-                          placeholder="Python, Java, TypeScript, JavaScript"
-                        />
-                        <span className="field-hint">Comma-separated list of technologies.</span>
-                      </div>
-                      <button
-                        type="button"
-                        className="btn-remove-card"
-                        onClick={() =>
-                          setPortfolioMeta((p) => ({
-                            ...p,
-                            skills: p.skills.filter((_, si) => si !== i),
-                          }))
-                        }
-                      >
-                        Remove Group
-                      </button>
-                    </div>
-                  ))}
                 </div>
               </div>
 
