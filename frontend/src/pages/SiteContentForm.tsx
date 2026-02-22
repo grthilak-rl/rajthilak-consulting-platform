@@ -84,6 +84,31 @@ const DEFAULT_SERVICES_META: ServicesMeta = {
   ],
 };
 
+interface TechStackCategory {
+  name: string;
+  techs: string[];
+  techsRaw?: string;
+}
+
+interface TechStackFormMeta {
+  overline: string;
+  heading: string;
+  categories: TechStackCategory[];
+}
+
+const DEFAULT_TECH_STACK_META: TechStackFormMeta = {
+  overline: "Technical Stack",
+  heading: "What I Work With",
+  categories: [
+    { name: "Backend & APIs", techs: ["Python", "FastAPI", "Java", "Spring Boot"] },
+    { name: "Frontend", techs: ["React", "TypeScript", "Next.js", "Vue.js"] },
+    { name: "Data & Messaging", techs: ["PostgreSQL", "Redis", "Kafka", "MongoDB"] },
+    { name: "Cloud & DevOps", techs: ["AWS", "Docker", "Kubernetes", "Terraform"] },
+    { name: "AI & ML", techs: ["OpenAI", "LangChain", "Pinecone", "Hugging Face"] },
+    { name: "Tools & Practices", techs: ["Git", "pytest", "Jest", "OpenAPI"] },
+  ],
+};
+
 export default function SiteContentForm() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -101,11 +126,13 @@ export default function SiteContentForm() {
   const [servicesMeta, setServicesMeta] = useState<ServicesMeta>({ ...DEFAULT_SERVICES_META });
   const [heroDescLabel, setHeroDescLabel] = useState(DEFAULT_HERO_DESC_META.clients_label);
   const [heroDescClientsRaw, setHeroDescClientsRaw] = useState(DEFAULT_HERO_DESC_META.clients.join(", "));
+  const [techStackMeta, setTechStackMeta] = useState<TechStackFormMeta>({ ...DEFAULT_TECH_STACK_META });
 
   const isAboutHero = key === "about_hero";
   const isHeroDesc = key === "hero_description";
   const isPhilosophy = key === "about_philosophy";
   const isServices = key === "home_services";
+  const isTechStack = key === "about_tech_stack";
   const isHtmlContent = key === "about_story" || key === "about_why_platform";
 
   useEffect(() => {
@@ -157,6 +184,17 @@ export default function SiteContentForm() {
             cards: cards.map((c) => ({ ...c, tagsRaw: c.tags.join(", ") })),
           });
         }
+
+        if (item.key === "about_tech_stack" && item.metadata) {
+          const m = item.metadata as unknown as TechStackFormMeta;
+          setTechStackMeta({
+            overline: m.overline || DEFAULT_TECH_STACK_META.overline,
+            heading: m.heading || DEFAULT_TECH_STACK_META.heading,
+            categories: m.categories?.length
+              ? m.categories.map((c) => ({ ...c, techsRaw: c.techs.join(", ") }))
+              : DEFAULT_TECH_STACK_META.categories,
+          });
+        }
       })
       .catch((err: unknown) => {
         if (err instanceof ApiError && (err.status === 401 || err.status === 403)) {
@@ -199,7 +237,16 @@ export default function SiteContentForm() {
                     tags: (tagsRaw ?? c.tags.join(", ")).split(",").map((t) => t.trim()).filter(Boolean),
                   })),
                 } as unknown as Record<string, unknown>)
-              : undefined,
+              : isTechStack
+                ? ({
+                    overline: techStackMeta.overline,
+                    heading: techStackMeta.heading,
+                    categories: techStackMeta.categories.map(({ techsRaw, ...c }) => ({
+                      ...c,
+                      techs: (techsRaw ?? c.techs.join(", ")).split(",").map((t) => t.trim()).filter(Boolean),
+                    })),
+                  } as unknown as Record<string, unknown>)
+                : undefined,
     };
 
     try {
@@ -307,6 +354,9 @@ export default function SiteContentForm() {
                   <span className="field-hint">This is the subtitle displayed below the section heading.</span>
                 )}
                 {isServices && (
+                  <span className="field-hint">This is the subtitle displayed below the section heading.</span>
+                )}
+                {isTechStack && (
                   <span className="field-hint">This is the subtitle displayed below the section heading.</span>
                 )}
                 {isHtmlContent && (
@@ -638,6 +688,109 @@ export default function SiteContentForm() {
                         />
                         <span className="field-hint">Comma-separated list of tags.</span>
                       </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Tech Stack — Structured Fields */}
+          {isTechStack && (
+            <>
+              <div className="cs-form-section">
+                <h2>Section Display</h2>
+                <div className="cs-form-grid">
+                  <div className="cs-form-field">
+                    <label htmlFor="tech-overline">Overline</label>
+                    <input
+                      id="tech-overline"
+                      type="text"
+                      value={techStackMeta.overline}
+                      onChange={(e) => setTechStackMeta((p) => ({ ...p, overline: e.target.value }))}
+                      placeholder="Technical Stack"
+                    />
+                  </div>
+                  <div className="cs-form-field">
+                    <label htmlFor="tech-heading">Heading</label>
+                    <input
+                      id="tech-heading"
+                      type="text"
+                      value={techStackMeta.heading}
+                      onChange={(e) => setTechStackMeta((p) => ({ ...p, heading: e.target.value }))}
+                      placeholder="What I Work With"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="cs-form-section">
+                <h2>
+                  Technology Categories
+                  <button
+                    type="button"
+                    className="btn-add-card"
+                    onClick={() =>
+                      setTechStackMeta((p) => ({
+                        ...p,
+                        categories: [...p.categories, { name: "", techs: [], techsRaw: "" }],
+                      }))
+                    }
+                  >
+                    + Add Category
+                  </button>
+                </h2>
+                <div className="sc-cards-grid">
+                  {techStackMeta.categories.map((cat, i) => (
+                    <div key={i} className="sc-card-editor">
+                      <div className="sc-card-num">{String(i + 1).padStart(2, "0")}</div>
+                      <div className="cs-form-field">
+                        <label>Category Name</label>
+                        <input
+                          type="text"
+                          value={cat.name}
+                          onChange={(e) =>
+                            setTechStackMeta((p) => ({
+                              ...p,
+                              categories: p.categories.map((c, ci) =>
+                                ci === i ? { ...c, name: e.target.value } : c
+                              ),
+                            }))
+                          }
+                          placeholder="Backend & APIs"
+                        />
+                      </div>
+                      <div className="cs-form-field">
+                        <label>Technologies</label>
+                        <textarea
+                          rows={3}
+                          value={cat.techsRaw ?? cat.techs.join(", ")}
+                          onChange={(e) =>
+                            setTechStackMeta((p) => ({
+                              ...p,
+                              categories: p.categories.map((c, ci) =>
+                                ci === i ? { ...c, techsRaw: e.target.value } : c
+                              ),
+                            }))
+                          }
+                          placeholder="Python, FastAPI, Java, Spring Boot"
+                        />
+                        <span className="field-hint">
+                          Comma-separated. Names must match case study technologies for auto-proficiency bars.
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        className="btn-remove-card"
+                        onClick={() =>
+                          setTechStackMeta((p) => ({
+                            ...p,
+                            categories: p.categories.filter((_, ci) => ci !== i),
+                          }))
+                        }
+                      >
+                        Remove Category
+                      </button>
                     </div>
                   ))}
                 </div>

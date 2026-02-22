@@ -390,6 +390,23 @@ def seed_site_content():
                 },
             },
             {
+                "key": "about_tech_stack",
+                "title": "Technical Stack",
+                "content": "Technologies and tools I use across the full stack, from infrastructure to frontend.",
+                "metadata_": {
+                    "overline": "Technical Stack",
+                    "heading": "What I Work With",
+                    "categories": [
+                        {"name": "Backend & APIs", "techs": ["Python", "FastAPI", "Java", "Spring Boot", "Node.js", "GraphQL"]},
+                        {"name": "Frontend", "techs": ["React", "TypeScript", "Next.js", "Vue.js", "TailwindCSS"]},
+                        {"name": "Data & Messaging", "techs": ["PostgreSQL", "Redis", "Kafka", "MongoDB"]},
+                        {"name": "Cloud & DevOps", "techs": ["AWS", "Docker", "Kubernetes", "Terraform", "GitHub Actions"]},
+                        {"name": "AI & ML", "techs": ["OpenAI", "LangChain", "Pinecone", "Hugging Face"]},
+                        {"name": "Tools & Practices", "techs": ["Git", "pytest", "Jest", "OpenAPI"]},
+                    ],
+                },
+            },
+            {
                 "key": "about_why_platform",
                 "title": "Why I Built This Platform",
                 "content": (

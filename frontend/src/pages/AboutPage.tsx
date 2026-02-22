@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Layout from '../components/Layout';
-import { fetchTestimonials, fetchSiteContent } from '../api/client';
-import type { Testimonial, SiteContent } from '../types';
+import { fetchTestimonials, fetchSiteContent, fetchCaseStudies } from '../api/client';
+import type { Testimonial, SiteContent, CaseStudy } from '../types';
 import Skeleton from '../components/Skeleton';
 import useCountUp from '../hooks/useCountUp';
 import './AboutPage.css';
@@ -44,6 +44,32 @@ const PHILOSOPHY_DEFAULTS = {
   ],
 };
 
+interface TechCategory {
+  name: string;
+  techs: string[];
+}
+
+interface TechStackData {
+  overline: string;
+  heading: string;
+  subtitle: string;
+  categories: TechCategory[];
+}
+
+const TECH_STACK_DEFAULTS: TechStackData = {
+  overline: "Technical Stack",
+  heading: "What I Work With",
+  subtitle: "Technologies and tools I use across the full stack, from infrastructure to frontend.",
+  categories: [
+    { name: "Backend & APIs", techs: ["Python / FastAPI", "Java / Spring Boot", "Node.js / Express", "GraphQL / REST"] },
+    { name: "Frontend", techs: ["React / TypeScript", "Next.js", "Vue.js", "TailwindCSS"] },
+    { name: "Data & Messaging", techs: ["PostgreSQL", "Redis", "Kafka", "MongoDB"] },
+    { name: "Cloud & DevOps", techs: ["AWS (EC2, S3, RDS, Lambda)", "Docker / Kubernetes", "Terraform", "CI/CD (GitHub Actions)"] },
+    { name: "AI & ML", techs: ["OpenAI API", "LangChain", "Vector DBs (Pinecone, Weaviate)", "Hugging Face"] },
+    { name: "Tools & Practices", techs: ["Git / GitHub", "Testing (pytest, Jest)", "API Documentation (OpenAPI)", "Code Review & Mentoring"] },
+  ],
+};
+
 export default function AboutPage() {
   const [visibleElements, setVisibleElements] = useState<Set<number>>(new Set());
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
@@ -52,6 +78,8 @@ export default function AboutPage() {
   const [storyHtml, setStoryHtml] = useState(STORY_DEFAULT);
   const [whyPlatformHtml, setWhyPlatformHtml] = useState(WHY_PLATFORM_DEFAULT);
   const [philosophy, setPhilosophy] = useState(PHILOSOPHY_DEFAULTS);
+  const [caseStudies, setCaseStudies] = useState<CaseStudy[]>([]);
+  const [techStack, setTechStack] = useState<TechStackData>(TECH_STACK_DEFAULTS);
 
   // Derive hero display values from API data or fallbacks
   const meta = heroContent?.metadata as Record<string, unknown> | undefined;
@@ -65,13 +93,36 @@ export default function AboutPage() {
   const projectsCounter = useCountUp({ end: heroStats[1]?.value ?? 20, duration: 1400 });
   const industriesCounter = useCountUp({ end: heroStats[2]?.value ?? 4, duration: 1000 });
 
+  const techProficiency = useMemo(() => {
+    const map = new Map<string, number>();
+    const total = caseStudies.length;
+    if (total === 0) return map;
+
+    const countMap = new Map<string, number>();
+    for (const cs of caseStudies) {
+      for (const tech of cs.technologies) {
+        const k = tech.toLowerCase();
+        countMap.set(k, (countMap.get(k) || 0) + 1);
+      }
+    }
+
+    for (const cat of techStack.categories) {
+      for (const techName of cat.techs) {
+        const count = countMap.get(techName.toLowerCase()) || 0;
+        map.set(techName, Math.max(15, Math.min(95, Math.round((count / total) * 100))));
+      }
+    }
+    return map;
+  }, [caseStudies, techStack]);
+
   useEffect(() => {
     async function loadData() {
       try {
         setLoading(true);
-        const [testimonialsData, siteContentData] = await Promise.allSettled([
+        const [testimonialsData, siteContentData, caseStudiesData] = await Promise.allSettled([
           fetchTestimonials(),
           fetchSiteContent(),
+          fetchCaseStudies(),
         ]);
 
         if (testimonialsData.status === "fulfilled") {
@@ -130,6 +181,22 @@ export default function AboutPage() {
               cards: (pm?.cards as typeof PHILOSOPHY_DEFAULTS.cards) || PHILOSOPHY_DEFAULTS.cards,
             });
           }
+          const techItem = items.find((i) => i.key === "about_tech_stack");
+          if (techItem) {
+            const tm = techItem.metadata as Record<string, unknown> | undefined;
+            if (tm?.categories) {
+              setTechStack({
+                overline: (tm.overline as string) || TECH_STACK_DEFAULTS.overline,
+                heading: (tm.heading as string) || TECH_STACK_DEFAULTS.heading,
+                subtitle: techItem.content || TECH_STACK_DEFAULTS.subtitle,
+                categories: (tm.categories as TechCategory[]) || TECH_STACK_DEFAULTS.categories,
+              });
+            }
+          }
+        }
+
+        if (caseStudiesData.status === "fulfilled") {
+          setCaseStudies(caseStudiesData.value);
         }
       } finally {
         setLoading(false);
@@ -250,143 +317,27 @@ export default function AboutPage() {
       <section className="tech-expertise reveal" data-index={3}>
         <div className={`tech-expertise-inner ${visibleElements.has(3) ? 'visible' : ''}`}>
           <div className="tech-header">
-            <div className="overline">Technical Stack</div>
-            <h2>What I Work With</h2>
-            <p>Technologies and tools I use across the full stack, from infrastructure to frontend.</p>
+            <div className="overline">{techStack.overline}</div>
+            <h2>{techStack.heading}</h2>
+            <p>{techStack.subtitle}</p>
           </div>
 
           <div className="tech-grid stagger-children">
-            <div className="tech-category">
-              <h3>Backend & APIs</h3>
-              <div className="tech-items">
-                <div className="tech-item">
-                  <span className="tech-name">Python / FastAPI</span>
-                  <div className="tech-bar"><div className="tech-bar-fill" style={{width: '95%'}}></div></div>
-                </div>
-                <div className="tech-item">
-                  <span className="tech-name">Java / Spring Boot</span>
-                  <div className="tech-bar"><div className="tech-bar-fill" style={{width: '85%'}}></div></div>
-                </div>
-                <div className="tech-item">
-                  <span className="tech-name">Node.js / Express</span>
-                  <div className="tech-bar"><div className="tech-bar-fill" style={{width: '75%'}}></div></div>
-                </div>
-                <div className="tech-item">
-                  <span className="tech-name">GraphQL / REST</span>
-                  <div className="tech-bar"><div className="tech-bar-fill" style={{width: '90%'}}></div></div>
+            {techStack.categories.map((category, catIdx) => (
+              <div key={catIdx} className="tech-category">
+                <h3>{category.name}</h3>
+                <div className="tech-items">
+                  {category.techs.map((techName, techIdx) => (
+                    <div key={techIdx} className="tech-item">
+                      <span className="tech-name">{techName}</span>
+                      <div className="tech-bar">
+                        <div className="tech-bar-fill" style={{ width: `${techProficiency.get(techName) ?? 15}%` }} />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-            </div>
-
-            <div className="tech-category">
-              <h3>Frontend</h3>
-              <div className="tech-items">
-                <div className="tech-item">
-                  <span className="tech-name">React / TypeScript</span>
-                  <div className="tech-bar"><div className="tech-bar-fill" style={{width: '90%'}}></div></div>
-                </div>
-                <div className="tech-item">
-                  <span className="tech-name">Next.js</span>
-                  <div className="tech-bar"><div className="tech-bar-fill" style={{width: '80%'}}></div></div>
-                </div>
-                <div className="tech-item">
-                  <span className="tech-name">Vue.js</span>
-                  <div className="tech-bar"><div className="tech-bar-fill" style={{width: '70%'}}></div></div>
-                </div>
-                <div className="tech-item">
-                  <span className="tech-name">TailwindCSS</span>
-                  <div className="tech-bar"><div className="tech-bar-fill" style={{width: '85%'}}></div></div>
-                </div>
-              </div>
-            </div>
-
-            <div className="tech-category">
-              <h3>Data & Messaging</h3>
-              <div className="tech-items">
-                <div className="tech-item">
-                  <span className="tech-name">PostgreSQL</span>
-                  <div className="tech-bar"><div className="tech-bar-fill" style={{width: '90%'}}></div></div>
-                </div>
-                <div className="tech-item">
-                  <span className="tech-name">Redis</span>
-                  <div className="tech-bar"><div className="tech-bar-fill" style={{width: '85%'}}></div></div>
-                </div>
-                <div className="tech-item">
-                  <span className="tech-name">Kafka</span>
-                  <div className="tech-bar"><div className="tech-bar-fill" style={{width: '75%'}}></div></div>
-                </div>
-                <div className="tech-item">
-                  <span className="tech-name">MongoDB</span>
-                  <div className="tech-bar"><div className="tech-bar-fill" style={{width: '70%'}}></div></div>
-                </div>
-              </div>
-            </div>
-
-            <div className="tech-category">
-              <h3>Cloud & DevOps</h3>
-              <div className="tech-items">
-                <div className="tech-item">
-                  <span className="tech-name">AWS (EC2, S3, RDS, Lambda)</span>
-                  <div className="tech-bar"><div className="tech-bar-fill" style={{width: '90%'}}></div></div>
-                </div>
-                <div className="tech-item">
-                  <span className="tech-name">Docker / Kubernetes</span>
-                  <div className="tech-bar"><div className="tech-bar-fill" style={{width: '85%'}}></div></div>
-                </div>
-                <div className="tech-item">
-                  <span className="tech-name">Terraform</span>
-                  <div className="tech-bar"><div className="tech-bar-fill" style={{width: '75%'}}></div></div>
-                </div>
-                <div className="tech-item">
-                  <span className="tech-name">CI/CD (GitHub Actions)</span>
-                  <div className="tech-bar"><div className="tech-bar-fill" style={{width: '85%'}}></div></div>
-                </div>
-              </div>
-            </div>
-
-            <div className="tech-category">
-              <h3>AI & ML</h3>
-              <div className="tech-items">
-                <div className="tech-item">
-                  <span className="tech-name">OpenAI API</span>
-                  <div className="tech-bar"><div className="tech-bar-fill" style={{width: '90%'}}></div></div>
-                </div>
-                <div className="tech-item">
-                  <span className="tech-name">LangChain</span>
-                  <div className="tech-bar"><div className="tech-bar-fill" style={{width: '85%'}}></div></div>
-                </div>
-                <div className="tech-item">
-                  <span className="tech-name">Vector DBs (Pinecone, Weaviate)</span>
-                  <div className="tech-bar"><div className="tech-bar-fill" style={{width: '75%'}}></div></div>
-                </div>
-                <div className="tech-item">
-                  <span className="tech-name">Hugging Face</span>
-                  <div className="tech-bar"><div className="tech-bar-fill" style={{width: '70%'}}></div></div>
-                </div>
-              </div>
-            </div>
-
-            <div className="tech-category">
-              <h3>Tools & Practices</h3>
-              <div className="tech-items">
-                <div className="tech-item">
-                  <span className="tech-name">Git / GitHub</span>
-                  <div className="tech-bar"><div className="tech-bar-fill" style={{width: '95%'}}></div></div>
-                </div>
-                <div className="tech-item">
-                  <span className="tech-name">Testing (pytest, Jest)</span>
-                  <div className="tech-bar"><div className="tech-bar-fill" style={{width: '85%'}}></div></div>
-                </div>
-                <div className="tech-item">
-                  <span className="tech-name">API Documentation (OpenAPI)</span>
-                  <div className="tech-bar"><div className="tech-bar-fill" style={{width: '90%'}}></div></div>
-                </div>
-                <div className="tech-item">
-                  <span className="tech-name">Code Review & Mentoring</span>
-                  <div className="tech-bar"><div className="tech-bar-fill" style={{width: '90%'}}></div></div>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
