@@ -1,15 +1,17 @@
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
 from app.api import public, auth, admin
-from app.core.config import CORS_ORIGINS
+from app.core.config import CORS_ORIGINS, UPLOAD_DIR
 from app.core.deps import get_current_user
 from app.core.limiter import limiter
 from app.scripts.init_db import init_db
@@ -18,6 +20,7 @@ from app.scripts.init_db import init_db
 @asynccontextmanager
 async def lifespan(app):
     init_db()
+    os.makedirs(UPLOAD_DIR, exist_ok=True)
     yield
 
 
@@ -54,6 +57,9 @@ app.include_router(
     tags=["admin"],
     dependencies=[Depends(get_current_user)],
 )
+
+
+app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 
 @app.get("/health")

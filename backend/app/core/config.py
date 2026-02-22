@@ -14,6 +14,10 @@ ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "changeme")
 JWT_SECRET = os.environ.get("JWT_SECRET", "dev-secret-change-in-production")
 JWT_EXPIRES_IN = int(os.environ.get("JWT_EXPIRES_IN", "60"))  # minutes
 
+UPLOAD_DIR = os.environ.get("UPLOAD_DIR", "/app/uploads")
+MAX_UPLOAD_SIZE = 10 * 1024 * 1024  # 10 MB
+ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg"}
+
 CORS_ORIGINS = [
     origin.strip()
     for origin in os.environ.get(

@@ -1,8 +1,12 @@
+import os
+import uuid as uuid_mod
+from pathlib import Path
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, status
 from sqlalchemy.orm import Session
 
+from app.core.config import ALLOWED_EXTENSIONS, MAX_UPLOAD_SIZE, UPLOAD_DIR
 from app.core.database import get_db
 from app.models.case_study import CaseStudy
 from app.models.note import Note
@@ -140,6 +144,32 @@ def list_notes(requirement_id: UUID, db: Session = Depends(get_db)):
         .all()
     )
     return notes
+
+
+# ── File Uploads ─────────────────────────────────────────────
+
+
+@router.post("/uploads")
+async def upload_file(file: UploadFile):
+    ext = Path(file.filename or "").suffix.lower()
+    if ext not in ALLOWED_EXTENSIONS:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"File type '{ext}' not allowed. Allowed: {', '.join(sorted(ALLOWED_EXTENSIONS))}",
+        )
+    contents = await file.read()
+    if len(contents) > MAX_UPLOAD_SIZE:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"File too large. Max size: {MAX_UPLOAD_SIZE // (1024 * 1024)} MB",
+        )
+    os.makedirs(UPLOAD_DIR, exist_ok=True)
+    safe_name = Path(file.filename or "upload").name.replace(" ", "_")
+    unique_name = f"{uuid_mod.uuid4().hex[:12]}_{safe_name}"
+    file_path = os.path.join(UPLOAD_DIR, unique_name)
+    with open(file_path, "wb") as f:
+        f.write(contents)
+    return {"url": f"/uploads/{unique_name}"}
 
 
 # ── Case Studies ─────────────────────────────────────────────

@@ -223,6 +223,23 @@ export async function updateSiteContent(id: string, payload: Partial<SiteContent
   return handleResponse<SiteContent>(res);
 }
 
+// Admin: File Upload
+export async function uploadFile(file: File): Promise<{ url: string }> {
+  const formData = new FormData();
+  formData.append("file", file);
+  const headers: Record<string, string> = {};
+  const t = getToken();
+  if (t) {
+    headers["Authorization"] = `Bearer ${t}`;
+  }
+  const res = await safeFetch(`${API_BASE}/admin/uploads`, {
+    method: "POST",
+    headers,
+    body: formData,
+  });
+  return handleResponse<{ url: string }>(res);
+}
+
 export async function deleteSiteContent(id: string): Promise<void> {
   const res = await safeFetch(`${API_BASE}/admin/site-content/${id}`, {
     method: "DELETE",

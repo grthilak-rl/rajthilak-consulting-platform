@@ -5,6 +5,7 @@ import {
   createCaseStudy,
   updateCaseStudy,
   fetchCaseStudyAdmin,
+  uploadFile,
   setToken,
 } from "../api/client";
 import type { CaseStudyFormData, GalleryItem } from "../types";
@@ -63,9 +64,9 @@ export default function CaseStudyForm() {
   const [metricValue, setMetricValue] = useState("");
   const [metricLabel, setMetricLabel] = useState("");
   const [featureInput, setFeatureInput] = useState("");
-  const [galleryUrl, setGalleryUrl] = useState("");
   const [galleryCaption, setGalleryCaption] = useState("");
   const [galleryType, setGalleryType] = useState<GalleryItem["type"]>("screenshot");
+  const [galleryUploading, setGalleryUploading] = useState(false);
 
   useEffect(() => {
     if (!isEditMode || !id) return;
@@ -157,14 +158,23 @@ export default function CaseStudyForm() {
     }));
   }
 
-  function addGalleryItem() {
-    if (!galleryUrl.trim()) return;
-    setFormData((prev) => ({
-      ...prev,
-      gallery: [...prev.gallery, { url: galleryUrl.trim(), caption: galleryCaption.trim(), type: galleryType }],
-    }));
-    setGalleryUrl("");
-    setGalleryCaption("");
+  async function handleGalleryFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setGalleryUploading(true);
+    try {
+      const { url } = await uploadFile(file);
+      setFormData((prev) => ({
+        ...prev,
+        gallery: [...prev.gallery, { url, caption: galleryCaption.trim(), type: galleryType }],
+      }));
+      setGalleryCaption("");
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setGalleryUploading(false);
+      e.target.value = "";
+    }
   }
 
   function removeGalleryItem(index: number) {
@@ -508,12 +518,6 @@ export default function CaseStudyForm() {
               <div className="gallery-input-row">
                 <input
                   type="text"
-                  value={galleryUrl}
-                  onChange={(e) => setGalleryUrl(e.target.value)}
-                  placeholder="https://example.com/screenshot.png"
-                />
-                <input
-                  type="text"
                   value={galleryCaption}
                   onChange={(e) => setGalleryCaption(e.target.value)}
                   placeholder="Caption (optional)"
@@ -522,8 +526,31 @@ export default function CaseStudyForm() {
                   <option value="screenshot">Screenshot</option>
                   <option value="architecture">Architecture</option>
                 </select>
-                <button type="button" className="btn-add-tag" onClick={addGalleryItem}>Add</button>
               </div>
+              <label className="gallery-upload-btn" aria-disabled={galleryUploading || saving}>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleGalleryFileSelect}
+                  disabled={galleryUploading || saving}
+                  style={{ display: "none" }}
+                />
+                {galleryUploading ? (
+                  <>
+                    <span className="upload-spinner" />
+                    Uploading...
+                  </>
+                ) : (
+                  <>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <path d="M8 2v8M4 6l4-4 4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M2 12h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                    </svg>
+                    Choose File
+                  </>
+                )}
+              </label>
+              <span className="field-hint">JPG, PNG, GIF, WebP, or SVG (max 10 MB)</span>
               {formData.gallery.length > 0 && (
                 <div className="gallery-list">
                   {formData.gallery.map((item, i) => (
