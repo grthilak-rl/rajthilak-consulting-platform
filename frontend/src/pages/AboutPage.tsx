@@ -99,17 +99,22 @@ export default function AboutPage() {
     if (total === 0) return map;
 
     const countMap = new Map<string, number>();
+    let maxCount = 1;
     for (const cs of caseStudies) {
       for (const tech of cs.technologies) {
         const k = tech.name.toLowerCase();
-        countMap.set(k, (countMap.get(k) || 0) + 1);
+        const newCount = (countMap.get(k) || 0) + 1;
+        countMap.set(k, newCount);
+        if (newCount > maxCount) maxCount = newCount;
       }
     }
 
+    // Scale proficiency: 0 uses → 15%, max uses → 95%, linearly between
     for (const cat of techStack.categories) {
       for (const techName of cat.techs) {
         const count = countMap.get(techName.toLowerCase()) || 0;
-        map.set(techName, Math.max(15, Math.min(95, Math.round((count / total) * 100))));
+        const proficiency = count === 0 ? 15 : Math.round(15 + (count / maxCount) * 80);
+        map.set(techName, proficiency);
       }
     }
     return map;

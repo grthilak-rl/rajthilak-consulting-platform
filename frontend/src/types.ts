@@ -37,6 +37,12 @@ export interface TechnologyItem {
   category: string;
 }
 
+export interface GalleryItem {
+  url: string;
+  caption: string;
+  type: "screenshot" | "architecture";
+}
+
 export interface CaseStudy {
   id: string;
   slug: string;
@@ -50,6 +56,14 @@ export interface CaseStudy {
     value: string;
     label: string;
   }[];
+  problem?: string;
+  solution?: string;
+  role_description?: string;
+  key_features?: string[];
+  architecture?: string;
+  challenges?: string;
+  impact?: string;
+  gallery?: GalleryItem[];
   visual: {
     color: string;
     icon: string;
@@ -69,6 +83,14 @@ export interface CaseStudyFormData {
   technologies: TechnologyItem[];
   featured: boolean;
   metrics: { value: string; label: string }[];
+  problem: string;
+  solution: string;
+  role_description: string;
+  key_features: string[];
+  architecture: string;
+  challenges: string;
+  impact: string;
+  gallery: GalleryItem[];
   visual_color: string;
   visual_icon: string;
   display_order: number;

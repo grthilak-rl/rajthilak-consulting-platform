@@ -163,6 +163,94 @@ export default function CaseStudyDetail() {
         </div>
       </section>
 
+      {/* Gallery */}
+      {caseStudy.gallery && caseStudy.gallery.length > 0 && (
+        <section className="detail-content-section detail-gallery-section">
+          <div className="detail-content-inner detail-content-wide">
+            <div className="detail-section-label">Gallery</div>
+            <h2>Screenshots &amp; Diagrams</h2>
+            <div className="detail-gallery-grid">
+              {caseStudy.gallery.map((item, i) => (
+                <figure key={i} className={`gallery-figure gallery-${item.type}`}>
+                  <img src={item.url} alt={item.caption} loading="lazy" />
+                  {item.caption && <figcaption>{item.caption}</figcaption>}
+                </figure>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Problem */}
+      {caseStudy.problem && (
+        <section className="detail-content-section">
+          <div className="detail-content-inner">
+            <div className="detail-section-label">The Problem</div>
+            <h2>What Was Broken</h2>
+            <div className="detail-prose">{caseStudy.problem}</div>
+          </div>
+        </section>
+      )}
+
+      {/* Solution */}
+      {caseStudy.solution && (
+        <section className="detail-content-section">
+          <div className="detail-content-inner">
+            <div className="detail-section-label">The Solution</div>
+            <h2>What Was Built</h2>
+            <div className="detail-prose">{caseStudy.solution}</div>
+          </div>
+        </section>
+      )}
+
+      {/* Key Features */}
+      {caseStudy.key_features && caseStudy.key_features.length > 0 && (
+        <section className="detail-content-section">
+          <div className="detail-content-inner">
+            <div className="detail-section-label">Key Features</div>
+            <h2>What Was Delivered</h2>
+            <ul className="detail-features-list">
+              {caseStudy.key_features.map((feature, i) => (
+                <li key={i}>{feature}</li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
+
+      {/* My Role */}
+      {caseStudy.role_description && (
+        <section className="detail-content-section">
+          <div className="detail-content-inner">
+            <div className="detail-section-label">My Role</div>
+            <h2>Ownership &amp; Responsibilities</h2>
+            <div className="detail-prose">{caseStudy.role_description}</div>
+          </div>
+        </section>
+      )}
+
+      {/* Architecture */}
+      {caseStudy.architecture && (
+        <section className="detail-content-section">
+          <div className="detail-content-inner">
+            <div className="detail-section-label">Architecture</div>
+            <h2>System Design</h2>
+            <div className="detail-prose">{caseStudy.architecture}</div>
+          </div>
+        </section>
+      )}
+
+      {/* Challenges & Trade-offs */}
+      {caseStudy.challenges && (
+        <section className="detail-content-section">
+          <div className="detail-content-inner">
+            <div className="detail-section-label">Challenges &amp; Trade-offs</div>
+            <h2>Problems I Solved</h2>
+            <div className="detail-prose">{caseStudy.challenges}</div>
+          </div>
+        </section>
+      )}
+
       {/* Metrics */}
       {caseStudy.metrics && caseStudy.metrics.length > 0 && (
         <section className="detail-metrics">
@@ -176,6 +264,17 @@ export default function CaseStudyDetail() {
                 </div>
               ))}
             </div>
+          </div>
+        </section>
+      )}
+
+      {/* Impact */}
+      {caseStudy.impact && (
+        <section className="detail-content-section">
+          <div className="detail-content-inner">
+            <div className="detail-section-label">Impact</div>
+            <h2>Why This Mattered</h2>
+            <div className="detail-prose">{caseStudy.impact}</div>
           </div>
         </section>
       )}

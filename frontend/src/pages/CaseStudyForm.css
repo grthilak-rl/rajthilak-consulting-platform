@@ -222,6 +222,107 @@
   color: var(--color-error);
 }
 
+/* Feature List */
+.feature-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+}
+
+.feature-item button {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 1.125rem;
+  cursor: pointer;
+  padding: 0;
+}
+
+.feature-item button:hover {
+  color: var(--color-error);
+}
+
+/* Gallery */
+.gallery-input-row {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.gallery-input-row input {
+  flex: 1;
+}
+
+.gallery-input-row select {
+  min-width: 130px;
+}
+
+.gallery-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.gallery-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.gallery-thumb {
+  width: 60px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+}
+
+.gallery-item-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.gallery-item-caption {
+  font-size: 0.875rem;
+  color: var(--color-text);
+}
+
+.gallery-item-type {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+}
+
+.gallery-item > button {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 1.125rem;
+  cursor: pointer;
+}
+
+.gallery-item > button:hover {
+  color: var(--color-error);
+}
+
 /* Color Picker */
 .color-picker {
   display: flex;
@@ -383,7 +484,8 @@
     grid-column: 1;
   }
 
-  .metric-input-row {
+  .metric-input-row,
+  .gallery-input-row {
     flex-direction: column;
   }
 

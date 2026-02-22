@@ -18,6 +18,14 @@ class CaseStudy(Base):
     technologies = Column(JSON, nullable=False, default=list)
     featured = Column(Boolean, default=False, nullable=False)
     metrics = Column(JSON, nullable=True)  # [{"value": "60%", "label": "Faster"}]
+    problem = Column(Text, nullable=True)
+    solution = Column(Text, nullable=True)
+    role_description = Column(Text, nullable=True)
+    key_features = Column(JSON, nullable=True)  # ["feature1", "feature2"]
+    architecture = Column(Text, nullable=True)
+    challenges = Column(Text, nullable=True)
+    impact = Column(Text, nullable=True)
+    gallery = Column(JSON, nullable=True)  # [{"url": "", "caption": "", "type": ""}]
     visual_color = Column(String, nullable=False, default="primary")
     visual_icon = Column(String, nullable=False, default="code")
     display_order = Column(Integer, default=0, nullable=False)

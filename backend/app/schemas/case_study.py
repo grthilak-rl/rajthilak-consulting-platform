@@ -20,6 +20,12 @@ class VisualConfig(BaseModel):
     icon: str
 
 
+class GalleryItem(BaseModel):
+    url: str
+    caption: str
+    type: str
+
+
 class CaseStudyResponse(BaseModel):
     id: UUID
     slug: str
@@ -30,6 +36,14 @@ class CaseStudyResponse(BaseModel):
     technologies: list[TechnologyItem]
     featured: bool
     metrics: Optional[list[MetricItem]] = None
+    problem: Optional[str] = None
+    solution: Optional[str] = None
+    role_description: Optional[str] = None
+    key_features: Optional[list[str]] = None
+    architecture: Optional[str] = None
+    challenges: Optional[str] = None
+    impact: Optional[str] = None
+    gallery: Optional[list[GalleryItem]] = None
     visual: VisualConfig
     created_at: datetime
     updated_at: datetime
@@ -48,6 +62,14 @@ class CaseStudyResponse(BaseModel):
             technologies=obj.technologies or [],
             featured=obj.featured,
             metrics=obj.metrics,
+            problem=obj.problem,
+            solution=obj.solution,
+            role_description=obj.role_description,
+            key_features=obj.key_features,
+            architecture=obj.architecture,
+            challenges=obj.challenges,
+            impact=obj.impact,
+            gallery=obj.gallery,
             visual=VisualConfig(color=obj.visual_color, icon=obj.visual_icon),
             created_at=obj.created_at,
             updated_at=obj.updated_at,
@@ -64,6 +86,14 @@ class CaseStudyAdminResponse(BaseModel):
     technologies: list[TechnologyItem]
     featured: bool
     metrics: Optional[list[MetricItem]] = None
+    problem: Optional[str] = None
+    solution: Optional[str] = None
+    role_description: Optional[str] = None
+    key_features: Optional[list[str]] = None
+    architecture: Optional[str] = None
+    challenges: Optional[str] = None
+    impact: Optional[str] = None
+    gallery: Optional[list[GalleryItem]] = None
     visual: VisualConfig
     display_order: int
     is_active: bool
@@ -84,6 +114,14 @@ class CaseStudyAdminResponse(BaseModel):
             technologies=obj.technologies or [],
             featured=obj.featured,
             metrics=obj.metrics,
+            problem=obj.problem,
+            solution=obj.solution,
+            role_description=obj.role_description,
+            key_features=obj.key_features,
+            architecture=obj.architecture,
+            challenges=obj.challenges,
+            impact=obj.impact,
+            gallery=obj.gallery,
             visual=VisualConfig(color=obj.visual_color, icon=obj.visual_icon),
             display_order=obj.display_order,
             is_active=obj.is_active,
@@ -101,6 +139,14 @@ class CaseStudyCreate(BaseModel):
     technologies: list[TechnologyItem] = []
     featured: bool = False
     metrics: Optional[list[MetricItem]] = None
+    problem: Optional[str] = None
+    solution: Optional[str] = None
+    role_description: Optional[str] = None
+    key_features: Optional[list[str]] = None
+    architecture: Optional[str] = None
+    challenges: Optional[str] = None
+    impact: Optional[str] = None
+    gallery: Optional[list[GalleryItem]] = None
     visual_color: str = "primary"
     visual_icon: str = "code"
     display_order: int = 0
@@ -116,6 +162,14 @@ class CaseStudyUpdate(BaseModel):
     technologies: Optional[list[TechnologyItem]] = None
     featured: Optional[bool] = None
     metrics: Optional[list[MetricItem]] = None
+    problem: Optional[str] = None
+    solution: Optional[str] = None
+    role_description: Optional[str] = None
+    key_features: Optional[list[str]] = None
+    architecture: Optional[str] = None
+    challenges: Optional[str] = None
+    impact: Optional[str] = None
+    gallery: Optional[list[GalleryItem]] = None
     visual_color: Optional[str] = None
     visual_icon: Optional[str] = None
     display_order: Optional[int] = None

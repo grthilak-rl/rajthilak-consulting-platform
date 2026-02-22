@@ -187,6 +187,14 @@ def create_case_study(body: CaseStudyCreate, db: Session = Depends(get_db)):
         technologies=[t.model_dump() for t in body.technologies],
         featured=body.featured,
         metrics=[m.model_dump() for m in body.metrics] if body.metrics else None,
+        problem=body.problem,
+        solution=body.solution,
+        role_description=body.role_description,
+        key_features=body.key_features,
+        architecture=body.architecture,
+        challenges=body.challenges,
+        impact=body.impact,
+        gallery=[g.model_dump() for g in body.gallery] if body.gallery else None,
         visual_color=body.visual_color,
         visual_icon=body.visual_icon,
         display_order=body.display_order,
@@ -229,6 +237,11 @@ def update_case_study(
         update_data["metrics"] = [
             m.model_dump() if hasattr(m, "model_dump") else m
             for m in update_data["metrics"]
+        ]
+    if "gallery" in update_data and update_data["gallery"] is not None:
+        update_data["gallery"] = [
+            g.model_dump() if hasattr(g, "model_dump") else g
+            for g in update_data["gallery"]
         ]
     for field, value in update_data.items():
         setattr(study, field, value)
