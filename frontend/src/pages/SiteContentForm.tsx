@@ -14,7 +14,7 @@ interface AboutHeroMeta {
   overline: string;
   heading: string;
   stats: { value: number; suffix: string; label: string }[];
-  avatar: { initials: string; name: string; title: string };
+  avatar: { initials: string; name: string; title: string; github: string; linkedin: string; email: string };
 }
 
 const DEFAULT_HERO_META: AboutHeroMeta = {
@@ -25,7 +25,7 @@ const DEFAULT_HERO_META: AboutHeroMeta = {
     { value: 20, suffix: "+", label: "Projects Delivered" },
     { value: 4, suffix: "", label: "Industries" },
   ],
-  avatar: { initials: "RT", name: "Raj Thilak", title: "Engineering Consultant & Architect" },
+  avatar: { initials: "RT", name: "Raj Thilak", title: "Engineering Consultant & Architect", github: "https://github.com/rajthilak", linkedin: "https://linkedin.com/in/rajthilak", email: "raj@example.com" },
 };
 
 interface PhilosophyCard {
@@ -475,6 +475,43 @@ export default function SiteContentForm() {
                       }
                       placeholder="Engineering Consultant & Architect"
                     />
+                  </div>
+                  <div className="cs-form-field">
+                    <label htmlFor="avatar-github">GitHub URL</label>
+                    <input
+                      id="avatar-github"
+                      type="text"
+                      value={heroMeta.avatar.github}
+                      onChange={(e) =>
+                        setHeroMeta((p) => ({ ...p, avatar: { ...p.avatar, github: e.target.value } }))
+                      }
+                      placeholder="https://github.com/username"
+                    />
+                  </div>
+                  <div className="cs-form-field">
+                    <label htmlFor="avatar-linkedin">LinkedIn URL</label>
+                    <input
+                      id="avatar-linkedin"
+                      type="text"
+                      value={heroMeta.avatar.linkedin}
+                      onChange={(e) =>
+                        setHeroMeta((p) => ({ ...p, avatar: { ...p.avatar, linkedin: e.target.value } }))
+                      }
+                      placeholder="https://linkedin.com/in/username"
+                    />
+                  </div>
+                  <div className="cs-form-field full-width">
+                    <label htmlFor="avatar-email">Email</label>
+                    <input
+                      id="avatar-email"
+                      type="email"
+                      value={heroMeta.avatar.email}
+                      onChange={(e) =>
+                        setHeroMeta((p) => ({ ...p, avatar: { ...p.avatar, email: e.target.value } }))
+                      }
+                      placeholder="you@example.com"
+                    />
+                    <span className="field-hint">Leave blank to hide the icon on the About page.</span>
                   </div>
                 </div>
               </div>
