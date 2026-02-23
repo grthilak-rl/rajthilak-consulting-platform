@@ -80,6 +80,61 @@
   border-color: #dc2626;
 }
 
+/* Avatar Photo Preview */
+.avatar-photo-preview {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.avatar-photo-preview img {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--color-border);
+}
+
+/* Upload Button */
+.cs-form-field .avatar-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 10px 20px;
+  margin-top: var(--space-3);
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background 0.15s ease;
+  width: fit-content;
+}
+
+.cs-form-field .avatar-upload-btn:hover:not([aria-disabled="true"]) {
+  background: var(--color-primary-dark);
+}
+
+.cs-form-field .avatar-upload-btn[aria-disabled="true"] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.upload-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 /* Responsive */
 @media (max-width: 640px) {
   .sc-stat-row {

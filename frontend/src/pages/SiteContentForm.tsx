@@ -6,6 +6,7 @@ import {
   updateSiteContent,
   fetchSiteContentAdmin,
   setToken,
+  uploadFile,
 } from "../api/client";
 import type { SiteContentFormData } from "../types";
 import "./SiteContentForm.css";
@@ -14,7 +15,7 @@ interface AboutHeroMeta {
   overline: string;
   heading: string;
   stats: { value: number; suffix: string; label: string }[];
-  avatar: { initials: string; name: string; title: string; github: string; linkedin: string; email: string };
+  avatar: { initials: string; name: string; title: string; education: string; photoUrl: string; github: string; linkedin: string; email: string };
 }
 
 const DEFAULT_HERO_META: AboutHeroMeta = {
@@ -25,7 +26,7 @@ const DEFAULT_HERO_META: AboutHeroMeta = {
     { value: 20, suffix: "+", label: "Projects Delivered" },
     { value: 4, suffix: "", label: "Industries" },
   ],
-  avatar: { initials: "RT", name: "Raj Thilak", title: "Engineering Consultant & Architect", github: "https://github.com/rajthilak", linkedin: "https://linkedin.com/in/rajthilak", email: "raj@example.com" },
+  avatar: { initials: "RT", name: "Raj Thilak", title: "Engineering Consultant & Architect", education: "", photoUrl: "", github: "https://github.com/rajthilak", linkedin: "https://linkedin.com/in/rajthilak", email: "raj@example.com" },
 };
 
 interface PhilosophyCard {
@@ -144,6 +145,7 @@ export default function SiteContentForm() {
   const [heroDescClientsRaw, setHeroDescClientsRaw] = useState(DEFAULT_HERO_DESC_META.clients.join(", "));
   const [techStackMeta, setTechStackMeta] = useState<TechStackFormMeta>({ ...DEFAULT_TECH_STACK_META });
   const [portfolioMeta, setPortfolioMeta] = useState<PortfolioMeta>({ ...DEFAULT_PORTFOLIO_META });
+  const [avatarUploading, setAvatarUploading] = useState(false);
 
   const isAboutHero = key === "about_hero";
   const isHeroDesc = key === "hero_description";
@@ -173,7 +175,7 @@ export default function SiteContentForm() {
             overline: m.overline || DEFAULT_HERO_META.overline,
             heading: m.heading || DEFAULT_HERO_META.heading,
             stats: m.stats?.length ? m.stats : DEFAULT_HERO_META.stats,
-            avatar: m.avatar || DEFAULT_HERO_META.avatar,
+            avatar: { ...DEFAULT_HERO_META.avatar, ...m.avatar },
           });
         }
 
@@ -241,6 +243,24 @@ export default function SiteContentForm() {
       ...prev,
       stats: prev.stats.map((s, i) => (i === index ? { ...s, [field]: value } : s)),
     }));
+  }
+
+  async function handleAvatarPhotoSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setAvatarUploading(true);
+    try {
+      const { url } = await uploadFile(file);
+      setHeroMeta((prev) => ({
+        ...prev,
+        avatar: { ...prev.avatar, photoUrl: url },
+      }));
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setAvatarUploading(false);
+      e.target.value = "";
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -518,6 +538,60 @@ export default function SiteContentForm() {
                       }
                       placeholder="Engineering Consultant & Architect"
                     />
+                  </div>
+                  <div className="cs-form-field full-width">
+                    <label htmlFor="avatar-education">Education / Degree</label>
+                    <input
+                      id="avatar-education"
+                      type="text"
+                      value={heroMeta.avatar.education}
+                      onChange={(e) =>
+                        setHeroMeta((p) => ({ ...p, avatar: { ...p.avatar, education: e.target.value } }))
+                      }
+                      placeholder="B.Tech, Computer Science"
+                    />
+                    <span className="field-hint">Leave blank to hide on the About page.</span>
+                  </div>
+                  <div className="cs-form-field full-width">
+                    <label>Profile Photo</label>
+                    {heroMeta.avatar.photoUrl && (
+                      <div className="avatar-photo-preview">
+                        <img src={heroMeta.avatar.photoUrl} alt="Current avatar" />
+                        <button
+                          type="button"
+                          className="btn-remove-card"
+                          onClick={() =>
+                            setHeroMeta((p) => ({ ...p, avatar: { ...p.avatar, photoUrl: "" } }))
+                          }
+                        >
+                          Remove Photo
+                        </button>
+                      </div>
+                    )}
+                    <label className="avatar-upload-btn" aria-disabled={avatarUploading || saving}>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleAvatarPhotoSelect}
+                        disabled={avatarUploading || saving}
+                        style={{ display: "none" }}
+                      />
+                      {avatarUploading ? (
+                        <>
+                          <span className="upload-spinner" />
+                          Uploading…
+                        </>
+                      ) : (
+                        <>
+                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M8 2v8M4 6l4-4 4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M2 12h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                          </svg>
+                          {heroMeta.avatar.photoUrl ? "Change Photo" : "Choose Photo"}
+                        </>
+                      )}
+                    </label>
+                    <span className="field-hint">JPG, PNG, GIF, WebP, or SVG (max 10 MB). Replaces the initials circle on the About page.</span>
                   </div>
                   <div className="cs-form-field">
                     <label htmlFor="avatar-github">GitHub URL</label>

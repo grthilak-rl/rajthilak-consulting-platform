@@ -16,7 +16,7 @@ const HERO_DEFAULTS = {
     { value: 20, suffix: "+", label: "Projects Delivered" },
     { value: 4, suffix: "", label: "Industries" },
   ],
-  avatar: { initials: "RT", name: "Raj Thilak", title: "Engineering Consultant & Architect", github: "https://github.com/rajthilak", linkedin: "https://linkedin.com/in/rajthilak", email: "raj@example.com" },
+  avatar: { initials: "RT", name: "Raj Thilak", title: "Engineering Consultant & Architect", education: "", photoUrl: "", github: "https://github.com/rajthilak", linkedin: "https://linkedin.com/in/rajthilak", email: "raj@example.com" },
 };
 
 const STORY_DEFAULT = (
@@ -254,9 +254,16 @@ export default function AboutPage() {
           </div>
 
           <div className="about-avatar-card animate-in delay-4">
-            <div className="avatar-circle">{heroAvatar.initials}</div>
+            {heroAvatar.photoUrl ? (
+              <img src={heroAvatar.photoUrl} alt={heroAvatar.name} className="avatar-circle avatar-photo" />
+            ) : (
+              <div className="avatar-circle">{heroAvatar.initials}</div>
+            )}
             <div className="avatar-name">{heroAvatar.name}</div>
             <div className="avatar-title">{heroAvatar.title}</div>
+            {heroAvatar.education && (
+              <div className="avatar-education">{heroAvatar.education}</div>
+            )}
             <div className="avatar-links">
               {heroAvatar.github && (
                 <a href={heroAvatar.github} target="_blank" rel="noopener noreferrer" className="avatar-link" aria-label="GitHub">
