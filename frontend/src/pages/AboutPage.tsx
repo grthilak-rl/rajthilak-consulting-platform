@@ -16,7 +16,7 @@ const HERO_DEFAULTS = {
     { value: 20, suffix: "+", label: "Projects Delivered" },
     { value: 4, suffix: "", label: "Industries" },
   ],
-  avatar: { initials: "RT", name: "Raj Thilak", title: "Engineering Consultant & Architect", education: "", photoUrl: "", github: "https://github.com/rajthilak", linkedin: "https://linkedin.com/in/rajthilak", email: "raj@example.com" },
+  avatar: { initials: "RT", name: "Raj Thilak", title: "Engineering Consultant & Architect", education: "", photoUrl: "", photoZoom: 100, photoOffsetY: 50, github: "https://github.com/rajthilak", linkedin: "https://linkedin.com/in/rajthilak", email: "raj@example.com" },
 };
 
 const STORY_DEFAULT = (
@@ -255,7 +255,15 @@ export default function AboutPage() {
 
           <div className="about-avatar-card animate-in delay-4">
             {heroAvatar.photoUrl ? (
-              <img src={heroAvatar.photoUrl} alt={heroAvatar.name} className="avatar-circle avatar-photo" />
+              <img
+                src={heroAvatar.photoUrl}
+                alt={heroAvatar.name}
+                className="avatar-circle avatar-photo"
+                style={{
+                  objectPosition: `center ${heroAvatar.photoOffsetY ?? 50}%`,
+                  transform: `scale(${(heroAvatar.photoZoom ?? 100) / 100})`,
+                }}
+              />
             ) : (
               <div className="avatar-circle">{heroAvatar.initials}</div>
             )}

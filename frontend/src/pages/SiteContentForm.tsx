@@ -15,7 +15,7 @@ interface AboutHeroMeta {
   overline: string;
   heading: string;
   stats: { value: number; suffix: string; label: string }[];
-  avatar: { initials: string; name: string; title: string; education: string; photoUrl: string; github: string; linkedin: string; email: string };
+  avatar: { initials: string; name: string; title: string; education: string; photoUrl: string; photoZoom: number; photoOffsetY: number; github: string; linkedin: string; email: string };
 }
 
 const DEFAULT_HERO_META: AboutHeroMeta = {
@@ -26,7 +26,7 @@ const DEFAULT_HERO_META: AboutHeroMeta = {
     { value: 20, suffix: "+", label: "Projects Delivered" },
     { value: 4, suffix: "", label: "Industries" },
   ],
-  avatar: { initials: "RT", name: "Raj Thilak", title: "Engineering Consultant & Architect", education: "", photoUrl: "", github: "https://github.com/rajthilak", linkedin: "https://linkedin.com/in/rajthilak", email: "raj@example.com" },
+  avatar: { initials: "RT", name: "Raj Thilak", title: "Engineering Consultant & Architect", education: "", photoUrl: "", photoZoom: 100, photoOffsetY: 50, github: "https://github.com/rajthilak", linkedin: "https://linkedin.com/in/rajthilak", email: "raj@example.com" },
 };
 
 interface PhilosophyCard {
@@ -555,17 +555,52 @@ export default function SiteContentForm() {
                   <div className="cs-form-field full-width">
                     <label>Profile Photo</label>
                     {heroMeta.avatar.photoUrl && (
-                      <div className="avatar-photo-preview">
-                        <img src={heroMeta.avatar.photoUrl} alt="Current avatar" />
-                        <button
-                          type="button"
-                          className="btn-remove-card"
-                          onClick={() =>
-                            setHeroMeta((p) => ({ ...p, avatar: { ...p.avatar, photoUrl: "" } }))
-                          }
-                        >
-                          Remove Photo
-                        </button>
+                      <div className="avatar-photo-adjuster">
+                        <div className="avatar-photo-preview-circle">
+                          <img
+                            src={heroMeta.avatar.photoUrl}
+                            alt="Current avatar"
+                            style={{
+                              objectPosition: `center ${heroMeta.avatar.photoOffsetY}%`,
+                              transform: `scale(${heroMeta.avatar.photoZoom / 100})`,
+                            }}
+                          />
+                        </div>
+                        <div className="avatar-photo-controls">
+                          <div className="avatar-slider">
+                            <label>Zoom: {heroMeta.avatar.photoZoom}%</label>
+                            <input
+                              type="range"
+                              min={100}
+                              max={200}
+                              value={heroMeta.avatar.photoZoom}
+                              onChange={(e) =>
+                                setHeroMeta((p) => ({ ...p, avatar: { ...p.avatar, photoZoom: Number(e.target.value) } }))
+                              }
+                            />
+                          </div>
+                          <div className="avatar-slider">
+                            <label>Vertical Position: {heroMeta.avatar.photoOffsetY}%</label>
+                            <input
+                              type="range"
+                              min={0}
+                              max={100}
+                              value={heroMeta.avatar.photoOffsetY}
+                              onChange={(e) =>
+                                setHeroMeta((p) => ({ ...p, avatar: { ...p.avatar, photoOffsetY: Number(e.target.value) } }))
+                              }
+                            />
+                          </div>
+                          <button
+                            type="button"
+                            className="btn-remove-card"
+                            onClick={() =>
+                              setHeroMeta((p) => ({ ...p, avatar: { ...p.avatar, photoUrl: "", photoZoom: 100, photoOffsetY: 50 } }))
+                            }
+                          >
+                            Remove Photo
+                          </button>
+                        </div>
                       </div>
                     )}
                     <label className="avatar-upload-btn" aria-disabled={avatarUploading || saving}>
