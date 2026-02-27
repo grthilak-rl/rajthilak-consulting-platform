@@ -6,6 +6,18 @@ import type { CaseStudy } from '../types';
 import Skeleton from '../components/Skeleton';
 import './CaseStudyDetail.css';
 
+/** Wrap plain-text architecture content in <pre> if it isn't already HTML-wrapped */
+const wrapArchitecture = (html: string): string => {
+  const trimmed = html.trim();
+  // Already contains block-level HTML — return as-is
+  if (/^<(pre|div|p|ul|ol|table)\b/i.test(trimmed)) return html;
+  // Contains box-drawing characters or looks like fixed-width diagram — wrap in <pre>
+  if (/[┌┐└┘├┤┬┴┼─│═║╔╗╚╝╠╣╦╩╬▶▸►▷→←↑↓]/.test(trimmed)) {
+    return `<pre>${trimmed}</pre>`;
+  }
+  return html;
+};
+
 const getIconEmoji = (icon: string) => {
   switch (icon) {
     case 'activity': return '📈';
@@ -235,7 +247,7 @@ export default function CaseStudyDetail() {
           <div className="detail-content-inner">
             <div className="detail-section-label">Architecture</div>
             <h2>System Design</h2>
-            <div className="detail-prose" dangerouslySetInnerHTML={{ __html: caseStudy.architecture }} />
+            <div className="detail-prose" dangerouslySetInnerHTML={{ __html: wrapArchitecture(caseStudy.architecture) }} />
           </div>
         </section>
       )}
