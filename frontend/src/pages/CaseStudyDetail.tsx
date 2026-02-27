@@ -187,7 +187,7 @@ export default function CaseStudyDetail() {
           <div className="detail-content-inner">
             <div className="detail-section-label">The Problem</div>
             <h2>What Was Broken</h2>
-            <div className="detail-prose">{caseStudy.problem}</div>
+            <div className="detail-prose" dangerouslySetInnerHTML={{ __html: caseStudy.problem }} />
           </div>
         </section>
       )}
@@ -198,7 +198,7 @@ export default function CaseStudyDetail() {
           <div className="detail-content-inner">
             <div className="detail-section-label">The Solution</div>
             <h2>What Was Built</h2>
-            <div className="detail-prose">{caseStudy.solution}</div>
+            <div className="detail-prose" dangerouslySetInnerHTML={{ __html: caseStudy.solution }} />
           </div>
         </section>
       )}
@@ -224,7 +224,7 @@ export default function CaseStudyDetail() {
           <div className="detail-content-inner">
             <div className="detail-section-label">My Role</div>
             <h2>Ownership &amp; Responsibilities</h2>
-            <div className="detail-prose">{caseStudy.role_description}</div>
+            <div className="detail-prose" dangerouslySetInnerHTML={{ __html: caseStudy.role_description }} />
           </div>
         </section>
       )}
@@ -235,7 +235,7 @@ export default function CaseStudyDetail() {
           <div className="detail-content-inner">
             <div className="detail-section-label">Architecture</div>
             <h2>System Design</h2>
-            <div className="detail-prose">{caseStudy.architecture}</div>
+            <div className="detail-prose" dangerouslySetInnerHTML={{ __html: caseStudy.architecture }} />
           </div>
         </section>
       )}
@@ -246,7 +246,7 @@ export default function CaseStudyDetail() {
           <div className="detail-content-inner">
             <div className="detail-section-label">Challenges &amp; Trade-offs</div>
             <h2>Problems I Solved</h2>
-            <div className="detail-prose">{caseStudy.challenges}</div>
+            <div className="detail-prose" dangerouslySetInnerHTML={{ __html: caseStudy.challenges }} />
           </div>
         </section>
       )}
@@ -257,12 +257,16 @@ export default function CaseStudyDetail() {
           <div className="detail-metrics-inner">
             <h2>Key Results</h2>
             <div className="detail-metrics-grid stagger-children visible">
-              {caseStudy.metrics.map((metric, i) => (
-                <div key={i} className="detail-metric-card">
-                  <div className="detail-metric-value">{metric.value}</div>
-                  <div className="detail-metric-label">{metric.label}</div>
-                </div>
-              ))}
+              {caseStudy.metrics.map((metric, i) => {
+                const len = metric.value.length;
+                const fontSize = len <= 5 ? '2.5rem' : len <= 10 ? '1.75rem' : len <= 20 ? '1.25rem' : '1rem';
+                return (
+                  <div key={i} className="detail-metric-card">
+                    <div className="detail-metric-value" style={{ fontSize }}>{metric.value}</div>
+                    <div className="detail-metric-label">{metric.label}</div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </section>
@@ -274,7 +278,7 @@ export default function CaseStudyDetail() {
           <div className="detail-content-inner">
             <div className="detail-section-label">Impact</div>
             <h2>Why This Mattered</h2>
-            <div className="detail-prose">{caseStudy.impact}</div>
+            <div className="detail-prose" dangerouslySetInnerHTML={{ __html: caseStudy.impact }} />
           </div>
         </section>
       )}

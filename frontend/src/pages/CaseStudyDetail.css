@@ -253,6 +253,8 @@
   line-height: 1.1;
   letter-spacing: -0.02em;
   margin-bottom: var(--space-2);
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .detail-metric-label {
@@ -447,7 +449,66 @@
   font-size: 1.0625rem;
   color: var(--color-text-secondary);
   line-height: 1.8;
-  white-space: pre-wrap;
+}
+
+.detail-prose p {
+  margin-bottom: var(--space-4);
+}
+
+.detail-prose p:last-child {
+  margin-bottom: 0;
+}
+
+.detail-prose strong {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.detail-prose ul,
+.detail-prose ol {
+  margin-bottom: var(--space-4);
+  padding-left: var(--space-6);
+}
+
+.detail-prose li {
+  margin-bottom: var(--space-2);
+}
+
+.detail-prose hr {
+  width: 48px;
+  height: 3px;
+  background: var(--color-primary);
+  border: none;
+  border-radius: 2px;
+  margin: var(--space-8) 0;
+}
+
+.detail-prose pre {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-mono, 'SF Mono', 'Fira Code', 'Cascadia Code', monospace);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  padding: var(--space-6);
+  border-radius: var(--radius-lg);
+  overflow-x: auto;
+  margin: var(--space-6) 0;
+  border: 1px solid var(--color-border);
+  white-space: pre;
+}
+
+.detail-prose code {
+  font-family: var(--font-mono, 'SF Mono', 'Fira Code', 'Cascadia Code', monospace);
+  font-size: 0.875em;
+  background: var(--color-gray-100);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+}
+
+.detail-prose pre code {
+  background: none;
+  padding: 0;
+  font-size: inherit;
 }
 
 /* Key Features List */

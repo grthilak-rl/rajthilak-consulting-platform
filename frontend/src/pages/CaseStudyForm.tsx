@@ -420,54 +420,56 @@ export default function CaseStudyForm() {
                 <label htmlFor="problem">Problem</label>
                 <textarea
                   id="problem"
-                  rows={4}
+                  rows={8}
                   value={formData.problem}
                   onChange={(e) => handleChange("problem", e.target.value)}
                   placeholder="What was broken or missing? Describe the challenge..."
                 />
-                <span className="field-hint">What pain point or gap did the client face?</span>
+                <span className="field-hint">HTML supported: &lt;p&gt;, &lt;ul&gt;/&lt;ol&gt;/&lt;li&gt;, &lt;strong&gt;, &lt;hr&gt;</span>
               </div>
               <div className="cs-form-field full-width">
                 <label htmlFor="solution">Solution</label>
                 <textarea
                   id="solution"
-                  rows={4}
+                  rows={8}
                   value={formData.solution}
                   onChange={(e) => handleChange("solution", e.target.value)}
                   placeholder="What was built and how it works..."
                 />
+                <span className="field-hint">HTML supported: &lt;p&gt;, &lt;ul&gt;/&lt;ol&gt;/&lt;li&gt;, &lt;strong&gt;, &lt;hr&gt;</span>
               </div>
               <div className="cs-form-field full-width">
                 <label htmlFor="role_description">My Role (Detailed)</label>
                 <textarea
                   id="role_description"
-                  rows={3}
+                  rows={8}
                   value={formData.role_description}
                   onChange={(e) => handleChange("role_description", e.target.value)}
                   placeholder="Ownership areas and responsibilities..."
                 />
-                <span className="field-hint">Expands on the brief &quot;Role&quot; field above</span>
+                <span className="field-hint">HTML supported: &lt;p&gt;, &lt;ul&gt;/&lt;ol&gt;/&lt;li&gt;, &lt;strong&gt;, &lt;hr&gt;</span>
               </div>
               <div className="cs-form-field full-width">
                 <label htmlFor="challenges">Challenges &amp; Trade-offs</label>
                 <textarea
                   id="challenges"
-                  rows={4}
+                  rows={8}
                   value={formData.challenges}
                   onChange={(e) => handleChange("challenges", e.target.value)}
                   placeholder="Real engineering problems and how they were solved..."
                 />
+                <span className="field-hint">HTML supported: &lt;p&gt;, &lt;ul&gt;/&lt;ol&gt;/&lt;li&gt;, &lt;strong&gt;, &lt;hr&gt;</span>
               </div>
               <div className="cs-form-field full-width">
                 <label htmlFor="impact">Impact</label>
                 <textarea
                   id="impact"
-                  rows={3}
+                  rows={8}
                   value={formData.impact}
                   onChange={(e) => handleChange("impact", e.target.value)}
                   placeholder="Why this mattered — qualitative narrative..."
                 />
-                <span className="field-hint">Complements the quantitative Metrics above</span>
+                <span className="field-hint">HTML supported: &lt;p&gt;, &lt;ul&gt;/&lt;ol&gt;/&lt;li&gt;, &lt;strong&gt;, &lt;hr&gt;</span>
               </div>
             </div>
           </div>
@@ -502,11 +504,12 @@ export default function CaseStudyForm() {
               <label htmlFor="architecture">Architecture</label>
               <textarea
                 id="architecture"
-                rows={5}
+                rows={8}
                 value={formData.architecture}
                 onChange={(e) => handleChange("architecture", e.target.value)}
                 placeholder="Describe the system architecture, components, data flow..."
               />
+              <span className="field-hint">HTML supported: &lt;p&gt;, &lt;ul&gt;/&lt;ol&gt;/&lt;li&gt;, &lt;strong&gt;, &lt;hr&gt;</span>
             </div>
           </div>
 
