@@ -1,5 +1,7 @@
 DEMO.md
 .env
+.env.production
+*.pem
 
 # Python
 __pycache__/
