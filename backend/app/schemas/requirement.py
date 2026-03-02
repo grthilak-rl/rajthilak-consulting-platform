@@ -36,6 +36,10 @@ class RequirementResponse(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class RequirementStatusResponse(RequirementResponse):
+    invite_link: Optional[str] = None
+
+
 class StatusUpdate(BaseModel):
     status: RequirementStatus
 

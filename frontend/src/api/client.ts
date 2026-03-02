@@ -1,19 +1,33 @@
-import type { LoginResponse, Note, Requirement, CaseStudy, CaseStudyFormData, Service, Testimonial, SiteContent, SiteContentFormData } from "../types";
+import type { LoginResponse, Note, Requirement, RequirementStatusResponse, CaseStudy, CaseStudyFormData, Service, Testimonial, SiteContent, SiteContentFormData, UserRole, UserInfo, ClientTestimonialPayload, InviteInfo } from "../types";
 
 const API_BASE = "/api";
 
 const TOKEN_KEY = "auth_token";
+const ROLE_KEY = "user_role";
 
 export function setToken(t: string | null): void {
   if (t) {
     sessionStorage.setItem(TOKEN_KEY, t);
   } else {
     sessionStorage.removeItem(TOKEN_KEY);
+    sessionStorage.removeItem(ROLE_KEY);
   }
 }
 
 export function getToken(): string | null {
   return sessionStorage.getItem(TOKEN_KEY);
+}
+
+export function setRole(role: string | null): void {
+  if (role) {
+    sessionStorage.setItem(ROLE_KEY, role);
+  } else {
+    sessionStorage.removeItem(ROLE_KEY);
+  }
+}
+
+export function getRole(): UserRole | null {
+  return sessionStorage.getItem(ROLE_KEY) as UserRole | null;
 }
 
 function authHeaders(): Record<string, string> {
@@ -69,9 +83,43 @@ export async function login(email: string, password: string): Promise<LoginRespo
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
   });
-  return handleResponse<LoginResponse>(res);
+  const data = await handleResponse<LoginResponse>(res);
+  setRole(data.role);
+  return data;
 }
 
+// Invitation flow
+export async function getInviteInfo(token: string): Promise<InviteInfo> {
+  const res = await safeFetch(`${API_BASE}/auth/invite-info?token=${token}`);
+  return handleResponse<InviteInfo>(res);
+}
+
+export async function acceptInvite(token: string, password: string): Promise<LoginResponse> {
+  const res = await safeFetch(`${API_BASE}/auth/accept-invite`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token, password }),
+  });
+  const data = await handleResponse<LoginResponse>(res);
+  setRole(data.role);
+  return data;
+}
+
+// Client self-registration
+export async function register(email: string, password: string, name?: string): Promise<LoginResponse> {
+  const payload: Record<string, string> = { email, password };
+  if (name) payload.name = name;
+  const res = await safeFetch(`${API_BASE}/auth/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  const data = await handleResponse<LoginResponse>(res);
+  setRole(data.role);
+  return data;
+}
+
+// Admin: Requirements
 export async function fetchRequirements(): Promise<Requirement[]> {
   const res = await safeFetch(`${API_BASE}/admin/requirements`, {
     headers: authHeaders(),
@@ -79,20 +127,20 @@ export async function fetchRequirements(): Promise<Requirement[]> {
   return handleResponse<Requirement[]>(res);
 }
 
-export async function fetchRequirement(id: string): Promise<Requirement> {
+export async function fetchRequirement(id: string): Promise<RequirementStatusResponse> {
   const res = await safeFetch(`${API_BASE}/admin/requirements/${id}`, {
     headers: authHeaders(),
   });
-  return handleResponse<Requirement>(res);
+  return handleResponse<RequirementStatusResponse>(res);
 }
 
-export async function updateStatus(id: string, newStatus: string): Promise<Requirement> {
+export async function updateStatus(id: string, newStatus: string): Promise<RequirementStatusResponse> {
   const res = await safeFetch(`${API_BASE}/admin/requirements/${id}/status`, {
     method: "PATCH",
     headers: authHeaders(),
     body: JSON.stringify({ status: newStatus }),
   });
-  return handleResponse<Requirement>(res);
+  return handleResponse<RequirementStatusResponse>(res);
 }
 
 export async function updateProgress(id: string, progress: number): Promise<Requirement> {
@@ -120,7 +168,7 @@ export async function createNote(id: string, content: string): Promise<Note> {
   return handleResponse<Note>(res);
 }
 
-// Public API endpoints for case studies, services, testimonials, and site content
+// Public API endpoints
 export async function fetchCaseStudies(): Promise<CaseStudy[]> {
   const res = await safeFetch(`${API_BASE}/public/case-studies`);
   return handleResponse<CaseStudy[]>(res);
@@ -242,6 +290,78 @@ export async function uploadFile(file: File): Promise<{ url: string }> {
 
 export async function deleteSiteContent(id: string): Promise<void> {
   const res = await safeFetch(`${API_BASE}/admin/site-content/${id}`, {
+    method: "DELETE",
+    headers: authHeaders(),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => null);
+    const message = (data as { detail?: string })?.detail || `Request failed (${res.status})`;
+    throw new ApiError(message, res.status);
+  }
+}
+
+// Client Portal
+export async function fetchMyRequirements(): Promise<Requirement[]> {
+  const res = await safeFetch(`${API_BASE}/client/requirements`, {
+    headers: authHeaders(),
+  });
+  return handleResponse<Requirement[]>(res);
+}
+
+export async function fetchMyRequirement(id: string): Promise<Requirement> {
+  const res = await safeFetch(`${API_BASE}/client/requirements/${id}`, {
+    headers: authHeaders(),
+  });
+  return handleResponse<Requirement>(res);
+}
+
+export async function fetchMyNotes(id: string): Promise<Note[]> {
+  const res = await safeFetch(`${API_BASE}/client/requirements/${id}/notes`, {
+    headers: authHeaders(),
+  });
+  return handleResponse<Note[]>(res);
+}
+
+export async function submitClientTestimonial(
+  requirementId: string,
+  payload: ClientTestimonialPayload,
+): Promise<Testimonial> {
+  const res = await safeFetch(`${API_BASE}/client/requirements/${requirementId}/testimonial`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify(payload),
+  });
+  return handleResponse<Testimonial>(res);
+}
+
+// Admin: User Management
+export async function fetchUsers(): Promise<UserInfo[]> {
+  const res = await safeFetch(`${API_BASE}/admin/users`, {
+    headers: authHeaders(),
+  });
+  return handleResponse<UserInfo[]>(res);
+}
+
+export async function createUser(payload: { email: string; password: string; role: string }): Promise<UserInfo> {
+  const res = await safeFetch(`${API_BASE}/admin/users`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify(payload),
+  });
+  return handleResponse<UserInfo>(res);
+}
+
+export async function updateUser(id: string, payload: { email?: string; role?: string }): Promise<UserInfo> {
+  const res = await safeFetch(`${API_BASE}/admin/users/${id}`, {
+    method: "PATCH",
+    headers: authHeaders(),
+    body: JSON.stringify(payload),
+  });
+  return handleResponse<UserInfo>(res);
+}
+
+export async function deleteUser(id: string): Promise<void> {
+  const res = await safeFetch(`${API_BASE}/admin/users/${id}`, {
     method: "DELETE",
     headers: authHeaders(),
   });

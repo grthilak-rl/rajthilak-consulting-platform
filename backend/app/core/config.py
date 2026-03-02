@@ -18,6 +18,8 @@ UPLOAD_DIR = os.environ.get("UPLOAD_DIR", "/app/uploads")
 MAX_UPLOAD_SIZE = 10 * 1024 * 1024  # 10 MB
 ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg"}
 
+FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:5173")
+
 CORS_ORIGINS = [
     origin.strip()
     for origin in os.environ.get(

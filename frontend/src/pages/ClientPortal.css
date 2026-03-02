@@ -1,0 +1,322 @@
+/* ============================================
+   CLIENT PORTAL
+   ============================================ */
+.client-portal {
+  min-height: 100vh;
+  background: var(--color-bg);
+  padding: var(--space-8);
+}
+
+.client-portal-inner {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Header */
+.client-portal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-8);
+}
+
+.client-portal-header h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* Reuse btn-logout from AdminDashboard pattern */
+.client-portal .btn-logout {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.client-portal .btn-logout:hover {
+  border-color: var(--color-error);
+  color: var(--color-error);
+  background: var(--color-error-50);
+}
+
+/* Table wrap */
+.client-table-wrap {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: var(--space-6);
+}
+
+.client-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.client-table th {
+  text-align: left;
+  padding: var(--space-3) var(--space-4);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.client-table td {
+  padding: var(--space-4) var(--space-4);
+  font-size: 0.875rem;
+  color: var(--color-text);
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+
+.client-table tbody tr {
+  cursor: pointer;
+  transition: background 0.1s ease;
+}
+
+.client-table tbody tr:hover {
+  background: var(--color-primary-50);
+}
+
+.client-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Row content */
+.portal-req-title {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.portal-req-date {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+}
+
+/* Status Badge — same pattern as admin */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+.status-badge.status-new {
+  background: var(--color-primary-50);
+  color: var(--color-primary);
+}
+
+.status-badge.status-accepted {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--color-success);
+}
+
+.status-badge.status-in_progress {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--color-accent);
+}
+
+.status-badge.status-completed {
+  background: var(--color-success);
+  color: #fff;
+}
+
+.status-badge.status-rejected {
+  background: var(--color-error-50);
+  color: var(--color-error);
+}
+
+/* Progress cell */
+.portal-progress-cell {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.portal-progress-bar-wrap {
+  flex: 1;
+  max-width: 140px;
+  height: 6px;
+  background: var(--color-gray-100);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.portal-progress-bar-fill {
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: var(--radius-full);
+  transition: width 0.3s ease;
+}
+
+.portal-progress-pct {
+  font-size: 0.8125rem;
+  font-family: var(--font-mono);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+/* Empty state */
+.client-empty {
+  text-align: center;
+  padding: var(--space-16) var(--space-8);
+}
+
+.client-empty-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  background: var(--color-primary-50);
+  border-radius: var(--radius-lg);
+  color: var(--color-primary);
+  margin-bottom: var(--space-5);
+}
+
+.client-empty h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: var(--space-2);
+}
+
+.client-empty p {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+/* Loading Skeleton */
+.client-skeleton-row {
+  display: flex;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.client-skeleton-row:last-child {
+  border-bottom: none;
+}
+
+.client-skeleton-row .skel-block {
+  height: 16px;
+  background: var(--color-gray-100);
+  border-radius: var(--radius-sm);
+  animation: shimmer 1.5s ease infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* Error */
+.client-error {
+  text-align: center;
+  padding: var(--space-16) var(--space-8);
+}
+
+.client-error p {
+  color: var(--color-error);
+  font-size: 0.9375rem;
+  margin-bottom: var(--space-4);
+}
+
+.client-error button {
+  padding: 8px 20px;
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* Footer note */
+.client-portal-footer {
+  text-align: center;
+}
+
+.client-portal-footer p {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.client-portal-footer a {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.client-portal-footer a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .client-portal {
+    padding: var(--space-5);
+  }
+
+  .client-portal-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  .portal-progress-bar-wrap {
+    max-width: 80px;
+  }
+
+  /* Table → card on mobile */
+  .client-table thead {
+    display: none;
+  }
+
+  .client-table tbody,
+  .client-table tbody tr,
+  .client-table tbody td {
+    display: block;
+  }
+
+  .client-table tbody tr {
+    padding: var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .client-table tbody td {
+    padding: var(--space-1) 0;
+    border-bottom: none;
+  }
+
+  .client-table tbody td::before {
+    content: attr(data-label);
+    display: inline-block;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-muted);
+    width: 90px;
+    flex-shrink: 0;
+  }
+}

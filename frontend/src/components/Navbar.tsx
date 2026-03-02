@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { getToken, getRole } from '../api/client';
 import useTheme from '../hooks/useTheme';
 import './Navbar.css';
 
@@ -12,6 +13,10 @@ export default function Navbar({ transparent = false }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
+  const token = getToken();
+  const role = getRole();
+
+  const dashboardPath = role === 'client' ? '/portal' : role === 'editor' ? '/admin/portfolio' : '/admin/dashboard';
 
   useEffect(() => {
     if (!transparent) return;
@@ -67,6 +72,15 @@ export default function Navbar({ transparent = false }: NavbarProps) {
               </Link>
             </li>
           </ul>
+          {token ? (
+            <Link to={dashboardPath} className="nav-signin">
+              Dashboard
+            </Link>
+          ) : (
+            <Link to="/admin/login" className="nav-signin">
+              Sign In
+            </Link>
+          )}
           <button
             className="theme-toggle"
             onClick={toggleTheme}
@@ -120,6 +134,13 @@ export default function Navbar({ transparent = false }: NavbarProps) {
               <li><Link to="/portfolio" className={isActive('/portfolio') ? 'active' : ''}>Portfolio</Link></li>
               <li><Link to="/about" className={isActive('/about') ? 'active' : ''}>About</Link></li>
               <li><Link to="/submit">Submit Requirement</Link></li>
+              <li>
+                {token ? (
+                  <Link to={dashboardPath}>Dashboard</Link>
+                ) : (
+                  <Link to="/admin/login">Sign In</Link>
+                )}
+              </li>
             </ul>
             <button className="mobile-theme-toggle" onClick={toggleTheme}>
               {theme === 'light' ? (

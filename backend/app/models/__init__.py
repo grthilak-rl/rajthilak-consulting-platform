@@ -1,4 +1,4 @@
-from app.models.user import User
+from app.models.user import User, UserRole
 from app.models.requirement import Requirement, RequirementType, RequirementStatus
 from app.models.note import Note
 from app.models.case_study import CaseStudy
@@ -8,6 +8,7 @@ from app.models.site_content import SiteContent
 
 __all__ = [
     "User",
+    "UserRole",
     "Requirement",
     "RequirementType",
     "RequirementStatus",

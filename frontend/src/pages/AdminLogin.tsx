@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { login, setToken } from "../api/client";
 import "./AdminLogin.css";
 
@@ -18,7 +18,13 @@ export default function AdminLogin() {
     try {
       const data = await login(email, password);
       setToken(data.access_token);
-      navigate("/admin/dashboard");
+      if (data.role === "client") {
+        navigate("/portal");
+      } else if (data.role === "editor") {
+        navigate("/admin/portfolio");
+      } else {
+        navigate("/admin/dashboard");
+      }
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -29,9 +35,10 @@ export default function AdminLogin() {
   return (
     <div className="admin-login">
       <div className="admin-login-card">
+        <Link to="/" className="auth-brand">raj<span>thilak</span></Link>
         <div className="admin-login-header">
-          <h1>Admin Login</h1>
-          <p>Sign in to manage requirements</p>
+          <h1>Sign In</h1>
+          <p>Sign in to your account</p>
         </div>
 
         {error && (
@@ -85,6 +92,10 @@ export default function AdminLogin() {
             )}
           </button>
         </form>
+
+        <div className="login-footer">
+          Don't have an account? <Link to="/register">Sign up</Link>
+        </div>
       </div>
     </div>
   );

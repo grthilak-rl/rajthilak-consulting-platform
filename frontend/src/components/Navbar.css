@@ -222,6 +222,36 @@
 }
 
 /* ============================================
+   SIGN IN / DASHBOARD LINK
+   ============================================ */
+.nav-signin {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  padding: 6px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.nav-signin:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.nav.transparent .nav-signin {
+  color: rgba(255,255,255,0.75);
+  border-color: rgba(255,255,255,0.2);
+}
+
+.nav.transparent .nav-signin:hover {
+  color: #fff;
+  border-color: rgba(255,255,255,0.5);
+}
+
+/* ============================================
    THEME TOGGLE
    ============================================ */
 .theme-toggle {
@@ -289,6 +319,10 @@ html.dark .nav.scrolled {
 
 @media (max-width: 768px) {
   .nav-links {
+    display: none;
+  }
+
+  .nav-signin {
     display: none;
   }
 

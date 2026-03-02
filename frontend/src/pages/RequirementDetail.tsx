@@ -44,6 +44,7 @@ export default function RequirementDetail() {
 
   const [noteContent, setNoteContent] = useState("");
   const [addingNote, setAddingNote] = useState(false);
+  const [inviteLink, setInviteLink] = useState<string | null>(null);
 
   function handleAuthError(err: unknown): boolean {
     if (err instanceof ApiError && (err.status === 401 || err.status === 403)) {
@@ -63,6 +64,9 @@ export default function RequirementDetail() {
         setStatus(req.status);
         setProgress(req.progress);
         setNotes(notesList);
+        if (req.invite_link) {
+          setInviteLink(req.invite_link);
+        }
       })
       .catch((err: unknown) => {
         if (!handleAuthError(err)) {
@@ -81,6 +85,9 @@ export default function RequirementDetail() {
     try {
       const updated = await updateStatus(id, newStatus);
       setRequirement(updated);
+      if (updated.invite_link) {
+        setInviteLink(updated.invite_link);
+      }
     } catch (err) {
       if (!handleAuthError(err)) {
         setActionError((err as Error).message);
@@ -204,6 +211,25 @@ export default function RequirementDetail() {
               <path d="M8 4.5v4M8 10.5v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
             {actionError}
+          </div>
+        )}
+
+        {/* Invite Link */}
+        {inviteLink && (
+          <div className="req-invite-card">
+            <h2>Client Invitation</h2>
+            <p>Share this link with the client so they can create their account:</p>
+            <div className="invite-link-box">
+              <code>{inviteLink}</code>
+              <button
+                className="btn-copy"
+                onClick={() => {
+                  navigator.clipboard.writeText(inviteLink);
+                }}
+              >
+                Copy
+              </button>
+            </div>
           </div>
         )}
 

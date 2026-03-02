@@ -124,6 +124,63 @@
   color: var(--color-text-secondary);
 }
 
+/* Invite Card */
+.req-invite-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-primary-50, #3b82f6);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+}
+
+.req-invite-card h2 {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-primary, #3b82f6);
+  margin-bottom: var(--space-3);
+}
+
+.req-invite-card p {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-4);
+}
+
+.invite-link-box {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+}
+
+.invite-link-box code {
+  flex: 1;
+  font-size: 0.8125rem;
+  color: var(--color-text);
+  word-break: break-all;
+}
+
+.btn-copy {
+  flex-shrink: 0;
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-primary, #3b82f6);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.btn-copy:hover {
+  opacity: 0.9;
+}
+
 /* Info Card */
 .req-info-card {
   background: var(--color-surface);

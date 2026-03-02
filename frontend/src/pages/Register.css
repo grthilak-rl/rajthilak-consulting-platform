@@ -1,4 +1,7 @@
-.admin-login {
+/* ============================================
+   CLIENT REGISTRATION
+   ============================================ */
+.register {
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -7,9 +10,9 @@
   background: var(--color-bg);
 }
 
-.admin-login-card {
+.register-card {
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xl);
@@ -36,27 +39,31 @@
   opacity: 0.8;
 }
 
-.admin-login-header {
+/* Header */
+.register-header {
   text-align: center;
   margin-bottom: var(--space-8);
 }
 
-.admin-login-header h1 {
+.register-header h1 {
   font-size: 1.5rem;
   font-weight: 700;
+  letter-spacing: -0.02em;
   margin-bottom: var(--space-2);
 }
 
-.admin-login-header p {
+.register-header p {
   font-size: 0.875rem;
   color: var(--color-text-secondary);
+  line-height: 1.6;
 }
 
-.admin-login .form-group {
+/* Form */
+.register .form-group {
   margin-bottom: var(--space-5);
 }
 
-.admin-login .form-label {
+.register .form-label {
   display: block;
   font-size: 0.8125rem;
   font-weight: 500;
@@ -64,7 +71,7 @@
   margin-bottom: var(--space-2);
 }
 
-.admin-login .form-input {
+.register .form-input {
   width: 100%;
   padding: 10px 14px;
   background: var(--color-surface);
@@ -75,14 +82,16 @@
   color: var(--color-text);
   outline: none;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  box-sizing: border-box;
 }
 
-.admin-login .form-input:focus {
+.register .form-input:focus {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
-.admin-login .alert-error {
+/* Error alert */
+.register .alert-error {
   display: flex;
   align-items: center;
   gap: var(--space-2);
@@ -95,7 +104,8 @@
   color: var(--color-error);
 }
 
-.admin-login .btn-login {
+/* Submit Button */
+.btn-register {
   width: 100%;
   display: inline-flex;
   align-items: center;
@@ -113,38 +123,44 @@
   margin-top: var(--space-3);
 }
 
-.admin-login .btn-login:hover:not(:disabled) {
+.btn-register:hover:not(:disabled) {
   background: var(--color-primary-dark);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
 }
 
-.admin-login .btn-login:disabled {
+.btn-register:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-.admin-login .spinner {
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.login-footer {
+/* Footer */
+.register-footer {
   text-align: center;
-  margin-top: var(--space-6);
+  margin-top: var(--space-5);
   font-size: 0.875rem;
   color: var(--color-text-secondary);
 }
 
-.login-footer a {
+.register-footer a {
   color: var(--color-primary);
-  font-weight: 500;
   text-decoration: none;
+  font-weight: 500;
 }
 
-.login-footer a:hover {
+.register-footer a:hover {
   text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .register {
+    padding: var(--space-5);
+    align-items: flex-start;
+    padding-top: var(--space-10);
+  }
+
+  .register-card {
+    padding: var(--space-7);
+  }
 }

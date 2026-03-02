@@ -1,7 +1,8 @@
 from datetime import datetime
+from typing import Optional
 from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class TestimonialResponse(BaseModel):
@@ -17,3 +18,9 @@ class TestimonialResponse(BaseModel):
     updated_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+class ClientTestimonialCreate(BaseModel):
+    content: str
+    rating: int = Field(ge=1, le=5)
+    author_role: Optional[str] = None

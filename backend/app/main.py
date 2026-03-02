@@ -1,7 +1,7 @@
 import os
 from contextlib import asynccontextmanager
 
-from fastapi import Depends, FastAPI, Request, status
+from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -10,9 +10,8 @@ from fastapi.staticfiles import StaticFiles
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
-from app.api import public, auth, admin
+from app.api import public, auth, admin, client as client_api, users
 from app.core.config import CORS_ORIGINS, UPLOAD_DIR
-from app.core.deps import get_current_user
 from app.core.limiter import limiter
 from app.scripts.init_db import init_db
 
@@ -51,15 +50,16 @@ app.add_middleware(
 
 app.include_router(public.router, prefix="/api/public", tags=["public"])
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
-app.include_router(
-    admin.router,
-    prefix="/api/admin",
-    tags=["admin"],
-    dependencies=[Depends(get_current_user)],
-)
+app.include_router(admin.router, prefix="/api/admin", tags=["admin"])
+app.include_router(client_api.router, prefix="/api/client", tags=["client"])
+app.include_router(users.router, prefix="/api/admin/users", tags=["users"])
 
 
-app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
+try:
+    os.makedirs(UPLOAD_DIR, exist_ok=True)
+except OSError:
+    pass
+app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR, check_dir=False), name="uploads")
 
 
 @app.get("/health")

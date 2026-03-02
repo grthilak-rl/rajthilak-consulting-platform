@@ -21,8 +21,32 @@ export interface Note {
   created_at: string;
 }
 
+export type UserRole = "admin" | "editor" | "client";
+
 export interface LoginResponse {
   access_token: string;
+  role: UserRole;
+}
+
+export interface UserInfo {
+  id: string;
+  email: string;
+  role: UserRole;
+  created_at: string;
+}
+
+export interface ClientTestimonialPayload {
+  content: string;
+  rating: number;
+  author_role?: string;
+}
+
+export interface InviteInfo {
+  email: string;
+}
+
+export interface RequirementStatusResponse extends Requirement {
+  invite_link?: string | null;
 }
 
 export interface Project {

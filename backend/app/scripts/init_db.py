@@ -9,6 +9,7 @@ from sqlalchemy.exc import OperationalError
 from app.core.config import ADMIN_EMAIL, ADMIN_PASSWORD
 from app.core.database import engine, SessionLocal
 from app.models import User
+from app.models.user import UserRole
 from app.models.requirement import Requirement, RequirementType, RequirementStatus
 from app.models.case_study import CaseStudy
 from app.models.service import Service
@@ -55,6 +56,9 @@ def seed_admin():
     try:
         existing = db.query(User).filter(User.email == ADMIN_EMAIL).first()
         if existing:
+            if existing.role != UserRole.admin:
+                existing.role = UserRole.admin
+                db.commit()
             print(f"Admin user already exists: {ADMIN_EMAIL}")
             return
 
@@ -62,7 +66,11 @@ def seed_admin():
             ADMIN_PASSWORD.encode("utf-8"), gensalt()
         ).decode("utf-8")
 
-        admin = User(email=ADMIN_EMAIL, password_hash=password_hash)
+        admin = User(
+            email=ADMIN_EMAIL,
+            password_hash=password_hash,
+            role=UserRole.admin,
+        )
         db.add(admin)
         db.commit()
         print(f"Admin user created: {ADMIN_EMAIL}")

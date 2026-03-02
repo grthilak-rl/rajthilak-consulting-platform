@@ -77,7 +77,7 @@ export default function AdminDashboard() {
 
   function handleLogout() {
     setToken(null);
-    navigate("/admin/login");
+    navigate("/");
   }
 
   if (loading) {
@@ -151,6 +151,12 @@ export default function AdminDashboard() {
               <path d="M12.7 3.3a1 1 0 011.4 1.4l-8 8a1 1 0 01-.5.3l-2.5.6.6-2.5a1 1 0 01.3-.5l8-8z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
             Manage Site
+          </Link>
+          <Link to="/admin/users" className="btn-manage-users">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M8 7a3 3 0 100-6 3 3 0 000 6zM2 14a6 6 0 0112 0" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+            Manage Users
           </Link>
         </div>
 
