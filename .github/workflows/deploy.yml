@@ -25,6 +25,10 @@ jobs:
 
             cd /home/ubuntu/app
 
+            # Discard any local changes so pull never conflicts
+            git checkout -- .
+            git clean -fd
+
             # Pull latest code (fail fast if auth/network issue)
             git pull origin main
 
